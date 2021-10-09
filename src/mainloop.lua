@@ -170,8 +170,8 @@ function love.update(dt)
         if ui:windowBegin("Edit Room Parameters", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
             ui:layoutRow("dynamic", 25*global_scale, 5)
             ui:label("Level Exits:")
-            for k,v in pairs(app.editParamsExitTable) do 
-                ui:checkbox(k,v)
+            for _,v in pairs({"left","bottom","right","top"}) do 
+                ui:checkbox(v,app.editParamsExitTable[v])
             end 
             --ui:checkbox("test",app.editParamsVTable.test)
             ui:layoutRow("dynamic",25*global_scale,1)
@@ -179,7 +179,7 @@ function love.update(dt)
                 --room.params.test=app.editParamsVTable.test.value
                 --print(room.params.test)
                 for k,v in pairs(app.editParamsExitTable) do 
-                    app.editParams.level_exits[k]=v.value
+                    app.editParams.exits[k]=v.value
                     print(v.value)
                 end
                 app.editParams = nil

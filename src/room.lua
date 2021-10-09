@@ -5,7 +5,7 @@ function newRoom(x, y, w, h)
         w = w or 16,
         h = h or 16,
         data = {},
-        level_exits={up=true,down=false,left=false,right=false},
+        exits={left=false, bottom=false, right=false, top=true},
         params = {},
         title = "",
     }

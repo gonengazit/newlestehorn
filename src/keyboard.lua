@@ -257,7 +257,7 @@ function love.keyreleased(key, scancode)
     if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
         app.editParams = activeRoom()
         app.editParamsExitTable ={}
-        for k,v in pairs(app.editParams.level_exits) do 
+        for k,v in pairs(app.editParams.exits) do 
             app.editParamsExitTable[k]={value=v}
         end
     end
