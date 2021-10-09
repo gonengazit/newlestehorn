@@ -263,7 +263,15 @@ function savePico8(filename)
             local levels, mapdata = {}, {}
             for n = 1, #project.rooms do
                 local room = project.rooms[n]
-                levels[n] = string.format("%f,%f,%f,%f,%s", room.x/128, room.y/128, room.w/16, room.h/16, room.title)
+                local exit_string="0b"
+                for _,v in pairs({"left","down","right","up"}) do
+                    if room.level_exits[v] then
+                        exit_string=exit_string.."1"
+                    else
+                        exit_string=exit_string.."0"
+                    end 
+                end 
+                levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, exit_string)
                 
                 mapdata[n] = dumproomdata(room)
             end

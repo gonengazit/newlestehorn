@@ -5,6 +5,8 @@ function newRoom(x, y, w, h)
         w = w or 16,
         h = h or 16,
         data = {},
+        level_exits={up=true,down=false,left=false,right=false},
+        params = {},
         title = "",
     }
     room.data = fill2d0s(room.w, room.h)

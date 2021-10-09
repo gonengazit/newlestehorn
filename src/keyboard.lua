@@ -255,8 +255,11 @@ function love.keyreleased(key, scancode)
 	-- this shortcut is handled on release, and can be consumed
 	-- so you don't input r into the field
     if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
-		app.renameRoom = activeRoom()
-        app.renameRoomVTable = {value = app.renameRoom.title}
+        app.editParams = activeRoom()
+        app.editParamsExitTable ={}
+        for k,v in pairs(app.editParams.level_exits) do 
+            app.editParamsExitTable[k]={value=v}
+        end
     end
 end
 

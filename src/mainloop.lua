@@ -143,23 +143,49 @@ function love.update(dt)
 		ui:windowEnd()
 	end
     
-    if app.renameRoom then
-        local room = app.renameRoom
+    --if app.renameRoom then
+        --local room = app.renameRoom
         
-        local w, h = 200*global_scale, 88*global_scale
-        if ui:windowBegin("Rename room", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
-            ui:layoutRow("dynamic", 25*global_scale, 1)
+        --local w, h = 200*global_scale, 88*global_scale
+        --if ui:windowBegin("Rename room", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+            --ui:layoutRow("dynamic", 25*global_scale, 1)
             
-            local state, changed
-            ui:editFocus()
-            state, changed = ui:edit("simple", app.renameRoomVTable)
+            --local state, changed
+            --ui:editFocus()
+            --state, changed = ui:edit("simple", app.renameRoomVTable)
             
+            --if ui:button("OK") or app.enterPressed then
+                --room.title = app.renameRoomVTable.value
+                --app.renameRoom = nil
+            --end
+        --else
+            --app.renameRoom = nil
+        --end
+        --ui:windowEnd()
+    --end
+    if app.editParams then
+        local room = app.editParams
+        
+        local w, h = 500*global_scale, 88*global_scale
+        if ui:windowBegin("Edit Room Parameters", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+            ui:layoutRow("dynamic", 25*global_scale, 5)
+            ui:label("Level Exits:")
+            for k,v in pairs(app.editParamsExitTable) do 
+                ui:checkbox(k,v)
+            end 
+            --ui:checkbox("test",app.editParamsVTable.test)
+            ui:layoutRow("dynamic",25*global_scale,1)
             if ui:button("OK") or app.enterPressed then
-                room.title = app.renameRoomVTable.value
-                app.renameRoom = nil
+                --room.params.test=app.editParamsVTable.test.value
+                --print(room.params.test)
+                for k,v in pairs(app.editParamsExitTable) do 
+                    app.editParams.level_exits[k]=v.value
+                    print(v.value)
+                end
+                app.editParams = nil
             end
         else
-            app.renameRoom = nil
+            app.editParams = nil
         end
         ui:windowEnd()
     end
