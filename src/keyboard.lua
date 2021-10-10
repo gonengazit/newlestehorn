@@ -255,10 +255,11 @@ function love.keyreleased(key, scancode)
 	-- this shortcut is handled on release, and can be consumed
 	-- so you don't input r into the field
     if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
-        app.editParams = activeRoom()
-        app.editParamsExitTable ={}
-        for k,v in pairs(app.editParams.exits) do 
-            app.editParamsExitTable[k]={value=v}
+        local room=activeRoom()
+        app.editParams = room
+        app.editParamsTable ={exits={},hex={value=room.hex}}
+        for k,v in pairs(room.exits) do 
+            app.editParamsTable.exits[k]={value=v}
         end
     end
 end

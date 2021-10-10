@@ -166,21 +166,48 @@ function love.update(dt)
     if app.editParams then
         local room = app.editParams
         
-        local w, h = 500*global_scale, 88*global_scale
+        local w, h = 500*global_scale, 125*global_scale
         if ui:windowBegin("Edit Room Parameters", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+
+            local x,y=div8(room.x),div8(room.y)
+            local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
+            ui:layoutRow("dynamic",25*global_scale,1)
+            if not fits_on_map then
+                local style={}
+                for k,v in pairs({"text normal", "text hover", "text active"}) do
+                    style[v]="#707070"
+                end 
+                for k,v in pairs({"normal", "hover", "active"}) do
+                    style[v]="#606060"
+                end 
+                for k,v in pairs({"cursor normal","cursor hover"}) do 
+                    style[v]="#303030"
+                end 
+                --style["border color"]="#787878"
+                ui:stylePush({['checkbox']=style})
+
+                --this is a hack
+                --TODO: use images and get proper hiding
+            else
+                ui:stylePush({})
+            end 
+            ui:checkbox("Level Stored As Hex",fits_on_map and app.editParamsTable.hex or true)
+            ui:stylePop()
+
+
             ui:layoutRow("dynamic", 25*global_scale, 5)
             ui:label("Level Exits:")
             for _,v in pairs({"left","bottom","right","top"}) do 
-                ui:checkbox(v,app.editParamsExitTable[v])
+                ui:checkbox(v,app.editParamsTable.exits[v])
             end 
             --ui:checkbox("test",app.editParamsVTable.test)
             ui:layoutRow("dynamic",25*global_scale,1)
             if ui:button("OK") or app.enterPressed then
                 --room.params.test=app.editParamsVTable.test.value
                 --print(room.params.test)
-                for k,v in pairs(app.editParamsExitTable) do 
+                app.editParams.hex=app.editParamsTable.hex.value
+                for k,v in pairs(app.editParamsTable.exits) do 
                     app.editParams.exits[k]=v.value
-                    print(v.value)
                 end
                 app.editParams = nil
             end
