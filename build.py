@@ -4,7 +4,7 @@ import shutil
 import os
 
 
-platforms = ["windows", "linux"]
+platforms = ["windows", "linux", "macos"]
 
 
 
@@ -14,8 +14,8 @@ Path("build").mkdir()
 shutil.copytree("src", "build/src", ignore=shutil.ignore_patterns("*.so", "*.dll"))
 
 # create .love file
-shutil.make_archive("build/everhorn", "zip", "build/src")
-os.rename("build/everhorn.zip", "build/everhorn.love")
+shutil.make_archive("build/newlestehorn", "zip", "build/src")
+os.rename("build/newlestehorn.zip", "build/newlestehorn.love")
 
 # copy files
 for platform in platforms:
@@ -33,25 +33,35 @@ for platform in platforms:
         for dll in ["nuklear.dll", "nfd.dll"]:
             shutil.copy(f"bin/windows/{dll}", "build/windows")
         
-        # concatenate love.exe and everhorn.love
-        filenames = ["bin/windows/love/love.exe", "build/everhorn.love"]
-        with open("build/windows/everhorn.exe", "wb") as of:
+        # concatenate love.exe and newlestehorn.love
+        filenames = ["bin/windows/love/love.exe", "build/newlestehorn.love"]
+        with open("build/windows/newlestehorn.exe", "wb") as of:
             for fn in filenames:
                 with open(fn, "rb") as inf:
                         of.write(inf.read())
-    else:
-        # linux and osx - no fancy packaging, just src and .so's
+    elif platform == "linux":
+        # linux - no fancy packaging, just src and .so's
         # copy src
         shutil.copytree("build/src", f"build/{platform}", dirs_exist_ok=True)
         
         # copy .so's
         for so in ["nuklear.so", "nfd.so"]:
             shutil.copy(f"bin/{platform}/{so}", f"build/{platform}")
+    elif platform == "macos":
+        # macos - no fancy packaging, just src and .so's
+        # copy src
+        shutil.copytree("build/src", f"build/{platform}", dirs_exist_ok=True)
+        
+        # copy .so and .py
+        # python file used as a hack for file dialog for macos
+        # since i couldn't compile nfd
+        for so in ["nuklear.so", "filedialog.py"]:
+            shutil.copy(f"bin/{platform}/{so}", f"build/{platform}")
 
 # create archives    
 version = input("version suffix: ")
 for platform in platforms:
-    arcname = f"everhorn-{version}-{platform}"
+    arcname = f"newlestehorn-{version}-{platform}"
     os.rename(f"build/{platform}", f"build/{arcname}")
     
     fmt = "zip" if platform == "windows" else "gztar"
