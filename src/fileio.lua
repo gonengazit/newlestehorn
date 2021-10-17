@@ -248,61 +248,30 @@ function savePico8(filename)
         table.insert(out, line)
         ln = ln + 1
     end
+    file:close()
 
-    -- code updates
-    local evh_found = false
-
-    for k = 1, #out do
-        if out[k] == "--@begin" then
-            evh_found = true
-
-            while #out >= k+1 and out[k+1] ~= "--@end" do
-            if #out >= k+1 then
-                table.remove(out, k+1)
+    local levels, mapdata = {}, {}
+    for n = 1, #project.rooms do
+        local room = project.rooms[n]
+        local exit_string="0b"
+        for _,v in pairs({"left","bottom","right","top"}) do
+            if room.exits[v] then
+                exit_string=exit_string.."1"
             else
-                return false
-            end
-        end
-
-        local levels, mapdata = {}, {}
-        for n = 1, #project.rooms do
-            local room = project.rooms[n]
-            local exit_string="0b"
-            for _,v in pairs({"left","bottom","right","top"}) do
-                if room.exits[v] then
-                    exit_string=exit_string.."1"
-                else
-                    exit_string=exit_string.."0"
-                end 
+                exit_string=exit_string.."0"
             end 
-            levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, exit_string)
+        end 
+        levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, exit_string)
 
-            if room.hex then 
-                mapdata[n] = dumproomdata(room)
-            end
-        end
-
-        table.insert(out, k+1, "levels = "..dumplua(levels))
-        table.insert(out, k+2, "mapdata = "..dumplua(mapdata))
-        local inject = ""
-        if app.playtesting and app.room then
-            inject = inject.."local __init = _init function _init() __init() begin_game() load_level("..app.room..") music(-1)"
-
-                if app.playtesting == 2 then
-                    inject = inject.." max_djump=2"
-                end
-
-                inject = inject.." end"
-            end
-            table.insert(out, k+3, inject)
+        if room.hex then 
+            mapdata[n] = dumproomdata(room)
         end
     end
-
     -- map section
 
     -- start out by making sure both sections exist, and are sized to max size
 
-    
+
     local gfxexist, mapexist=false,false
     for k = 1, #out do
         if out[k] == "__gfx__" then
@@ -313,10 +282,10 @@ function savePico8(filename)
     end
 
     if not gfxexist then
-        add(out,"__gfx__")
+        table.insert(out,"__gfx__")
     end
     if not mapexist then
-        add(out,"__map__")
+        table.insert(out,"__map__")
     end
 
     for k,v in ipairs(out) do 
@@ -362,10 +331,21 @@ function savePico8(filename)
         out[gfxstart+(j-32)*2+66] = string.sub(line, 129, 256)
     end
 
-    file:close()
+    local cartdata=table.concat(out, "\n")
+    -- write to levels table without overwriting the code
 
+    cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
+    cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(mapdata).."%2")
+    if app.playtesting and app.room then
+        local inject = "local __init = _init function _init() __init() load_level("..app.room..") music(-1)"
+        if app.playtesting == 2 then
+            inject = inject.." max_djump=2"
+        end
+        inject = inject.." end"
+        cartdata=cartdata:gsub("%-%-@end",inject.."\n--@end")
+    end
     file = io.open(filename, "wb")
-    file:write(table.concat(out, "\n"))
+    file:write(cartdata)
     file:close()
 
     app.saveFileName = filename
