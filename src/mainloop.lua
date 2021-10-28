@@ -130,6 +130,8 @@ function love.update(dt)
 			if ui:selectable("Rectangle", app.tool == "rectangle") then app.tool = "rectangle" end
 			ui:layoutRow("static", 25*global_scale, 100*global_scale, 1)
 			if ui:selectable("Select", app.tool == "select") then app.tool = "select" end
+			ui:layoutRow("static", 25*global_scale, 100*global_scale, 1)
+			if ui:selectable("Camera Trigger", app.tool == "camtrigger") then app.tool = "camtrigger" end
 			
 			for j = 0, app.showGarbageTiles and 15 or 7 do
 				ui:layoutRow("static", 8*tms, 8*tms, 16)
@@ -336,8 +338,8 @@ function love.draw()
         end
     end
     if activeRoom() then
-		drawRoom(activeRoom(), p8data)
-	end
+        drawRoom(activeRoom(), p8data)
+    end
     if project.selection then
         drawRoom(project.selection, p8data, true)
         love.graphics.setColor(0, 1, 0.5)
@@ -357,11 +359,15 @@ function love.draw()
             love.graphics.rectangle("line", activeRoom().x + ti*8 + 0.5 / app.camScale, 
                                             activeRoom().y + tj*8 + 0.5 / app.camScale, 8, 8)
         end
-    elseif (app.tool == "rectangle" and app.rectangleI) or app.tool == "select" then
-		local i1, j1 = app.rectangleI or app.selectTileI, app.rectangleJ or app.selectTileJ
+    elseif (app.tool == "rectangle" and app.rectangleI) or app.tool == "select" or app.tool=="camtrigger" then
+        local i1, j1 = app.rectangleI or app.selectTileI or app.camtriggerI, app.rectangleJ or app.selectTileJ or app.camtriggerJ
         if i1 and ti then
             local i, j, w, h = rectCont2Tiles(ti, tj, i1, j1)
-            love.graphics.setColor(0, 1, 0.5)
+            if app.tool=="camtrigger" then
+                love.graphics.setColor(1,0.75,0)
+            else
+                love.graphics.setColor(0, 1, 0.5)
+            end
             love.graphics.setLineWidth(1 / app.camScale)
             love.graphics.rectangle("line", activeRoom().x + i*8 + 0.5 / app.camScale, 
                                             activeRoom().y + j*8 + 0.5 / app.camScale,

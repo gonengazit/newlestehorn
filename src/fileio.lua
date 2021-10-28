@@ -115,7 +115,7 @@ function loadpico8(filename)
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
-    local levels, mapdata
+    local levels, mapdata, cam_triggers
     if evh then
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -127,7 +127,7 @@ function loadpico8(filename)
             chunk = setfenv(chunk, env)
             chunk()
 
-            levels, mapdata = env.levels, env.mapdata
+            levels, mapdata, cam_triggers = env.levels, env.mapdata, env.cam_triggers
         end
     end
 
