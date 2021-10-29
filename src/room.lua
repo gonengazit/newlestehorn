@@ -33,8 +33,15 @@ function drawRoom(room, p8data, highlight)
             end
         end
     end
-    for _,trigger in pairs(room.camtriggers) do
-        love.graphics.setColor(1,0.75,0,0.5)
+    local highlighted = project.selected_camtrigger or hoveredTrigger()
+    --TODO: draw selected and hovered in different colors maybe
+    for _,trigger in ipairs(room.camtriggers) do
+		local ti, tj = mouseOverTile()
+        if trigger== highlighted then
+            love.graphics.setColor(1,0.9,0,0.5)
+        else
+            love.graphics.setColor(1,0.75,0,0.5)
+        end
         local px,py,pw,ph=trigger.x*8+room.x,trigger.y*8+room.y,trigger.w*8,trigger.h*8
         love.graphics.rectangle("fill",px,py,pw,ph)
         love.graphics.setLineWidth(1 / app.camScale)

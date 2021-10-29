@@ -198,7 +198,7 @@ function love.keypressed(key, scancode, isrepeat)
     end
     
     -- another fucking hack: the shit above doesnt consume inputs when editing text for some fucking reason
-    if app.renameRoom then
+    if app.editCamTrigger or app.editParams then
         return
     end
     
@@ -241,6 +241,21 @@ function love.keypressed(key, scancode, isrepeat)
 		else
 			app.playtesting = false
 		end
+    elseif key == "delete" then
+        local room=activeRoom()
+        if project.selected_camtrigger and room then
+            --TODO: make sure to unselect camtriggers on room switch
+            for i,v in ipairs(room.camtriggers) do
+                if v==project.selected_camtrigger then
+                    table.remove(room.camtriggers, i)
+                    project.selected_camtrigger=nil
+                    break
+                end
+            end
+        end
+    elseif key == "t" and project.selected_camtrigger then
+        app.editCamtrigger=project.selected_camtrigger
+        app.editCamtriggerTable={x={value=project.selected_camtrigger.off_x},y={value=project.selected_camtrigger.off_y}}
     end
 end
 

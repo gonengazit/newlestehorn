@@ -72,6 +72,7 @@ function love.load()
     newProject()
     pushHistory()
 
+    openPico8("test.p8")
 
     checkmarkIm=love.graphics.newImage("checkmark.png")
     checkmarkWithBg=love.graphics.newCanvas(checkmarkIm:getWidth()*5/4,checkmarkIm:getHeight()*5/4)
@@ -222,6 +223,29 @@ function love.update(dt)
             end
         else
             app.editParams = nil
+        end
+        ui:windowEnd()
+    end
+    if app.editCamtrigger then
+        local room = app.editParams
+        
+        local w, h = 400*global_scale, 88*global_scale
+        if ui:windowBegin("Edit Camera Triggers", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
+            ui:layoutRow("dynamic",25*global_scale,4)
+            ui:label("x offset","centered")
+            ui:edit("simple",app.editCamtriggerTable.x) 
+            ui:label("y offset","centered")
+            ui:edit("simple",app.editCamtriggerTable.y) 
+            ui:layoutRow("dynamic",25*global_scale,1)
+            if ui:button("OK") or app.enterPressed then
+                --room.params.test=app.editParamsVTable.test.value
+                --print(room.params.test)
+                app.editCamtrigger.x_off=app.editCamtriggerTable.x
+                app.editCamtrigger.y_off=app.editCamtriggerTable.y
+                app.editCamtrigger = nil
+            end
+        else
+            app.editCamTrigger=nil
         end
         ui:windowEnd()
     end

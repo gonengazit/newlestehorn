@@ -9,7 +9,7 @@ require 'autotiles'
 
 
 -- global constants
-global_scale=2 -- global scale, to run nicely on hi dpi displays
+global_scale=1 -- global scale, to run nicely on hi dpi displays
 tms = 4*global_scale -- tile menu scale
 psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 
@@ -57,6 +57,7 @@ function newProject()
     project = {
         rooms = {}, 
         selection = nil,
+        selected_camtrigger=nil,
     }
     
     -- basic p8data with blank spritesheet
@@ -133,6 +134,18 @@ function select(i1, j1, i2, j2)
             end
         end
         project.selection = selection
+    end
+end
+
+function hoveredTrigger()
+    local room=activeRoom()
+    if room then
+        for _,trigger in ipairs(room.camtriggers) do
+            local ti, tj = mouseOverTile()
+            if not hovered and ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
+                return trigger
+            end
+        end
     end
 end
 

@@ -56,13 +56,22 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 
     if button == 1 or button == 2 then
-	local ti, tj = mouseOverTile()
-	if app.tool == "rectangle" and ti then
-	    app.rectangleI, app.rectangleJ = ti, tj
-	end
-	if app.tool == "camtrigger" and ti then
-	    app.camtriggerI, app.camtriggerJ = ti, tj
-	end
+		local ti, tj = mouseOverTile()
+		if app.tool == "rectangle" and ti then
+			app.rectangleI, app.rectangleJ = ti, tj
+		end
+		if app.tool == "camtrigger" and ti then
+			local hovered=hoveredTrigger()
+			if project.selected_camtrigger then
+				project.selected_camtrigger=false
+				--rn deselect
+				-- TODO: implement resizing and moving (like rooms)
+			elseif hovered then 
+				project.selected_camtrigger=hovered
+			else
+				app.camtriggerI, app.camtriggerJ = ti, tj
+			end
+		end
     end
 end
 
@@ -117,15 +126,18 @@ function love.mousereleased(x, y, button, istouch, presses)
 		end
 	    end
 	end
-    elseif app.tool == "camtrigger" then
-	local i1, j1 = app.camtriggerI, app.camtriggerJ
-	local room = activeRoom()
-	if i1 and ti then
-	    local room = activeRoom()
-	    local i0, j0, w, h = rectCont2Tiles(i1, j1, ti, tj)
-	    table.insert(room.camtriggers,{x=i0,y=j0,w=w,h=h,off_x=0,off_y=0})
-	    -- open dialogue box to edit off_x and off_y
-	end 
+	elseif app.tool == "camtrigger" then
+		local i1, j1 = app.camtriggerI, app.camtriggerJ
+		local room = activeRoom()
+		if i1 and ti then
+			local room = activeRoom()
+			local i0, j0, w, h = rectCont2Tiles(i1, j1, ti, tj)
+			local trigger={x=i0,y=j0,w=w,h=h,off_x=0,off_y=0}
+			table.insert(room.camtriggers,trigger)
+			app.editCamtrigger=trigger
+			app.editCamtriggerTable={x={value=0},y={value=0}}
+			project.selected_camtrigger=trigger
+		end 
     end
 
     app.camMoveX, app.camMoveY = nil, nil
