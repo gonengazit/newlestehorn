@@ -240,8 +240,8 @@ function love.update(dt)
             if ui:button("OK") or app.enterPressed then
                 --room.params.test=app.editParamsVTable.test.value
                 --print(room.params.test)
-                app.editCamtrigger.x_off=app.editCamtriggerTable.x
-                app.editCamtrigger.y_off=app.editCamtriggerTable.y
+                app.editCamtrigger.off_x=app.editCamtriggerTable.x.value
+                app.editCamtrigger.off_y=app.editCamtriggerTable.y.value
                 app.editCamtrigger = nil
             end
         else

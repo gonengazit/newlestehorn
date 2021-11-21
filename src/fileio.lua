@@ -115,7 +115,7 @@ function loadpico8(filename)
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
-    local levels, mapdata, cam_triggers
+    local levels, mapdata, camera_offsets
     if evh then
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -127,7 +127,7 @@ function loadpico8(filename)
             chunk = setfenv(chunk, env)
             chunk()
 
-            levels, mapdata, cam_triggers = env.levels, env.mapdata, env.cam_triggers
+            levels, mapdata, camera_offsets = env.levels, env.mapdata, env.camera_offsets
         end
     end
 
@@ -201,6 +201,19 @@ function loadpico8(filename)
             data.rooms[n] = room
         end
     end
+    if camera_offsets then
+        for n,tbl in pairs(camera_offsets) do 
+            for _,t in pairs(tbl) do
+                args={}
+                for d in t:gmatch("[%S^,]+") do
+                    table.insert(args,tonumber(d))
+                end
+                if data.rooms[n] then
+                    table.insert(data.rooms[n].camtriggers,{x=args[1],y=args[2],w=args[3],h=args[4],off_x=args[5],off_y=args[6]})
+                end
+            end
+        end
+    end
     return data
 end
 
@@ -250,7 +263,7 @@ function savePico8(filename)
     end
     file:close()
 
-    local levels, mapdata = {}, {}
+    local levels, mapdata, camera_offsets = {}, {}, {}
     for n = 1, #project.rooms do
         local room = project.rooms[n]
         local exit_string="0b"
@@ -265,6 +278,14 @@ function savePico8(filename)
 
         if room.hex then 
             mapdata[n] = dumproomdata(room)
+        end
+
+        if room.camtriggers then
+            camera_offsets[n]={}
+            for _,t in pairs(room.camtriggers) do 
+                local trigger_str=string.format("%d,%d,%d,%d,%d,%d",t.x,t.y,t.w,t.h,t.off_x,t.off_y)
+                table.insert(camera_offsets[n],trigger_str)
+            end
         end
     end
     -- map section
@@ -336,6 +357,7 @@ function savePico8(filename)
 
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(mapdata).."%2")
+    cartdata = cartdata:gsub("(%-%-@begin.*camera_offsets%s*=%s*)%b{}(.*%-%-@end)","%1"..dumplua(camera_offsets).."%2")
 
     --remove playtesting inject if one already exists:
     cartdata = cartdata:gsub("(%-%-@begin.*)local __init.-\n(.*%-%-@end)","%1".."%2")
