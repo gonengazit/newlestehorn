@@ -255,7 +255,7 @@ function love.update(dt)
                 app.editCamtrigger = nil
             end
         else
-            app.editCamTrigger=nil
+            app.editCamtrigger=nil
         end
         ui:windowEnd()
     end
