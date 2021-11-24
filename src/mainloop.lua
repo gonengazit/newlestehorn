@@ -66,7 +66,7 @@ function love.load(args)
     love.keyboard.setKeyRepeat(true)
 
     ui = nuklear.newUI()
-    
+
     global_scale=1 -- global scale, to run nicely on hi dpi displays
     tms = 4 -- tile menu scale
 
@@ -78,7 +78,7 @@ function love.load(args)
     end
 
     --p8data = loadpico8(love.filesystem.getSource().."\\celeste.p8")
-    
+
     newProject()
     pushHistory()
 
@@ -98,24 +98,24 @@ function love.update(dt)
     app.left, app.top = rpw, 0
 
     ui:frameBegin()
-		--ui:scale(2)
+    --ui:scale(2)
     ui:stylePush {
         window = {
             spacing = {x = 1, y = 1},
             padding = {x = 1, y = 1},
         },
         selectable = {
-			padding = {x = 0, y = 0},
-			["normal active"] = "#000000",
-			["hover active"] = "#000000",
-			["pressed active"] = "#000000",
-		},
+            padding = {x = 0, y = 0},
+            ["normal active"] = "#000000",
+            ["hover active"] = "#000000",
+            ["pressed active"] = "#000000",
+        },
         checkbox = {
             ["cursor normal"] = checkmarkIm,
             ["cursor hover"] = checkmarkIm
         }
     }
-    
+
     -- room panel
     if ui:windowBegin("Room Panel", 0, 0, rpw, app.H, {"scrollbar"}) then
         ui:layoutRow("dynamic", 25*global_scale, 1)
@@ -124,14 +124,14 @@ function love.update(dt)
                 app.room = n
             end
         end
-        
+
         if app.roomAdded then
-			ui:windowSetScroll(0, 100000)
-			app.roomAdded = false
-		end
+            ui:windowSetScroll(0, 100000)
+            app.roomAdded = false
+        end
     end
     ui:windowEnd()
-    
+
     -- tool panel
     if app.showToolPanel then
 		local tpw = 16*8*tms + 18
@@ -333,6 +333,10 @@ function love.update(dt)
     
     if project.selection and app.tool ~= "select" then
         placeSelection()
+    end
+
+    if app.tool ~= "camtrigger" then
+        project.selected_camtrigger = nil
     end
     
     if app.message then
