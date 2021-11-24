@@ -139,7 +139,7 @@ function hoveredTrigger()
     if room then
         for _,trigger in ipairs(room.camtriggers) do
             local ti, tj = mouseOverTile()
-            if not hovered and ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
+            if ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
                 return trigger
             end
         end
