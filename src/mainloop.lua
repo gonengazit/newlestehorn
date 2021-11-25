@@ -145,7 +145,17 @@ function love.update(dt)
                     local tool = toolslist[1 + row*4+i]
 
                     if ui:selectable(tools[tool].name, app.tool == tool) then
-                        app.tool = tool
+                        if app.tool and app.tool ~= tool then
+                            if tools[app.tool].ondisabled then
+                                tools[app.tool].ondisabled()
+                            end
+
+                            app.tool = tool
+
+                            if tools[app.tool].onenabled then
+                                tools[app.tool].onenabled()
+                            end
+                        end
                     end
                 end
             end
@@ -322,14 +332,6 @@ function love.update(dt)
             room.y = room.y - (ay == top and 8*(newh-room.h) or 0)
             room.data, room.w, room.h = newdata, neww, newh
         end
-    end
-
-    if project.selection and app.tool ~= "select" then
-        placeSelection()
-    end
-
-    if app.tool ~= "camtrigger" then
-        project.selected_camtrigger = nil
     end
 
     if app.message then

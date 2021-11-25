@@ -96,6 +96,12 @@ end
 tools.select = {}
 tools.select.name = "Selection"
 
+function tools.select.ondisabled()
+    if project.selection then
+        placeSelection()
+    end
+end
+
 function tools.select.draw()
     local ti, tj = mouseOverTile()
 
@@ -146,6 +152,10 @@ end
 
 tools.camtrigger = {}
 tools.camtrigger.name = "Camtrigger"
+
+function tools.camtrigger.ondisabled()
+    project.selected_camtrigger = nil
+end
 
 function tools.camtrigger.draw()
     local ti, tj = mouseOverTile()
