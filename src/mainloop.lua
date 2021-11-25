@@ -98,7 +98,8 @@ function love.update(dt)
     app.left, app.top = rpw, 0
 
     ui:frameBegin()
-        --ui:scale(2)
+    --ui:scale(2)
+
     ui:stylePush {
         window = {
             spacing = {x = 1, y = 1},
@@ -264,7 +265,7 @@ function love.update(dt)
                 app.editCamtrigger = nil
             end
         else
-            app.editCamTrigger=nil
+            app.editCamtrigger=nil
         end
         ui:windowEnd()
     end
@@ -325,6 +326,10 @@ function love.update(dt)
 
     if project.selection and app.tool ~= "select" then
         placeSelection()
+    end
+
+    if app.tool ~= "camtrigger" then
+        project.selected_camtrigger = nil
     end
 
     if app.message then
