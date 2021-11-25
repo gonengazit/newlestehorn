@@ -45,29 +45,29 @@ autotiles = {
     },
     -- bg dirt (simplistic - only corner tiles are used)
     [3] = {
-		[0]  = 40,
-		[1]  = 40,
-		[2]  = 40,
-		[3]  = 40,
-		[4]  = 40,
-		[5]  = 58,
-		[6]  = 57,
-		[7]  = 40,
-		[8]  = 40,
-		[9]  = 42,
-		[10] = 41,
-		[11] = 40,
-		[12] = 40,
-		[13] = 40,
-		[14] = 40,
-		[15] = 40,
-		-- extra
-		[16] = 16,
-		[17] = 56,
-		[18] = 88,
-		[19] = 103,
-		[20] = 104,
-	},
+        [0]  = 40,
+        [1]  = 40,
+        [2]  = 40,
+        [3]  = 40,
+        [4]  = 40,
+        [5]  = 58,
+        [6]  = 57,
+        [7]  = 40,
+        [8]  = 40,
+        [9]  = 42,
+        [10] = 41,
+        [11] = 40,
+        [12] = 40,
+        [13] = 40,
+        [14] = 40,
+        [15] = 40,
+        -- extra
+        [16] = 16,
+        [17] = 56,
+        [18] = 88,
+        [19] = 103,
+        [20] = 104,
+    },
 }
 
 autotilet, autotilet_strict = {}, {}
@@ -111,9 +111,9 @@ function autotile(room, i, j, k)
 end
 
 function autotileWithNeighbors(room, i, j, k)
-	autotile(room, i, j, k)
-	autotile(room, i + 1, j, k)
-	autotile(room, i - 1, j, k)
-	autotile(room, i, j + 1, k)
-	autotile(room, i, j - 1, k)
+    autotile(room, i, j, k)
+    autotile(room, i + 1, j, k)
+    autotile(room, i - 1, j, k)
+    autotile(room, i, j + 1, k)
+    autotile(room, i, j - 1, k)
 end

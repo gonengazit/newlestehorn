@@ -60,65 +60,65 @@ end
 local alph_ = "abcdefghijklmnopqrstuvwxyz"
 local alph = {[0] = " "}
 for i = 1, 26 do
-	alph[i] = string.sub(alph_, i, i)
+    alph[i] = string.sub(alph_, i, i)
 end
 
 function b26(n)
-	local m, n = math.floor(n / 26), n % 26
-	if m > 0 then
-		return b26(m - 1) .. alph[n + 1]
-	else
-		return alph[n + 1]
-	end
+    local m, n = math.floor(n / 26), n % 26
+    if m > 0 then
+        return b26(m - 1) .. alph[n + 1]
+    else
+        return alph[n + 1]
+    end
 end
 
 function loadroomdata(room, levelstr)
-	for i = 0, room.w - 1 do
-		for j = 0, room.h - 1 do
-			local k = i + j*room.w 
-			room.data[i][j] = fromhex(string.sub(levelstr, 1 + 2*k, 2 + 2*k))
-		end
-	end
+    for i = 0, room.w - 1 do
+        for j = 0, room.h - 1 do
+            local k = i + j*room.w
+            room.data[i][j] = fromhex(string.sub(levelstr, 1 + 2*k, 2 + 2*k))
+        end
+    end
 end
 
 function dumproomdata(room)
-	local s = ""
-	for j = 0, room.h - 1 do
-		for i = 0, room.w - 1 do
-			s = s .. tohex(room.data[i][j])
-		end
-	end
-	return s
+    local s = ""
+    for j = 0, room.h - 1 do
+        for i = 0, room.w - 1 do
+            s = s .. tohex(room.data[i][j])
+        end
+    end
+    return s
 end
 
 function roomMakeStr(room)
-	if room then
-		room.str = dumproomdata(room)
-	end
+    if room then
+        room.str = dumproomdata(room)
+    end
 end
 
 function roomMakeData(room)
-	if room then
-		room.data = fill2d0s(room.w, room.h)
-		loadroomdata(room, room.str)
-	end
+    if room then
+        room.data = fill2d0s(room.w, room.h)
+        loadroomdata(room, room.str)
+    end
 end
 
 function loadproject(str)
-	local proj = loadlua(str)
-	for n, room in pairs(proj.rooms) do
-		roomMakeData(room)
-	end
-	roomMakeData(proj.selection)
-	
-	return proj
+    local proj = loadlua(str)
+    for n, room in pairs(proj.rooms) do
+        roomMakeData(room)
+    end
+    roomMakeData(proj.selection)
+
+    return proj
 end
 
 function dumpproject(proj)
-	for n, room in pairs(proj.rooms) do
-		roomMakeStr(room)
-	end
-	roomMakeStr(proj.selection)
-	
-	return serpent.line(proj, {compact = true, comment = false, keyignore = {["data"] = true}})
+    for n, room in pairs(proj.rooms) do
+        roomMakeStr(room)
+    end
+    roomMakeStr(proj.selection)
+
+    return serpent.line(proj, {compact = true, comment = false, keyignore = {["data"] = true}})
 end

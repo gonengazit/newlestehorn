@@ -5,9 +5,9 @@ function love.keypressed(key, scancode, isrepeat)
     if key == "return" then
         app.enterPressed = true
     end
-    
+
     -- first handle actions that are allowed to repeat when holding key
-    
+
     local dx, dy = 0, 0
     if key == "left" then dx = -1 end
     if key == "right" then dx = 1 end
@@ -17,7 +17,7 @@ function love.keypressed(key, scancode, isrepeat)
         project.selection.x = project.selection.x + dx*8
         project.selection.y = project.selection.y + dy*8
     end
-    
+
     -- Ctrl+Z, Ctrl+Shift+Z
     if love.keyboard.isDown("lctrl") then
         if key == "z" then
@@ -28,32 +28,32 @@ function love.keypressed(key, scancode, isrepeat)
             end
         end
     end
-    
+
     -- room switching / swapping
     if key == "down" or key == "up" then
         if app.room then
             local n1 = app.room
             local n2 = key == "down" and app.room + 1 or app.room - 1
-            
+
             if project.rooms[n1] and project.rooms[n2] then
-				if love.keyboard.isDown("lctrl") then
-					-- swap
-					local tmp = project.rooms[n1]
-					project.rooms[n1] = project.rooms[n2]
-					project.rooms[n2] = tmp
-				end
-                
+                if love.keyboard.isDown("lctrl") then
+                    -- swap
+                    local tmp = project.rooms[n1]
+                    project.rooms[n1] = project.rooms[n2]
+                    project.rooms[n2] = tmp
+                end
+
                 app.room = n2
             end
         end
     end
-    
+
     if isrepeat then
         return
     end
-    
+
     -- non-repeatable global shortcuts
-    
+
     if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
         -- Ctrl+O
         if key == "o" then
@@ -66,25 +66,25 @@ function love.keypressed(key, scancode, isrepeat)
                 elseif ext == "p8" then
                     openOk = openPico8(filename)
                 end
-                
+
                 if openOk then
-					app.history = {}
-					app.historyN = 0
-					pushHistory()
-				end
+                    app.history = {}
+                    app.historyN = 0
+                    pushHistory()
+                end
             end
             if openOk then
-				showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
-			else
-				showMessage("Failed to open file")
-			end
-		-- Ctrl+R
+                showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
+            else
+                showMessage("Failed to open file")
+            end
+        -- Ctrl+R
         elseif key == "r" then
-			if app.openFileName then
-				local data = loadpico8(app.openFileName)
-				p8data.spritesheet = data.spritesheet
-				showMessage("Reloaded")
-			end
+            if app.openFileName then
+                local data = loadpico8(app.openFileName)
+                p8data.spritesheet = data.spritesheet
+                showMessage("Reloaded")
+            end
         -- Ctrl+S
         elseif key == "s" then
             local filename
@@ -93,7 +93,7 @@ function love.keypressed(key, scancode, isrepeat)
             else
                 filename = filedialog.save()
             end
-            
+
             if filename and savePico8(filename) then
                 showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
             else
@@ -108,7 +108,7 @@ function love.keypressed(key, scancode, isrepeat)
                     love.system.setClipboardText(s)
                     table.remove(project.rooms, app.room)
                     app.room = nil
-                    
+
                     showMessage("Cut room")
                 end
             else
@@ -117,7 +117,7 @@ function love.keypressed(key, scancode, isrepeat)
                     local s = dumplua {"selection", project.selection}
                     love.system.setClipboardText(s)
                     project.selection = nil
-                    
+
                     showMessage("Cut")
                 end
             end
@@ -128,7 +128,7 @@ function love.keypressed(key, scancode, isrepeat)
                 if activeRoom() then
                     local s = dumplua {"room", activeRoom()}
                     love.system.setClipboardText(s)
-                    
+
                     showMessage("Copied room")
                 end
             else
@@ -137,14 +137,14 @@ function love.keypressed(key, scancode, isrepeat)
                     local s = dumplua {"selection", project.selection}
                     love.system.setClipboardText(s)
                     placeSelection()
-                    
+
                     showMessage("Copied")
                 end
             end
         -- Ctrl+V
         elseif key == "v" then
             placeSelection() -- to clean selection first
-            
+
             local t, err = loadlua(love.system.getClipboardText())
             if not err then
                 if type(t) == "table" then
@@ -154,7 +154,7 @@ function love.keypressed(key, scancode, isrepeat)
                         project.selection.x = roundto8(mx - s.w*4)
                         project.selection.y = roundto8(my - s.h*4)
                         app.tool = "select"
-                        
+
                         showMessage("Pasted")
                     elseif t[1] == "room" then
                         local r = t[2]
@@ -177,55 +177,55 @@ function love.keypressed(key, scancode, isrepeat)
                 app.tool = "select"
                 select(0, 0, activeRoom().w - 1, activeRoom().h - 1)
             end
-		elseif key=="h" then 
-			app.showGarbageTiles=not app.showGarbageTiles
+        elseif key=="h" then
+            app.showGarbageTiles=not app.showGarbageTiles
         end
     else -- if ctrl is not down
-		if key == "delete" and love.keyboard.isDown("lshift") then
-			if app.room then
-				table.remove(project.rooms, app.room)
-				if not activeRoom() then
-					app.room = #project.rooms
-				end
-			end
+        if key == "delete" and love.keyboard.isDown("lshift") then
+            if app.room then
+                table.remove(project.rooms, app.room)
+                if not activeRoom() then
+                    app.room = #project.rooms
+                end
+            end
         end
     end
-    
+
     -- now pass to nuklear and return if consumed
-    
+
     if ui:keypressed(key, scancode, isrepeat) then
         return
     end
-    
+
     -- another fucking hack: the shit above doesnt consume inputs when editing text for some fucking reason
     if app.editCamTrigger or app.editParams then
         return
     end
-    
+
     -- now editing things (that shouldn't happen if you have a nuklear window focused or something)
-    
+
     if key == "n" then
         local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
-        
+
         -- disabled that shit
         -- generate alphabetic room title
         --local n, title = 0, nil
         --while true do
-			--title = b26(n)
-			--local exists = false
-			--for _, otherRoom in ipairs(project.rooms) do
-				--if otherRoom.title == title then
-					--exists = true
-				--end
-			--end
-			--if not exists then
-				--break
-			--end
-			--n = n + 1
-		--end
-		--room.title = title
-		room.title = ""
-        
+            --title = b26(n)
+            --local exists = false
+            --for _, otherRoom in ipairs(project.rooms) do
+                --if otherRoom.title == title then
+                    --exists = true
+                --end
+            --end
+            --if not exists then
+                --break
+            --end
+            --n = n + 1
+        --end
+        --room.title = title
+        room.title = ""
+
         table.insert(project.rooms, room)
         app.room = #project.rooms
         app.roomAdded = true
@@ -235,12 +235,12 @@ function love.keypressed(key, scancode, isrepeat)
         placeSelection()
     elseif key == "tab" and not love.keyboard.isDown("lalt") then
         if not app.playtesting then
-			app.playtesting = 1
-		elseif app.playtesting == 1 then
-			app.playtesting = 2
-		else
-			app.playtesting = false
-		end
+            app.playtesting = 1
+        elseif app.playtesting == 1 then
+            app.playtesting = 2
+        else
+            app.playtesting = false
+        end
     elseif key == "delete" then
         local room=activeRoom()
         if project.selected_camtrigger and room then
@@ -260,20 +260,20 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.keyreleased(key, scancode)
-	-- just save history every time a key is released lol
+    -- just save history every time a key is released lol
     pushHistory()
 
-	if ui:keyreleased(key, scancode) then
-		return
-	end
-	
-	-- this shortcut is handled on release, and can be consumed
-	-- so you don't input r into the field
+    if ui:keyreleased(key, scancode) then
+        return
+    end
+
+    -- this shortcut is handled on release, and can be consumed
+    -- so you don't input r into the field
     if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
         local room=activeRoom()
         app.editParams = room
         app.editParamsTable ={exits={},hex={value=room.hex}}
-        for k,v in pairs(room.exits) do 
+        for k,v in pairs(room.exits) do
             app.editParamsTable.exits[k]={value=v}
         end
     end

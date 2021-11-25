@@ -12,7 +12,7 @@ function newRoom(x, y, w, h)
         camtriggers={}
     }
     room.data = fill2d0s(room.w, room.h)
-    
+
     return room
 end
 
@@ -25,27 +25,28 @@ function drawRoom(room, p8data, highlight)
             if not highlight or n~=0 then
                 love.graphics.setColor(1, 1, 1)
                 love.graphics.draw(p8data.spritesheet, p8data.quads[n], room.x + i*8, room.y + j*8)
-                
-                if highlight then
-                    love.graphics.setColor(0, 1, 0.5, 0.5)
-                    love.graphics.rectangle("fill", room.x + i*8, room.y + j*8, 8, 8)
-                end
+
+
             end
         end
     end
+
+    if highlight then
+        drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
+    end
+
     local highlighted = project.selected_camtrigger or hoveredTrigger()
     --TODO: draw selected and hovered in different colors maybe
     for _,trigger in ipairs(room.camtriggers) do
-		local ti, tj = mouseOverTile()
-        if trigger== highlighted then
-            love.graphics.setColor(1,0.9,0,0.5)
+        local ti, tj = mouseOverTile()
+
+        local col
+        if trigger == highlighted then
+            col = {1,0.9,0}
         else
-            love.graphics.setColor(1,0.75,0,0.5)
+            col = {1,0.75,0}
         end
-        local px,py,pw,ph=trigger.x*8+room.x,trigger.y*8+room.y,trigger.w*8,trigger.h*8
-        love.graphics.rectangle("fill",px,py,pw,ph)
-        love.graphics.setLineWidth(1 / app.camScale)
-        love.graphics.setColor(1,0.75,0)
-        love.graphics.rectangle("line",px+0.5/app.camScale,py+0.5/app.camScale,pw,ph)
+
+        drawColoredRect(room, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
     end
 end
