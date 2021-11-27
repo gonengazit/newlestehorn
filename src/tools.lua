@@ -5,8 +5,28 @@ toolslist = {"brush", "rectangle", "select", "camtrigger"}
 
 
 
-tools.brush = {}
-tools.brush.name = "Brush"
+baseTool = {}
+baseTool.__index = baseTool
+function baseTool.onenabled() end
+function baseTool.ondisabled() end
+function baseTool.update() end
+function baseTool.draw() end
+function baseTool.mousepressed() end
+function baseTool.mousereleased() end
+function baseTool.mousemoved() end
+
+function newTool(name)
+    local tool = {}
+    tool.name = name
+
+    setmetatable(tool, baseTool)
+
+    return tool
+end
+
+
+
+tools.brush = newTool("Brush")
 
 function tools.brush.update(dt)
     if not ui:windowIsAnyHovered() and not love.keyboard.isDown("lalt") and (love.mouse.isDown(1) or love.mouse.isDown(2)) then
@@ -34,8 +54,7 @@ end
 
 
 
-tools.rectangle = {}
-tools.rectangle.name = "Rectangle"
+tools.rectangle = newTool("Rectangle")
 
 function tools.rectangle.draw()
     local ti, tj = mouseOverTile()
@@ -93,8 +112,7 @@ end
 
 
 
-tools.select = {}
-tools.select.name = "Selection"
+tools.select = newTool("Selection")
 
 function tools.select.ondisabled()
     if project.selection then
@@ -150,8 +168,7 @@ end
 
 
 
-tools.camtrigger = {}
-tools.camtrigger.name = "Camtrigger"
+tools.camtrigger = newTool("Camera Trigger")
 
 function tools.camtrigger.ondisabled()
     project.selected_camtrigger = nil

@@ -146,15 +146,11 @@ function love.update(dt)
 
                     if ui:selectable(tools[tool].name, app.tool == tool) then
                         if app.tool and app.tool ~= tool then
-                            if tools[app.tool].ondisabled then
-                                tools[app.tool].ondisabled()
-                            end
+                            tools[app.tool].ondisabled()
 
                             app.tool = tool
 
-                            if tools[app.tool].onenabled then
-                                tools[app.tool].onenabled()
-                            end
+                            tools[app.tool].onenabled()
                         end
                     end
                 end
@@ -287,9 +283,7 @@ function love.update(dt)
     ui:stylePop()
 
     -- tool update
-    if tools[app.tool] and tools[app.tool].update then
-        tools[app.tool].update(dt)
-    end
+    tools[app.tool].update(dt)
 
     ui:frameEnd()
 
@@ -381,9 +375,7 @@ function love.draw()
     end
 
     -- tool draw
-    if tools[app.tool] and tools[app.tool].draw then
-        tools[app.tool].draw()
-    end
+    tools[app.tool].draw()
 
     love.graphics.reset()
     love.graphics.setColor(1, 1, 1)

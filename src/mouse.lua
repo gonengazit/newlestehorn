@@ -40,9 +40,7 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 
     --tool mousepressed
-    if tools[app.tool] and tools[app.tool].mousepressed then
-        tools[app.tool].mousepressed(x, y, button)
-    end
+    tools[app.tool].mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
@@ -50,9 +48,7 @@ function love.mousereleased(x, y, button, istouch, presses)
     -- note: mousereleased is not swallowed by nuklear windows, unlike mousepressed
 
     --tool mousereleased
-    if tools[app.tool] and tools[app.tool].mousereleased then
-        tools[app.tool].mousereleased(x, y, button)
-    end
+    tools[app.tool].mousereleased(x, y, button)
 
     app.camMoveX, app.camMoveY = nil, nil
     app.roomMoveX, app.roomMoveY = nil, nil
@@ -85,9 +81,7 @@ function love.mousemoved(x, y, dx, dy, istouch)
     end
 
     --tool mousemoved
-    if tools[app.tool] and tools[app.tool].mousemoved then
-        tools[app.tool].mousemoved(x, y, dx, dy)
-    end
+    tools[app.tool].mousemoved(x, y, dx, dy)
 end
 
 function love.wheelmoved(x, y)
