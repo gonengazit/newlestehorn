@@ -144,13 +144,15 @@ function love.update(dt)
                 for i = 0, 3 do
                     local tool = toolslist[1 + row*4+i]
 
-                    if ui:selectable(tools[tool].name, app.tool == tool) then
-                        if app.tool and app.tool ~= tool then
-                            tools[app.tool].ondisabled()
+                    if tool then
+                        if ui:selectable(tools[tool].name, app.tool == tool) then
+                            if app.tool and app.tool ~= tool then
+                                tools[app.tool].ondisabled()
 
-                            app.tool = tool
+                                app.tool = tool
 
-                            tools[app.tool].onenabled()
+                                tools[app.tool].onenabled()
+                            end
                         end
                     end
                 end
