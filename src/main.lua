@@ -5,6 +5,7 @@ serpent = require 'serpent'
 require 'util'
 require 'room'
 require 'autotiles'
+require 'tools'
 
 
 
@@ -12,12 +13,10 @@ require 'autotiles'
 psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 
 
--- GLOBAL VARIABLES (im dirty like that)
--- and stuff that has to do with them
 
 function newProject()
     -- this is UI things
-		love.graphics.setNewFont(12*global_scale)
+    love.graphics.setNewFont(12*global_scale)
     app = {
         camX = 0,
         camY = 0,
@@ -31,32 +30,34 @@ function newProject()
         messageTimeLeft = nil,
         playtesting = false,
         showToolPanel = true,
-		showGarbageTiles=false,
-        
+        showGarbageTiles=false,
+
         -- history (undo stack)
         history = {},
         historyN = 0,
-        
+
         font = love.graphics.getFont(),
-        
+
         left = 0, top = 0, -- top left corner of editing area
-        
+
         -- these are used in various hacks to work around nuklear being big dumb (or me idk)
         anyWindowHovered = false,
         enterPressed = false,
         roomAdded = false,
-        
+
     }
-		--ui:styleSetFont(love.graphics.getFont())
-		ui:stylePush({['font']=app.font})
-		--print(app.font:getHeight())
+
+    --ui:styleSetFont(love.graphics.getFont())
+    ui:stylePush({['font']=app.font})
+    --print(app.font:getHeight())
+
     -- this is what goes into history and (mostly) gets saved
     project = {
-        rooms = {}, 
+        rooms = {},
         selection = nil,
         selected_camtrigger=nil,
     }
-    
+
     -- basic p8data with blank spritesheet
     local data = {}
     local imgdata = love.image.newImageData(128, 64)
@@ -68,7 +69,7 @@ function newProject()
             data.quads[i + j*16] = love.graphics.newQuad(i*8, j*8, 8, 8, data.spritesheet:getDimensions())
         end
     end
-    
+
     p8data = data
 end
 
@@ -76,7 +77,7 @@ function toScreen(x, y)
     return (app.camX + x) * app.camScale + app.left,
            (app.camY + y) * app.camScale + app.top
 end
- 
+
 function fromScreen(x, y)
     return (x - app.left)/app.camScale - app.camX,
            (y - app.top)/app.camScale - app.camY
@@ -94,6 +95,35 @@ function mouseOverTile()
         if ti >= 0 and ti < activeRoom().w and tj >= 0 and tj < activeRoom().h then
             return ti, tj
         end
+    end
+end
+
+function drawMouseOverTile(col)
+    local col = col or {0, 1, 0.5}
+
+    local ti, tj = mouseOverTile()
+    if ti then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.draw(p8data.spritesheet, p8data.quads[app.currentTile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+
+        love.graphics.setColor(col)
+        love.graphics.setLineWidth(1 / app.camScale)
+        love.graphics.rectangle("line", activeRoom().x + ti*8 + 0.5 / app.camScale,
+                                        activeRoom().y + tj*8 + 0.5 / app.camScale, 8, 8)
+    end
+end
+
+function drawColoredRect(room, x, y, w, h, col, filled)
+    love.graphics.setColor(col)
+    love.graphics.setLineWidth(1 / app.camScale)
+    love.graphics.rectangle("line", room.x + x + 0.5 / app.camScale,
+                                    room.y + y + 0.5 / app.camScale,
+                                    w, h)
+    if filled then
+        love.graphics.setColor(col[1], col[2], col[3], 0.25)
+        love.graphics.rectangle("fill", room.x + x + 0.5 / app.camScale,
+                                        room.y + y + 0.5 / app.camScale,
+                                        w, h)
     end
 end
 
@@ -152,11 +182,11 @@ function pushHistory()
         --print("BEFORE: "..tostring(app.history[app.historyN]))
         --print("AFTER: "..s)
         app.historyN = app.historyN + 1
-    
+
         for i = app.historyN, #app.history do
             app.history[i] = nil
         end
-        
+
         app.history[app.historyN] = s
     end
 end
@@ -164,24 +194,24 @@ end
 function undo()
     if app.historyN >= 2 then
         app.historyN = app.historyN - 1
-        
+
         local err
         project, err = loadproject(app.history[app.historyN])
         if err then error(err) end
     end
-    
+
     if not activeRoom() then app.room = nil end
 end
 
 function redo()
     if app.historyN <= #app.history - 1 then
         app.historyN = app.historyN + 1
-        
+
         local err
         project, err = loadproject(app.history[app.historyN])
         if err then error(err) end
     end
-    
+
     if not activeRoom() then app.room = nil end
 end
 
