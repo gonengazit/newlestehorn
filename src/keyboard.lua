@@ -238,12 +238,12 @@ function love.keypressed(key, scancode, isrepeat)
         end
     elseif key == "delete" then
         local room=activeRoom()
-        if project.selected_camtrigger and room then
+        if app.selected_camtrigger and room then
             --TODO: make sure to unselect camtriggers on room switch
             for i,v in ipairs(room.camtriggers) do
-                if v==project.selected_camtrigger then
+                if v==app.selected_camtrigger then
                     table.remove(room.camtriggers, i)
-                    project.selected_camtrigger=nil
+                    app.selected_camtrigger=nil
                     break
                 end
             end

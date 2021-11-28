@@ -219,13 +219,13 @@ end
 tools.camtrigger = newTool("Camera Trigger")
 
 function tools.camtrigger.ondisabled()
-    project.selected_camtrigger = nil
+    app.selected_camtrigger = nil
 end
 
 function tools.camtrigger.panel()
-    if project.selected_camtrigger then
-        local editX = {value = project.selected_camtrigger.off_x}
-        local editY = {value = project.selected_camtrigger.off_y}
+    if app.selected_camtrigger then
+        local editX = {value = app.selected_camtrigger.off_x}
+        local editY = {value = app.selected_camtrigger.off_y}
 
         ui:layoutRow("dynamic",25*global_scale,4)
         ui:label("x offset","centered")
@@ -233,8 +233,8 @@ function tools.camtrigger.panel()
         ui:label("y offset","centered")
         ui:edit("simple", editY)
 
-        project.selected_camtrigger.off_x = editX.value
-        project.selected_camtrigger.off_y = editY.value
+        app.selected_camtrigger.off_x = editX.value
+        app.selected_camtrigger.off_y = editY.value
     end
 end
 
@@ -255,12 +255,12 @@ function tools.camtrigger.mousepressed(x, y, button)
     if button == 1 then
         if ti then
             local hovered=hoveredTrigger()
-            if project.selected_camtrigger then
-                project.selected_camtrigger=false
+            if app.selected_camtrigger then
+                app.selected_camtrigger=false
                 --rn deselect
                 -- TODO: implement resizing and moving (like rooms)
             elseif hovered then
-                project.selected_camtrigger=hovered
+                app.selected_camtrigger=hovered
             else
                 app.camtriggerI, app.camtriggerJ = ti, tj
             end
@@ -276,7 +276,7 @@ function tools.camtrigger.mousereleased(x, y, button)
         local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
         local trigger={x=i0,y=j0,w=w,h=h,off_x=0,off_y=0}
         table.insert(room.camtriggers,trigger)
-        project.selected_camtrigger=trigger
+        app.selected_camtrigger=trigger
     end
 
     app.camtriggerI, app.camtriggerJ = nil, nil
