@@ -319,7 +319,7 @@ function tools.roomproperties.panel()
             ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
             ui:label(project.param_names[i] or "")
 
-            local t = {value=room.params[i]}
+            local t = {value=room.params[i] or 0}
             ui:edit("field", t)
             room.params[i] = t.value
         end
