@@ -138,150 +138,29 @@ function love.update(dt)
         local tpw = 16*8*tms + 18
         if ui:windowBegin("Tool panel", app.W - tpw, 0, tpw, app.H) then
             -- tools list
-            for row = 0, math.ceil(#toolslist/4) - 1 do
-                ui:layoutRow("dynamic", 25*global_scale, 4)
+            for i = 0, #toolslist - 1 do
+                if i%4 == 0 then
+                    ui:layoutRow("dynamic", 25*global_scale, 4)
+                end
 
-                for i = 0, 3 do
-                    local tool = toolslist[1 + row*4+i]
+                local tool = toolslist[1 + i]
 
-                    if tool then
-                        if ui:selectable(tools[tool].name, app.tool == tool) then
-                            if app.tool and app.tool ~= tool then
-                                tools[app.tool].ondisabled()
+                if ui:selectable(tools[tool].name, app.tool == tool) then
+                    if app.tool and app.tool ~= tool then
+                        tools[app.tool].ondisabled()
 
-                                app.tool = tool
+                        app.tool = tool
 
-                                tools[app.tool].onenabled()
-                            end
-                        end
+                        tools[app.tool].onenabled()
                     end
                 end
             end
 
-            -- tiles
-            ui:layoutRow("dynamic", 25*global_scale, 1)
-            ui:label("Tiles:")
-            for j = 0, app.showGarbageTiles and 15 or 7 do
-                ui:layoutRow("static", 8*tms, 8*tms, 16)
-                for i = 0, 15 do
-                    local n = i + j*16
-                    if tileButton(n, app.currentTile == n and not app.autotile) then
-                        app.currentTile = n
-                        app.autotile = nil
-                    end
-                end
-            end
+            -- some spacing
+            ui:layoutRow("dynamic", 10*global_scale, 0)
 
-            -- autotiles
-            ui:layoutRow("dynamic", 25*global_scale, 1)
-            ui:label("Autotiles:")
-            ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
-            for k, auto in ipairs(autotiles) do
-                if tileButton(auto[5], app.currentTile == auto[15] and app.autotile) then
-                    app.currentTile = auto[15]
-                    app.autotile = k
-                end
-            end
-        end
-        ui:windowEnd()
-    end
-
-    --if app.renameRoom then
-        --local room = app.renameRoom
-
-        --local w, h = 200*global_scale, 88*global_scale
-        --if ui:windowBegin("Rename room", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
-            --ui:layoutRow("dynamic", 25*global_scale, 1)
-
-            --local state, changed
-            --ui:editFocus()
-            --state, changed = ui:edit("simple", app.renameRoomVTable)
-
-            --if ui:button("OK") or app.enterPressed then
-                --room.title = app.renameRoomVTable.value
-                --app.renameRoom = nil
-            --end
-        --else
-            --app.renameRoom = nil
-        --end
-        --ui:windowEnd()
-    --end
-    if app.editParams then
-        local room = app.editParams
-        local param_n = math.max(#project.param_names,#room.params)
-        local w, h = 500*global_scale, 125*global_scale + 25*param_n
-        if ui:windowBegin("Edit Room Parameters", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
-
-            local x,y=div8(room.x),div8(room.y)
-            local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
-            ui:layoutRow("dynamic",25*global_scale,1)
-            if not fits_on_map then
-                local style={}
-                for k,v in pairs({"text normal", "text hover", "text active"}) do
-                    style[v]="#707070"
-                end
-                for k,v in pairs({"normal", "hover", "active"}) do
-                    style[v]=checkmarkWithBg -- show both selected and unselected as having a check to avoid nukelear limitations
-                    -- kinda hacky but it works decently enough
-                end
-                ui:stylePush({['checkbox']=style})
-
-            else
-                ui:stylePush({})
-            end
-            ui:checkbox("Level Stored As Hex",fits_on_map and app.editParamsTable.hex or true)
-            ui:stylePop()
-
-
-            ui:layoutRow("dynamic", 25*global_scale, 5)
-            ui:label("Level Exits:")
-            for _,v in pairs({"left","bottom","right","top"}) do
-                ui:checkbox(v,app.editParamsTable.exits[v])
-            end 
-
-            for i=1, param_n do 
-                ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
-                ui:label(project.param_names[i] or "")
-                ui:edit("field", app.editParamsTable.params[i])
-            end
-            ui:layoutRow("dynamic",25*global_scale,1)
-            if ui:button("OK") or app.enterPressed then
-                --room.params.test=app.editParamsVTable.test.value
-                --print(room.params.test)
-                app.editParams.hex=app.editParamsTable.hex.value
-                for k,v in pairs(app.editParamsTable.exits) do
-                    app.editParams.exits[k]=v.value
-                end
-                for k,v in pairs(app.editParamsTable.params) do 
-                    app.editParams.params[k]=v.value
-                end
-                app.editParams = nil
-            end
-        else
-            app.editParams = nil
-        end
-        ui:windowEnd()
-    end
-    if app.editCamtrigger then
-        local room = app.editParams
-
-        local w, h = 400*global_scale, 88*global_scale
-        if ui:windowBegin("Edit Camera Triggers", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
-            ui:layoutRow("dynamic",25*global_scale,4)
-            ui:label("x offset","centered")
-            ui:edit("simple",app.editCamtriggerTable.x)
-            ui:label("y offset","centered")
-            ui:edit("simple",app.editCamtriggerTable.y)
-            ui:layoutRow("dynamic",25*global_scale,1)
-            if ui:button("OK") or app.enterPressed then
-                --room.params.test=app.editParamsVTable.test.value
-                --print(room.params.test)
-                app.editCamtrigger.off_x=app.editCamtriggerTable.x.value
-                app.editCamtrigger.off_y=app.editCamtriggerTable.y.value
-                app.editCamtrigger = nil
-            end
-        else
-            app.editCamtrigger=nil
+            -- tool panel
+            tools[app.tool].panel()
         end
         ui:windowEnd()
     end

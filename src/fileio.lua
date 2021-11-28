@@ -74,7 +74,7 @@ function loadpico8(filename)
 
     for j =8,15 do
         for i = 0, 15 do
-            local id=i+16*(j-8) 
+            local id=i+16*(j-8)
             local d1=math.floor(id/16)
             local d2=id%16
             --spritesheet_data:paste(p8font,8*i,8*j,get_font_quad(d1))
@@ -136,6 +136,8 @@ function loadpico8(filename)
             levels, mapdata, camera_offsets = env.levels, env.mapdata, env.camera_offsets
         end
     end
+    -- parameter names default to none
+    data.param_names = data.param_names or {}
 
     mapdata = mapdata or {}
 
@@ -160,7 +162,7 @@ function loadpico8(filename)
             x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h), exits or "0b0001"
             params=split(params or "")
             if x and y and w and h then -- this confirms they're there and they're numbers
-                data.rooms[n] = newRoom(x*128, y*128, w*16, h*16) 
+                data.rooms[n] = newRoom(x*128, y*128, w*16, h*16)
                 data.rooms[n].exits={left=exits:sub(3,3)=="1", bottom=exits:sub(4,4)=="1", right=exits:sub(5,5)=="1", top=exits:sub(6,6)=="1"}
                 data.rooms[n].hex=false
                 data.rooms[n].params=params
@@ -171,9 +173,10 @@ function loadpico8(filename)
     else
         for J = 0, 3 do
             for I = 0, 7 do
-                local b=newRoom(I*128, J*128, 16, 16)
+                local room=newRoom(I*128, J*128, 16, 16)
+                room.hex = false
                 --b.title=""
-                table.insert(data.rooms, b)
+                table.insert(data.rooms, room)
             end
         end
     end
@@ -206,7 +209,7 @@ function loadpico8(filename)
     end
 
     if camera_offsets then
-        for n,tbl in pairs(camera_offsets) do 
+        for n,tbl in pairs(camera_offsets) do
             for _,t in pairs(tbl) do
                 args={}
                 for d in t:gmatch("[%S^,]+") do
@@ -225,7 +228,7 @@ function openPico8(filename)
     newProject()
 
     -- loads into global p8data as well, for spritesheet
-    p8data = loadpico8(filename)    
+    p8data = loadpico8(filename)
     project.rooms = p8data.rooms
     --store names of parameters, in order to show in the ui
     project.param_names=p8data.param_names
@@ -278,20 +281,20 @@ function savePico8(filename)
                 exit_string=exit_string.."1"
             else
                 exit_string=exit_string.."0"
-            end 
-        end 
+            end
+        end
         levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, exit_string)
         for _,v in ipairs(room.params) do
             levels[n]=levels[n]..","..v
-        end 
+        end
 
-        if room.hex then 
+        if room.hex then
             mapdata[n] = dumproomdata(room)
         end
 
         if room.camtriggers then
             camera_offsets[n]={}
-            for _,t in pairs(room.camtriggers) do 
+            for _,t in pairs(room.camtriggers) do
                 local trigger_str=string.format("%d,%d,%d,%d,%d,%d",t.x,t.y,t.w,t.h,t.off_x,t.off_y)
                 table.insert(camera_offsets[n],trigger_str)
             end
@@ -318,20 +321,20 @@ function savePico8(filename)
         table.insert(out,"__map__")
     end
 
-    for k,v in ipairs(out) do 
-        if out[k]=="__gfx__" or out[k]=="__map__" then 
+    for k,v in ipairs(out) do
+        if out[k]=="__gfx__" or out[k]=="__map__" then
             local j=k+1
             while j<#out and not out[j]:match("__%a+__") do
                 j=j+1
-            end 
+            end
             local emptyline=""
-            for i=1,out[k]=="__gfx__" and 128 or 256 do 
+            for i=1,out[k]=="__gfx__" and 128 or 256 do
                 emptyline=emptyline.."0"
-            end 
-            for i=j,k+(out[k]=="__gfx__" and 128 or 32) do 
+            end
+            for i=j,k+(out[k]=="__gfx__" and 128 or 32) do
                 table.insert(out,i,emptyline)
             end
-        end 
+        end
     end
     local gfxstart, mapstart
     for k = 1, #out do

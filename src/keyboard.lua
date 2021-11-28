@@ -197,11 +197,6 @@ function love.keypressed(key, scancode, isrepeat)
         return
     end
 
-    -- another fucking hack: the shit above doesnt consume inputs when editing text for some fucking reason
-    if app.editCamTrigger or app.editParams then
-        return
-    end
-
     -- now editing things (that shouldn't happen if you have a nuklear window focused or something)
 
     if key == "n" then
@@ -253,9 +248,6 @@ function love.keypressed(key, scancode, isrepeat)
                 end
             end
         end
-    elseif key == "t" and project.selected_camtrigger then
-        app.editCamtrigger=project.selected_camtrigger
-        app.editCamtriggerTable={x={value=project.selected_camtrigger.off_x},y={value=project.selected_camtrigger.off_y}}
     end
 end
 
@@ -265,20 +257,6 @@ function love.keyreleased(key, scancode)
 
     if ui:keyreleased(key, scancode) then
         return
-    end
-
-    -- this shortcut is handled on release, and can be consumed
-    -- so you don't input r into the field
-    if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
-        local room=activeRoom()
-        app.editParams = room
-        app.editParamsTable ={exits={},hex={value=room.hex},params={}}
-        for k,v in pairs(room.exits) do 
-            app.editParamsTable.exits[k]={value=v}
-        end
-        for i=1, math.max(#room.params, #project.param_names) do 
-            app.editParamsTable.params[i]={value=room.params[i] or 0}
-        end
     end
 end
 

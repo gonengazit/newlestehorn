@@ -1,7 +1,7 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger"}
+toolslist = {"brush", "rectangle", "select", "camtrigger", "roomproperties"}
 
 
 
@@ -9,6 +9,7 @@ baseTool = {}
 baseTool.__index = baseTool
 function baseTool.onenabled() end
 function baseTool.ondisabled() end
+function baseTool.panel() end
 function baseTool.update() end
 function baseTool.draw() end
 function baseTool.mousepressed() end
@@ -26,7 +27,44 @@ end
 
 
 
+-- common tool panels
+
+function tilePanel()
+    -- tiles
+    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:label("Tiles:")
+    for j = 0, app.showGarbageTiles and 15 or 7 do
+        ui:layoutRow("static", 8*tms, 8*tms, 16)
+        for i = 0, 15 do
+            local n = i + j*16
+            if tileButton(n, app.currentTile == n and not app.autotile) then
+                app.currentTile = n
+                app.autotile = nil
+            end
+        end
+    end
+
+    -- autotiles
+    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:label("Autotiles:")
+    ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
+    for k, auto in ipairs(autotiles) do
+        if tileButton(auto[5], app.currentTile == auto[15] and app.autotile) then
+            app.currentTile = auto[15]
+            app.autotile = k
+        end
+    end
+end
+
+
+
+-- Brush
+
 tools.brush = newTool("Brush")
+
+function tools.brush.panel()
+    tilePanel()
+end
 
 function tools.brush.update(dt)
     if not ui:windowIsAnyHovered() and not love.keyboard.isDown("lalt") and (love.mouse.isDown(1) or love.mouse.isDown(2)) then
@@ -54,7 +92,13 @@ end
 
 
 
+-- Rectangle
+
 tools.rectangle = newTool("Rectangle")
+
+function tools.rectangle.panel()
+    tilePanel()
+end
 
 function tools.rectangle.draw()
     local ti, tj = mouseOverTile()
@@ -112,6 +156,8 @@ end
 
 
 
+-- Selection
+
 tools.select = newTool("Selection")
 
 function tools.select.ondisabled()
@@ -168,10 +214,28 @@ end
 
 
 
+-- Camera Trigger
+
 tools.camtrigger = newTool("Camera Trigger")
 
 function tools.camtrigger.ondisabled()
     project.selected_camtrigger = nil
+end
+
+function tools.camtrigger.panel()
+    if project.selected_camtrigger then
+        local editX = {value = project.selected_camtrigger.off_x}
+        local editY = {value = project.selected_camtrigger.off_y}
+
+        ui:layoutRow("dynamic",25*global_scale,4)
+        ui:label("x offset","centered")
+        ui:edit("simple", editX)
+        ui:label("y offset","centered")
+        ui:edit("simple", editY)
+
+        project.selected_camtrigger.off_x = editX.value
+        project.selected_camtrigger.off_y = editY.value
+    end
 end
 
 function tools.camtrigger.draw()
@@ -212,10 +276,52 @@ function tools.camtrigger.mousereleased(x, y, button)
         local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
         local trigger={x=i0,y=j0,w=w,h=h,off_x=0,off_y=0}
         table.insert(room.camtriggers,trigger)
-        app.editCamtrigger=trigger
-        app.editCamtriggerTable={x={value=0},y={value=0}}
         project.selected_camtrigger=trigger
     end
 
     app.camtriggerI, app.camtriggerJ = nil, nil
+end
+
+
+
+-- Room Properties
+
+tools.roomproperties = newTool("Room Properties")
+
+function tools.roomproperties.panel()
+    local room = activeRoom()
+    if room then
+        local param_n = math.max(#project.param_names,#room.params)
+
+        local x,y=div8(room.x),div8(room.y)
+        local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
+        ui:layoutRow("dynamic",25*global_scale,1)
+        if not fits_on_map then
+            local style={}
+            for k,v in pairs({"text normal", "text hover", "text active"}) do
+                style[v]="#707070"
+            end
+            ui:stylePush({['checkbox']=style})
+
+        else
+            ui:stylePush({})
+        end
+        room.hex = ui:checkbox("Level Stored As Hex", room.hex or not fits_on_map)
+        ui:stylePop()
+
+        ui:layoutRow("dynamic", 25*global_scale, 5)
+        ui:label("Level Exits:")
+        for _,v in pairs({"left","bottom","right","top"}) do
+            room.exits[v] = ui:checkbox(v, room.exits[v])
+        end
+
+        for i=1, param_n do
+            ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
+            ui:label(project.param_names[i] or "")
+
+            local t = {value=room.params[i]}
+            ui:edit("field", t)
+            room.params[i] = t.value
+        end
+    end
 end
