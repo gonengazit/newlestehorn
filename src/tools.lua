@@ -301,6 +301,10 @@ function tools.roomproperties.panel()
             for k,v in pairs({"text normal", "text hover", "text active"}) do
                 style[v]="#707070"
             end
+            for k,v in pairs({"normal", "hover", "active"}) do
+                style[v]=checkmarkWithBg -- show both selected and unselected as having a check to avoid nukelear limitations
+                -- kinda hacky but it works decently enough
+            end
             ui:stylePush({['checkbox']=style})
 
         else
