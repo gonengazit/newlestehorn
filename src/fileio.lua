@@ -117,6 +117,12 @@ function loadpico8(filename)
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
     local levels, mapdata, camera_offsets
     if evh then
+        -- get names of parameters from commented string
+        local param_string=evh:match("%-%-\"x,y,w,h,exit_dirs,?(.-)\"")
+        data.param_names=split(param_string or "")
+        print(param_string)
+        print(#data.param_names)
+
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
         evh = string.gsub(evh, "//[^\n]*\n", "")
@@ -150,10 +156,14 @@ function loadpico8(filename)
     -- load levels
     if levels[1] then
         for n, s in pairs(levels) do
-            local x, y, w, h, exits = string.match(s, "^([^,]*),([^,]*),([^,]*),([^,]*),?([^,]*)$")
+            local x, y, w, h, exits, params= string.match(s, "^([^,]*),([^,]*),([^,]*),([^,]*),?([^,]*),?(.*)$")
             x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h), exits or "0b0001"
+            params=split(params or "")
             if x and y and w and h then -- this confirms they're there and they're numbers
-                data.roomBounds[n] = {x=x*128, y=y*128, w=w*16, h=h*16, exits={left=exits:sub(3,3)=="1", bottom=exits:sub(4,4)=="1", right=exits:sub(5,5)=="1", top=exits:sub(6,6)=="1"}}
+                data.rooms[n] = newRoom(x*128, y*128, w*16, h*16) 
+                data.rooms[n].exits={left=exits:sub(3,3)=="1", bottom=exits:sub(4,4)=="1", right=exits:sub(5,5)=="1", top=exits:sub(6,6)=="1"}
+                data.rooms[n].hex=false
+                data.rooms[n].params=params
             else
                 print("wat", s)
             end
@@ -161,8 +171,9 @@ function loadpico8(filename)
     else
         for J = 0, 3 do
             for I = 0, 7 do
-                local b = {x = I*128, y = J*128, w = 16, h = 16, title=""}
-                table.insert(data.roomBounds, b)
+                local b=newRoom(I*128, J*128, 16, 16)
+                --b.title=""
+                table.insert(data.rooms, b)
             end
         end
     end
@@ -170,26 +181,20 @@ function loadpico8(filename)
     -- load mapdata
     if mapdata then
         for n, levelstr in pairs(mapdata) do
-            local b = data.roomBounds[n]
-            if b then
-                local room = newRoom(b.x, b.y, b.w, b.h)
+            local room = data.rooms[n]
+            if room then
                 loadroomdata(room, levelstr)
-                room.exits=b.exits
-                --room.title = b.title
-                data.rooms[n] = room
+                room.hex=true
             end
         end
     end
 
     -- fill rooms with no mapdata from p8 map
-    for n, b in ipairs(data.roomBounds) do
-        if not data.rooms[n] then
-            local room = newRoom(b.x, b.y, b.w, b.h)
-            room.hex=false
-
-            for i = 0, b.w - 1 do
-                for j = 0, b.h - 1 do
-                    local i1, j1 = div8(b.x) + i, div8(b.y) + j
+    for n, room in ipairs(data.rooms) do
+        if not room.hex then
+            for i = 0, room.w - 1 do
+                for j = 0, room.h - 1 do
+                    local i1, j1 = div8(room.x) + i, div8(room.y) + j
                     if i1 >= 0 and i1 < 128 and j1 >= 0 and j1 < 64 then
                         room.data[i][j] = data.map[i1][j1]
                     else
@@ -197,10 +202,9 @@ function loadpico8(filename)
                     end
                 end
             end
-
-            data.rooms[n] = room
         end
     end
+
     if camera_offsets then
         for n,tbl in pairs(camera_offsets) do 
             for _,t in pairs(tbl) do
@@ -223,6 +227,8 @@ function openPico8(filename)
     -- loads into global p8data as well, for spritesheet
     p8data = loadpico8(filename)    
     project.rooms = p8data.rooms
+    --store names of parameters, in order to show in the ui
+    project.param_names=p8data.param_names
 
     app.openFileName = filename
 
@@ -275,6 +281,9 @@ function savePico8(filename)
             end 
         end 
         levels[n] = string.format("%g,%g,%g,%g,%s", room.x/128, room.y/128, room.w/16, room.h/16, exit_string)
+        for _,v in ipairs(room.params) do
+            levels[n]=levels[n]..","..v
+        end 
 
         if room.hex then 
             mapdata[n] = dumproomdata(room)

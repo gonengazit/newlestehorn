@@ -272,9 +272,12 @@ function love.keyreleased(key, scancode)
     if key == "r" and not love.keyboard.isDown("lctrl") and activeRoom() then
         local room=activeRoom()
         app.editParams = room
-        app.editParamsTable ={exits={},hex={value=room.hex}}
-        for k,v in pairs(room.exits) do
+        app.editParamsTable ={exits={},hex={value=room.hex},params={}}
+        for k,v in pairs(room.exits) do 
             app.editParamsTable.exits[k]={value=v}
+        end
+        for i=1, math.max(#room.params, #project.param_names) do 
+            app.editParamsTable.params[i]={value=room.params[i] or 0}
         end
     end
 end
