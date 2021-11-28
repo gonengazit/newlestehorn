@@ -190,8 +190,8 @@ function love.update(dt)
     --end
     if app.editParams then
         local room = app.editParams
-        
-        local w, h = 500*global_scale, 125*global_scale
+        local param_n = math.max(#project.param_names,#room.params)
+        local w, h = 500*global_scale, 125*global_scale + 25*param_n
         if ui:windowBegin("Edit Room Parameters", app.W/2 - w/2, app.H/2 - h/2, w, h, {"title", "border", "closable", "movable"}) then
 
             local x,y=div8(room.x),div8(room.y)
@@ -220,7 +220,12 @@ function love.update(dt)
             for _,v in pairs({"left","bottom","right","top"}) do 
                 ui:checkbox(v,app.editParamsTable.exits[v])
             end 
-            --ui:checkbox("test",app.editParamsVTable.test)
+
+            for i=1, param_n do 
+                ui:layoutRow("dynamic", 25*global_scale, 2)
+                ui:label(project.param_names[i] or "")
+                ui:edit("field", app.editParamsTable.params[i])
+            end
             ui:layoutRow("dynamic",25*global_scale,1)
             if ui:button("OK") or app.enterPressed then
                 --room.params.test=app.editParamsVTable.test.value
@@ -228,6 +233,9 @@ function love.update(dt)
                 app.editParams.hex=app.editParamsTable.hex.value
                 for k,v in pairs(app.editParamsTable.exits) do 
                     app.editParams.exits[k]=v.value
+                end
+                for k,v in pairs(app.editParamsTable.params) do 
+                    app.editParams.params[k]=v.value
                 end
                 app.editParams = nil
             end
