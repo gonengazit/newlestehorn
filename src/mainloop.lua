@@ -222,7 +222,7 @@ function love.update(dt)
             end 
 
             for i=1, param_n do 
-                ui:layoutRow("dynamic", 25*global_scale, 2)
+                ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
                 ui:label(project.param_names[i] or "")
                 ui:edit("field", app.editParamsTable.params[i])
             end
