@@ -89,7 +89,7 @@ function tools.brush.update(dt)
 end
 
 function tools.brush.draw()
-    drawMouseOverTile()
+    drawMouseOverTile(nil, app.currentTile)
 end
 
 
@@ -106,7 +106,7 @@ function tools.rectangle.draw()
     local ti, tj = mouseOverTile()
 
     if not app.rectangleI then
-        drawMouseOverTile()
+        drawMouseOverTile(nil, app.currentTile)
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, app.rectangleI, app.rectangleJ)
         drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)

@@ -98,13 +98,15 @@ function mouseOverTile()
     end
 end
 
-function drawMouseOverTile(col)
+function drawMouseOverTile(col, tile)
     local col = col or {0, 1, 0.5}
 
     local ti, tj = mouseOverTile()
     if ti then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.draw(p8data.spritesheet, p8data.quads[app.currentTile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+        if tile then
+            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+        end
 
         love.graphics.setColor(col)
         love.graphics.setLineWidth(1 / app.camScale)
