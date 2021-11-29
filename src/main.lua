@@ -57,6 +57,7 @@ function newProject()
         rooms = {},
         selection = nil,
         selectedCamtriggerN=nil,
+        param_names = {}
     }
 
     -- basic p8data with blank spritesheet

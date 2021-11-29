@@ -210,7 +210,7 @@ function loadpico8(filename)
         for n,tbl in pairs(camera_offsets) do
             for _,t in pairs(tbl) do
                 args={}
-                for d in t:gmatch("[%S^,]+") do
+                for d in t:gmatch("[^,]+") do
                     table.insert(args,tonumber(d))
                 end
                 if data.rooms[n] then
