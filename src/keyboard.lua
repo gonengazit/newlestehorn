@@ -191,6 +191,11 @@ function love.keypressed(key, scancode, isrepeat)
                 end
             end
         end
+        for i = 1, math.min(#toolslist,9) do
+            if key==tostring(i) then
+                switchTool(toolslist[i])
+            end
+        end
     end
 
     -- now pass to nuklear and return if consumed

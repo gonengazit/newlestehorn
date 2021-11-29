@@ -157,13 +157,7 @@ function love.update(dt)
                 local tool = toolslist[1 + i]
 
                 if ui:selectable(tools[tool].name, app.tool == tool) then
-                    if app.tool and app.tool ~= tool then
-                        tools[app.tool].ondisabled()
-
-                        app.tool = tool
-
-                        tools[app.tool].onenabled()
-                    end
+                    switchTool(tool)
                 end
             end
 

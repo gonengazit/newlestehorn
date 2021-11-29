@@ -183,6 +183,16 @@ function selectedTrigger()
     return activeRoom() and activeRoom().camtriggers[app.selectedCamtriggerN]
 end
 
+function switchTool(tool)
+    if app.tool and app.tool ~= tool then
+        tools[app.tool].ondisabled()
+
+        app.tool = tool
+
+        tools[app.tool].onenabled()
+    end
+end
+
 function pushHistory()
     local s = dumpproject(project)
     if s ~= app.history[app.historyN] then
