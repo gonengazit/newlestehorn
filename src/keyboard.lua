@@ -179,6 +179,8 @@ function love.keypressed(key, scancode, isrepeat)
             end
         elseif key=="h" then
             app.showGarbageTiles=not app.showGarbageTiles
+        elseif key=="t" then
+            app.showCameraTriggers=not app.showCameraTriggers
         end
     else -- if ctrl is not down
         if key == "delete" and love.keyboard.isDown("lshift") then

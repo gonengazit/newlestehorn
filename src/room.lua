@@ -33,22 +33,23 @@ function drawRoom(room, p8data, highlight)
         drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
     end
 
-    local highlighted = app.tool == "camtrigger" and (app.selected_camtrigger or hoveredTrigger())
-    --TODO: draw selected and hovered in different colors maybe
-    for _,trigger in ipairs(room.camtriggers) do
-        local ti, tj = mouseOverTile()
+    if app.tool == "camtrigger" or app.showCameraTriggers then 
+        local highlighted = app.tool == "camtrigger" and (app.selected_camtrigger or hoveredTrigger())
+        for _,trigger in ipairs(room.camtriggers) do
+            local ti, tj = mouseOverTile()
 
-        local col
-        if trigger == highlighted then
-            if app.selected_camtrigger then
-                col = {0.5,1,0}
+            local col
+            if trigger == highlighted then
+                if app.selected_camtrigger then
+                    col = {0.5,1,0}
+                else
+                    col = {1,0.9,0}
+                end
             else
-                col = {1,0.9,0}
+                col = {1,0.75,0}
             end
-        else
-            col = {1,0.75,0}
-        end
 
-        drawColoredRect(room, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
+            drawColoredRect(room, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
+        end
     end
 end

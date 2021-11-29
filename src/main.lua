@@ -31,6 +31,7 @@ function newProject()
         playtesting = false,
         showToolPanel = true,
         showGarbageTiles=false,
+        showCameraTriggers=true,
 
         -- history (undo stack)
         history = {},

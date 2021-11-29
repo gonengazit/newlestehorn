@@ -48,3 +48,4 @@ Go to the Releases section at the top of the page.
 * * **Room properties** - currently allows setting room exits and whether the room is stored in code ("hex") or in mapdata.
 * **Tab** toggles **playtesting mode**. When it's enabled, saving a cart will also inject a line of code that spawns you right in the current room and disables music. (conveniently, in PICO-8 you can press **Ctrl+R** to restart the cart and it will reload the map as well!). Press Tab again to enable **2 dashes**.
 * **CTRL+H** - shows/hides **garbage tiles** on the tool panel
+* **CTRL+T** - shows/hides **camera triggers** when not using the dedicated tool

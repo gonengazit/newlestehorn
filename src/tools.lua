@@ -224,6 +224,8 @@ function tools.camtrigger.ondisabled()
 end
 
 function tools.camtrigger.panel()
+    ui:layoutRow("dynamic", 25*global_scale, 1)
+    app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool",app.showCameraTriggers)
     if app.selected_camtrigger then
         local editX = {value = app.selected_camtrigger.off_x}
         local editY = {value = app.selected_camtrigger.off_y}
