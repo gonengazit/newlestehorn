@@ -1,5 +1,4 @@
 # ~~Everhorn~~ newlestehorn
-**DESPITE MY BEST EFFORTS THERE MAY BE BUGS, CONSIDER THIS A BETA AT THIS POINT**
 
 **~~Everhorn~~ newlestehorn** is a map editor for ~~Celeste Classic mods that use [Evercore](https://github.com/CelesteClassic/evercore) or a compatible level system.~~ the n.p8 project.
 
