@@ -120,8 +120,6 @@ function loadpico8(filename)
         -- get names of parameters from commented string
         local param_string=evh:match("%-%-\"x,y,w,h,exit_dirs,?(.-)\"")
         data.param_names=split(param_string or "")
-        print(param_string)
-        print(#data.param_names)
 
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
