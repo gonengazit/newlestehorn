@@ -242,7 +242,7 @@ function love.keypressed(key, scancode, isrepeat)
         local room=activeRoom()
         if app.selectedCamtriggerN and room then
             table.remove(room.camtriggers, app.selectedCamtriggerN)
-            app.selectedCamtriggeN=nil
+            app.selectedCamtriggerN=nil
         end
     end
 end
