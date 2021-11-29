@@ -46,6 +46,7 @@ function tilePanel()
     end
 
     -- autotiles
+    --[[
     ui:layoutRow("dynamic", 25*global_scale, 1)
     ui:label("Autotiles:")
     ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
@@ -55,6 +56,7 @@ function tilePanel()
             app.autotile = k
         end
     end
+    ]]
 end
 
 
