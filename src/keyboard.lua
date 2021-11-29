@@ -2,6 +2,10 @@ function love.keypressed(key, scancode, isrepeat)
     local x, y = love.mouse.getPosition()
     local mx, my = fromScreen(x, y)
 
+    if ui:keypressed(key, scancode, isrepeat) or app.textinputConsumed then
+        return
+    end
+
     if key == "return" then
         app.enterPressed = true
     end
@@ -191,63 +195,40 @@ function love.keypressed(key, scancode, isrepeat)
                 end
             end
         end
+
+        -- tool switching with 12...9
         for i = 1, math.min(#toolslist,9) do
             if key==tostring(i) then
                 switchTool(toolslist[i])
             end
         end
-    end
 
-    -- now pass to nuklear and return if consumed
+        if key == "n" then
+            local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
 
-    if ui:keypressed(key, scancode, isrepeat) then
-        return
-    end
+            room.title = ""
 
-    -- now editing things (that shouldn't happen if you have a nuklear window focused or something)
-
-    if key == "n" then
-        local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
-
-        -- disabled that shit
-        -- generate alphabetic room title
-        --local n, title = 0, nil
-        --while true do
-            --title = b26(n)
-            --local exists = false
-            --for _, otherRoom in ipairs(project.rooms) do
-                --if otherRoom.title == title then
-                    --exists = true
-                --end
-            --end
-            --if not exists then
-                --break
-            --end
-            --n = n + 1
-        --end
-        --room.title = title
-        room.title = ""
-
-        table.insert(project.rooms, room)
-        app.room = #project.rooms
-        app.roomAdded = true
-    elseif key == "space" then
-        app.showToolPanel = not app.showToolPanel
-    elseif key == "return" then
-        placeSelection()
-    elseif key == "tab" and not love.keyboard.isDown("lalt") then
-        if not app.playtesting then
-            app.playtesting = 1
-        elseif app.playtesting == 1 then
-            app.playtesting = 2
-        else
-            app.playtesting = false
-        end
-    elseif key == "delete" then
-        local room=activeRoom()
-        if app.selectedCamtriggerN and room then
-            table.remove(room.camtriggers, app.selectedCamtriggerN)
-            app.selectedCamtriggerN=nil
+            table.insert(project.rooms, room)
+            app.room = #project.rooms
+            app.roomAdded = true
+        elseif key == "space" then
+            app.showToolPanel = not app.showToolPanel
+        elseif key == "return" then
+            placeSelection()
+        elseif key == "tab" and not love.keyboard.isDown("lalt") then
+            if not app.playtesting then
+                app.playtesting = 1
+            elseif app.playtesting == 1 then
+                app.playtesting = 2
+            else
+                app.playtesting = false
+            end
+        elseif key == "delete" then
+            local room=activeRoom()
+            if app.selectedCamtriggerN and room then
+                table.remove(room.camtriggers, app.selectedCamtriggerN)
+                app.selectedCamtriggerN=nil
+            end
         end
     end
 end
@@ -262,5 +243,5 @@ function love.keyreleased(key, scancode)
 end
 
 function love.textinput(text)
-    ui:textinput(text)
+    app.textinputConsumed = ui:textinput(text)
 end
