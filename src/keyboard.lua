@@ -2,7 +2,7 @@ function love.keypressed(key, scancode, isrepeat)
     local x, y = love.mouse.getPosition()
     local mx, my = fromScreen(x, y)
 
-    if ui:keypressed(key, scancode, isrepeat) or app.textinputConsumed then
+    if ui:keypressed(key, scancode, isrepeat) then
         return
     end
 
@@ -194,25 +194,6 @@ function love.keypressed(key, scancode, isrepeat)
                     app.room = #project.rooms
                 end
             end
-        end
-
-        -- tool switching with 12...9
-        for i = 1, math.min(#toolslist,9) do
-            if key==tostring(i) then
-                switchTool(toolslist[i])
-            end
-        end
-
-        if key == "n" then
-            local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
-
-            room.title = ""
-
-            table.insert(project.rooms, room)
-            app.room = #project.rooms
-            app.roomAdded = true
-        elseif key == "space" then
-            app.showToolPanel = not app.showToolPanel
         elseif key == "return" then
             placeSelection()
         elseif key == "tab" and not love.keyboard.isDown("lalt") then
@@ -243,5 +224,27 @@ function love.keyreleased(key, scancode)
 end
 
 function love.textinput(text)
-    app.textinputConsumed = ui:textinput(text)
+    if ui:textinput(text) then
+        return
+    end
+    -- tool switching with 12...9
+    for i = 1, math.min(#toolslist,9) do
+        if text==tostring(i) then
+            switchTool(toolslist[i])
+        end
+    end
+
+    if text == "n" then
+        local x, y = love.mouse.getPosition()
+        local mx, my = fromScreen(x, y)
+        local room = newRoom(roundto8(mx), roundto8(my), 16, 16)
+
+        room.title = ""
+
+        table.insert(project.rooms, room)
+        app.room = #project.rooms
+        app.roomAdded = true
+    elseif text == " " then
+        app.showToolPanel = not app.showToolPanel
+    end
 end
