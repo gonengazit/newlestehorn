@@ -32,7 +32,7 @@ Go to the Releases section at the top of the page.
 
 # Usage
 
-* **Ctrl+O** - **Open** (loads rooms and the spritesheet).
+* **Ctrl+O** - **Open** a .p8 cart file (loads rooms and the spritesheet).
 * **Ctrl+S**, **Ctrl+Shift+S** - **Save/Save As**. If file exists, only the code in the *Everhorn section* will be updated. If you select a different file, a copy will be created based on the currently opened cart. So, if you need to move rooms from cart A to cart B (for example, to update the cart), open cart A, then save to cart B.
 * **Ctrl+R** - **reload** the spritesheet from the currently opened cart.
 * **Ctrl+Z**, **Ctrl+Shift+Z** - **Undo/Redo**. Can undo pretty much anything (including something like deleting a room).
