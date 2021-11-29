@@ -31,8 +31,9 @@ end
 
 function tilePanel()
     -- tiles
-    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:layoutRow("dynamic", 25*global_scale, 2)
     ui:label("Tiles:")
+    app.showGarbageTiles = ui:checkbox("Show garbage tiles", app.showGarbageTiles)
     for j = 0, app.showGarbageTiles and 15 or 7 do
         ui:layoutRow("static", 8*tms, 8*tms, 16)
         for i = 0, 15 do
