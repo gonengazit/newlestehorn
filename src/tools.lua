@@ -254,15 +254,18 @@ end
 
 function tools.camtrigger.mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
-
     if not ti then return end 
+
+    local hovered=hoveredTrigger()
     if button == 1 then
         if love.keyboard.isDown("lctrl") then 
+            if not app.selected_camtrigger and hovered then 
+                app.selected_camtrigger = hovered
+            end 
             if app.selected_camtrigger then 
                 app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
             end 
         else
-            local hovered=hoveredTrigger()
             if app.selected_camtrigger then
                 app.selected_camtrigger=false
                 --deselect
@@ -272,9 +275,14 @@ function tools.camtrigger.mousepressed(x, y, button)
                 app.camtriggerI, app.camtriggerJ = ti, tj
             end
         end
-    elseif button == 2 and love.keyboard.isDown("lctrl") and app.selected_camtrigger then 
-        app.camtriggerSideI = sign(ti - app.selected_camtrigger.x - app.selected_camtrigger.w/2)
-        app.camtriggerSideJ = sign(tj - app.selected_camtrigger.y - app.selected_camtrigger.h/2)
+    elseif button == 2 and love.keyboard.isDown("lctrl") then 
+        if not app.selected_camtrigger and hovered then 
+            app.selected_camtrigger = hovered
+        end
+        if app.selected_camtrigger then 
+            app.camtriggerSideI = sign(ti - app.selected_camtrigger.x - app.selected_camtrigger.w/2)
+            app.camtriggerSideJ = sign(tj - app.selected_camtrigger.y - app.selected_camtrigger.h/2)
+        end 
         -- app.camtriggerSideI,app.camtriggerSideJ=ti,tj
     end
 end
