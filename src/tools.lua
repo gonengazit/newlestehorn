@@ -238,12 +238,8 @@ function tools.camtrigger.panel()
         ui:label("y offset","centered")
         ui:edit("simple", editY)
 
-        if tonumber(editX.value) then
-            trigger.off_x = tonumber(editX.value)
-        end
-        if tonumber(editY.value) then
-            trigger.off_y = editY.value
-        end
+        trigger.off_x = editX.value
+        trigger.off_y = editY.value
     end
 end
 
@@ -329,7 +325,7 @@ function tools.camtrigger.mousereleased(x, y, button)
     if ti and app.camtriggerI then
         local room = activeRoom()
         local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
-        local trigger={x=i0,y=j0,w=w,h=h,off_x=0,off_y=0}
+        local trigger={x=i0,y=j0,w=w,h=h,off_x="0",off_y="0"}
         table.insert(room.camtriggers, trigger)
         app.selectedCamtriggerN = #room.camtriggers
     end

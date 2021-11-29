@@ -210,8 +210,10 @@ function loadpico8(filename)
         for n,tbl in pairs(camera_offsets) do
             for _,t in pairs(tbl) do
                 args={}
-                for d in t:gmatch("[^,]+") do
-                    table.insert(args,tonumber(d))
+                -- strip leading and trailing whitespace
+                for d in t:gmatch("%s*[^,]+%s*") do
+                    -- off_x and off_y are strings and not numbers
+                    table.insert(args,#args<4 and tonumber(d) or d)
                 end
                 if data.rooms[n] then
                     table.insert(data.rooms[n].camtriggers,{x=args[1],y=args[2],w=args[3],h=args[4],off_x=args[5],off_y=args[6]})
@@ -293,7 +295,7 @@ function savePico8(filename)
         if room.camtriggers then
             camera_offsets[n]={}
             for _,t in pairs(room.camtriggers) do
-                local trigger_str=string.format("%d,%d,%d,%d,%d,%d",t.x,t.y,t.w,t.h,t.off_x,t.off_y)
+                local trigger_str=string.format("%d,%d,%d,%d,%s,%s",t.x,t.y,t.w,t.h,t.off_x,t.off_y)
                 table.insert(camera_offsets[n],trigger_str)
             end
         end
