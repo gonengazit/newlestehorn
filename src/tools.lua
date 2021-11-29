@@ -1,7 +1,7 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger", "roomproperties"}
+toolslist = {"brush", "rectangle", "select", "camtrigger", "room"}
 
 
 
@@ -331,9 +331,29 @@ end
 
 -- Room Properties
 
-tools.roomproperties = newTool("Room Properties")
+tools.room = newTool("Room")
 
-function tools.roomproperties.panel()
+function tools.room.panel()
+    ui:layoutRow("static", 25*global_scale, 150*global_scale, 2)
+    if ui:button("New Room") then
+        local x, y = fromScreen(app.W/3, app.H/3)
+        local room = newRoom(roundto8(x), roundto8(y), 16, 16)
+
+        room.title = ""
+
+        table.insert(project.rooms, room)
+        app.room = #project.rooms
+        app.roomAdded = true
+    end
+    if ui:button("Delete Room") then
+        if app.room then
+            table.remove(project.rooms, app.room)
+            if not activeRoom() then
+                app.room = #project.rooms
+            end
+        end
+    end
+
     local room = activeRoom()
     if room then
         local param_n = math.max(#project.param_names,#room.params)
