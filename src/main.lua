@@ -55,7 +55,7 @@ function newProject()
     project = {
         rooms = {},
         selection = nil,
-        selected_camtrigger=nil,
+        selectedCamtriggerN=nil,
     }
 
     -- basic p8data with blank spritesheet
@@ -166,16 +166,20 @@ function select(i1, j1, i2, j2)
     end
 end
 
-function hoveredTrigger()
+function hoveredTriggerN()
     local room=activeRoom()
     if room then
-        for _,trigger in ipairs(room.camtriggers) do
+        for n, trigger in ipairs(room.camtriggers) do
             local ti, tj = mouseOverTile()
             if ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
-                return trigger
+                return n
             end
         end
     end
+end
+
+function selectedTrigger()
+    return activeRoom() and activeRoom().camtriggers[app.selectedCamtriggerN]
 end
 
 function pushHistory()
