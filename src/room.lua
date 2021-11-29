@@ -33,14 +33,12 @@ function drawRoom(room, p8data, highlight)
         drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
     end
 
-    if app.tool == "camtrigger" or app.showCameraTriggers then 
-    local highlighted = app.tool == "camtrigger" and (app.selectedCamtriggerN or hoveredTriggerN())
-    for n, trigger in ipairs(room.camtriggers) do
-            local ti, tj = mouseOverTile()
-
+    if app.tool == "camtrigger" or app.showCameraTriggers then
+        local highlighted = app.tool == "camtrigger" and (app.selectedCamtriggerN or hoveredTriggerN())
+        for n, trigger in ipairs(room.camtriggers) do
             local col
-        if room == activeRoom() and n == highlighted then
-            if app.selectedCamtriggerN then
+            if room == activeRoom() and n == highlighted then
+                if app.selectedCamtriggerN then
                     col = {0.5,1,0}
                 else
                     col = {1,0.9,0}
