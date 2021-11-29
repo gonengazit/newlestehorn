@@ -274,7 +274,7 @@ function tools.camtrigger.mousereleased(x, y, button)
     if ti and app.camtriggerI then
         local room = activeRoom()
         local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
-        local trigger={x=i0,y=j0,w=w,h=h,off_x=0,off_y=0}
+        local trigger={x=i0,y=j0,w=w,h=h,off_x="0",off_y="0"}
         table.insert(room.camtriggers,trigger)
         app.selected_camtrigger=trigger
     end
