@@ -1,7 +1,6 @@
-# Everhorn
-**DESPITE MY BEST EFFORTS THERE MAY BE BUGS, CONSIDER THIS A BETA AT THIS POINT**
+# ~~Everhorn~~ newlestehorn
 
-**Everhorn** is a map editor for Celeste Classic mods that use [Evercore](https://github.com/CelesteClassic/evercore) or a compatible level system.
+**~~Everhorn~~ newlestehorn** is a map editor for ~~Celeste Classic mods that use [Evercore](https://github.com/CelesteClassic/evercore) or a compatible level system.~~ the n.p8 project.
 
 ![image](https://user-images.githubusercontent.com/25254726/115297327-c0e58180-a164-11eb-960a-832990c192fc.png)
 
@@ -39,12 +38,13 @@ Go to the Releases section at the top of the page.
 * **N** - **create** new room.
 * **Alt+Left/Right Mouse Button** - **move** and **resize** rooms.
 * **Up/Down, Ctrl+Up/Down** - **switch** between rooms and **reorder** them (can also click to switch).
-* **R** - **rename** room. (I was told that in newleste.p8, room don't have titles; this will work as room options instead)
 * **Shift+Delete** - **delete** room.
 * **Ctrl+Shift+C** - **copy** the entire room (it's text-based, so you can send it to someone directly).
 * **Space** shows/hides the **tool panel** with the tools and the tileset. The tileset also includes 3 **autotiles**, which will automatically pick the right version of the tile based on it's neighbors, both when drawing and erasing. They are defined to match vanilla snow, ice, and dirt (you can put any other sprites instead, of course, and I can define more if needed).
 * * **Brush** - **left click** to paint with the tile, **right click** to erase (tile 0)
 * * **Rectangle** - same but in rectangles.
 * * **Select** - basic selection tool, click and drag to select a rectangle, then you can move it, place it, copy or cut it with **Ctrl+C**, **Ctrl+X** and paste with **Ctrl+V**.
+* * **Camera Trigger** - tool for adding, moving and resizing n.p8 camera triggers. Use **Ctrl+Left/Right Mouse Button** to move/resize.
+* * **Room properties** - currently allows setting room exits and whether the room is stored in code ("hex") or in mapdata.
 * **Tab** toggles **playtesting mode**. When it's enabled, saving a cart will also inject a line of code that spawns you right in the current room and disables music. (conveniently, in PICO-8 you can press **Ctrl+R** to restart the cart and it will reload the map as well!). Press Tab again to enable **2 dashes**.
 * **CTRL+H** - shows/hides **garbage tiles** on the tool panel

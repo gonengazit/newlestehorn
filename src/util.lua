@@ -123,16 +123,16 @@ function dumpproject(proj)
     return serpent.line(proj, {compact = true, comment = false, keyignore = {["data"] = true}})
 end
 
-function split(str) 
+function split(str)
     -- emulate pico8's split
     -- split , sperated list, auto convert numbers to ints
-	local tbl={}
-	for val in string.gmatch(str, '([^,]+)') do
-		if tonumber(val) ~= nil then
-			val=tonumber(val)
-		end
-		table.insert(tbl,val)
-	end
-	return tbl
+    local tbl={}
+    for val in string.gmatch(str, '([^,]+)') do
+        if tonumber(val) ~= nil then
+            val=tonumber(val)
+        end
+        table.insert(tbl,val)
+    end
+    return tbl
 end
 

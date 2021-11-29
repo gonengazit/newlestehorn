@@ -107,6 +107,9 @@ function love.update(dt)
         },
         selectable = {
             padding = {x = 0, y = 0},
+            ["normal"] = "#262626",
+            ["hover"] = "#262626",
+            ["pressed"] = "#262626",
             ["normal active"] = "#000000",
             ["hover active"] = "#000000",
             ["pressed active"] = "#000000",
