@@ -56,7 +56,7 @@ function newProject()
     project = {
         rooms = {},
         selection = nil,
-        selected_camtrigger=nil,
+        selectedCamtriggerN=nil,
     }
 
     -- basic p8data with blank spritesheet
@@ -99,13 +99,15 @@ function mouseOverTile()
     end
 end
 
-function drawMouseOverTile(col)
+function drawMouseOverTile(col, tile)
     local col = col or {0, 1, 0.5}
 
     local ti, tj = mouseOverTile()
     if ti then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.draw(p8data.spritesheet, p8data.quads[app.currentTile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+        if tile then
+            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+        end
 
         love.graphics.setColor(col)
         love.graphics.setLineWidth(1 / app.camScale)
@@ -165,16 +167,20 @@ function select(i1, j1, i2, j2)
     end
 end
 
-function hoveredTrigger()
+function hoveredTriggerN()
     local room=activeRoom()
     if room then
-        for _,trigger in ipairs(room.camtriggers) do
+        for n, trigger in ipairs(room.camtriggers) do
             local ti, tj = mouseOverTile()
             if ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
-                return trigger
+                return n
             end
         end
     end
+end
+
+function selectedTrigger()
+    return activeRoom() and activeRoom().camtriggers[app.selectedCamtriggerN]
 end
 
 function pushHistory()

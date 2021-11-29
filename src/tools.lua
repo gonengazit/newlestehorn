@@ -1,7 +1,7 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger", "roomproperties"}
+toolslist = {"brush", "rectangle", "select", "camtrigger", "room"}
 
 
 
@@ -88,7 +88,7 @@ function tools.brush.update(dt)
 end
 
 function tools.brush.draw()
-    drawMouseOverTile()
+    drawMouseOverTile(nil, app.currentTile)
 end
 
 
@@ -105,7 +105,7 @@ function tools.rectangle.draw()
     local ti, tj = mouseOverTile()
 
     if not app.rectangleI then
-        drawMouseOverTile()
+        drawMouseOverTile(nil, app.currentTile)
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, app.rectangleI, app.rectangleJ)
         drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
@@ -220,15 +220,17 @@ end
 tools.camtrigger = newTool("Camera Trigger")
 
 function tools.camtrigger.ondisabled()
-    app.selected_camtrigger = nil
+    app.selectedCamtriggerN = nil
 end
 
 function tools.camtrigger.panel()
     ui:layoutRow("dynamic", 25*global_scale, 1)
     app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool",app.showCameraTriggers)
-    if app.selected_camtrigger then
-        local editX = {value = app.selected_camtrigger.off_x}
-        local editY = {value = app.selected_camtrigger.off_y}
+    if selectedTrigger() then
+        local trigger = selectedTrigger()
+
+        local editX = {value = trigger.off_x}
+        local editY = {value = trigger.off_y}
 
         ui:layoutRow("dynamic",25*global_scale,4)
         ui:label("x offset","centered")
@@ -236,8 +238,8 @@ function tools.camtrigger.panel()
         ui:label("y offset","centered")
         ui:edit("simple", editY)
 
-        app.selected_camtrigger.off_x = editX.value
-        app.selected_camtrigger.off_y = editY.value
+        trigger.off_x = editX.value
+        trigger.off_y = editY.value
     end
 end
 
@@ -254,63 +256,67 @@ end
 
 function tools.camtrigger.mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
-    if not ti then return end 
+    if not ti then return end
 
-    local hovered=hoveredTrigger()
+    local hovered=hoveredTriggerN()
     if button == 1 then
-        if love.keyboard.isDown("lctrl") then 
-            if not app.selected_camtrigger and hovered then 
-                app.selected_camtrigger = hovered
-            end 
-            if app.selected_camtrigger then 
+        if love.keyboard.isDown("lctrl") then
+            if not selectedTrigger() and hovered then
+                app.selectedCamtriggerN = hovered
+            end
+            if selectedTrigger() then
                 app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
-            end 
+            end
         else
-            if app.selected_camtrigger then
-                app.selected_camtrigger=false
+            local hovered=hoveredTriggerN()
+            if selectedTrigger() then
+                app.selectedCamtriggerN=false
                 --deselect
             elseif hovered then
-                app.selected_camtrigger=hovered
+                app.selectedCamtriggerN=hovered
             else
                 app.camtriggerI, app.camtriggerJ = ti, tj
             end
         end
-    elseif button == 2 and love.keyboard.isDown("lctrl") then 
-        if not app.selected_camtrigger and hovered then 
-            app.selected_camtrigger = hovered
+    elseif button == 2 and love.keyboard.isDown("lctrl") then
+        if not selectedTrigger() and hovered then
+            app.selectedCamtriggerN = hovered
         end
-        if app.selected_camtrigger then 
+        if selectedTrigger() then
             app.camtriggerSideI = sign(ti - app.selected_camtrigger.x - app.selected_camtrigger.w/2)
             app.camtriggerSideJ = sign(tj - app.selected_camtrigger.y - app.selected_camtrigger.h/2)
-        end 
+        end
         -- app.camtriggerSideI,app.camtriggerSideJ=ti,tj
     end
 end
 
 function tools.camtrigger.mousemoved(x,y)
     local ti,tj = mouseOverTile()
-    if not ti then return end 
-    if app.camtriggerMoveI then 
-        app.selected_camtrigger.x=app.selected_camtrigger.x+(ti-app.camtriggerMoveI)
-        app.selected_camtrigger.y=app.selected_camtrigger.y+(tj-app.camtriggerMoveJ)
+    if not ti then return end
+
+    local trigger = selectedTrigger()
+
+    if app.camtriggerMoveI then
+        trigger.x=trigger.x+(ti-app.camtriggerMoveI)
+        trigger.y=trigger.y+(tj-app.camtriggerMoveJ)
         app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
-    end 
-    if app.camtriggerSideI then 
-        if app.camtriggerSideI < 0 then 
-            local newx = math.min(ti,app.selected_camtrigger.x+app.selected_camtrigger.w-1)
-            app.selected_camtrigger.w = app.selected_camtrigger.x - newx + app.selected_camtrigger.w
-            app.selected_camtrigger.x = newx
+    end
+    if app.camtriggerSideI then
+        if app.camtriggerSideI < 0 then
+            local newx = math.min(ti, trigger.x + trigger.w-1)
+            trigger.w = trigger.x - newx + trigger.w
+            trigger.x = newx
         else
-            app.selected_camtrigger.w = math.max(ti-app.selected_camtrigger.x+1,1)
-        end 
-        if app.camtriggerSideJ < 0 then 
-            local newy = math.min(tj,app.selected_camtrigger.y+app.selected_camtrigger.h-1)
-            app.selected_camtrigger.h = app.selected_camtrigger.y - newy + app.selected_camtrigger.h
-            app.selected_camtrigger.y = newy
+            trigger.w = math.max(ti - trigger.x + 1, 1)
+        end
+        if app.camtriggerSideJ < 0 then
+            local newy = math.min(tj, trigger.y + trigger.h - 1)
+            trigger.h = trigger.y - newy + trigger.h
+            trigger.y = newy
         else
-            app.selected_camtrigger.h=math.max(tj-app.selected_camtrigger.y+1,1)
-        end 
-    end 
+            trigger.h = math.max(tj - trigger.y + 1, 1)
+        end
+    end
 end
 
 function tools.camtrigger.mousereleased(x, y, button)
@@ -320,8 +326,8 @@ function tools.camtrigger.mousereleased(x, y, button)
         local room = activeRoom()
         local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
         local trigger={x=i0,y=j0,w=w,h=h,off_x="0",off_y="0"}
-        table.insert(room.camtriggers,trigger)
-        app.selected_camtrigger=trigger
+        table.insert(room.camtriggers, trigger)
+        app.selectedCamtriggerN = #room.camtriggers
     end
 
     app.camtriggerI, app.camtriggerJ = nil, nil
@@ -333,9 +339,29 @@ end
 
 -- Room Properties
 
-tools.roomproperties = newTool("Room Properties")
+tools.room = newTool("Room")
 
-function tools.roomproperties.panel()
+function tools.room.panel()
+    ui:layoutRow("static", 25*global_scale, 150*global_scale, 2)
+    if ui:button("New Room") then
+        local x, y = fromScreen(app.W/3, app.H/3)
+        local room = newRoom(roundto8(x), roundto8(y), 16, 16)
+
+        room.title = ""
+
+        table.insert(project.rooms, room)
+        app.room = #project.rooms
+        app.roomAdded = true
+    end
+    if ui:button("Delete Room") then
+        if app.room then
+            table.remove(project.rooms, app.room)
+            if not activeRoom() then
+                app.room = #project.rooms
+            end
+        end
+    end
+
     local room = activeRoom()
     if room then
         local param_n = math.max(#project.param_names,#room.params)

@@ -123,8 +123,16 @@ function love.update(dt)
     -- room panel
     if ui:windowBegin("Room Panel", 0, 0, rpw, app.H, {"scrollbar"}) then
         ui:layoutRow("dynamic", 25*global_scale, 1)
-        for n = 1, #project.rooms do
-            if ui:selectable("["..n.."] "..project.rooms[n].title, n == app.room) then
+        for n, room in ipairs(project.rooms) do
+            local line = "["..n..""
+            line = line .. (room.exits.left and "l" or "")
+            line = line .. (room.exits.bottom and "d" or "")
+            line = line .. (room.exits.right and "r" or "")
+            line = line .. (room.exits.top and "u" or "")
+            line = line .. (room.hex and "h" or "")
+            line = line .. "] " .. room.title
+
+            if ui:selectable(line, n == app.room) then
                 app.room = n
             end
         end
@@ -206,10 +214,10 @@ function love.update(dt)
                     newdata[i_][j_] = n
                 end
             end
-            for _,c in pairs(room.camtriggers) do 
+            for _,c in pairs(room.camtriggers) do
                 c.x = c.x + (ax == left and dx or 0)
                 c.y = c.y + (ay == top and dy or 0)
-            end 
+            end
             -- add 0 when no data is there
             for i = 0, neww - 1 do
                 newdata[i] = newdata[i] or {}
