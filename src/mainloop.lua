@@ -203,6 +203,10 @@ function love.update(dt)
                     newdata[i_][j_] = n
                 end
             end
+            for _,c in pairs(room.camtriggers) do 
+                c.x = c.x + (ax == left and dx or 0)
+                c.y = c.y + (ay == top and dy or 0)
+            end 
             -- add 0 when no data is there
             for i = 0, neww - 1 do
                 newdata[i] = newdata[i] or {}
