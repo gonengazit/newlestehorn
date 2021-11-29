@@ -31,8 +31,10 @@ end
 
 function tilePanel()
     -- tiles
-    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:layoutRow("dynamic", 25*global_scale, 2)
     ui:label("Tiles:")
+    app.showGarbageTiles = ui:checkbox("Show garbage tiles", app.showGarbageTiles)
+
     for j = 0, app.showGarbageTiles and 15 or 7 do
         ui:layoutRow("static", 8*tms, 8*tms, 16)
         for i = 0, 15 do
@@ -252,12 +254,12 @@ end
 function tools.camtrigger.mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
 
-    if not ti then return end 
+    if not ti then return end
     if button == 1 then
-        if love.keyboard.isDown("lctrl") then 
-            if app.selected_camtrigger then 
+        if love.keyboard.isDown("lctrl") then
+            if app.selected_camtrigger then
                 app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
-            end 
+            end
         else
             local hovered=hoveredTrigger()
             if app.selected_camtrigger then
@@ -269,7 +271,7 @@ function tools.camtrigger.mousepressed(x, y, button)
                 app.camtriggerI, app.camtriggerJ = ti, tj
             end
         end
-    elseif button == 2 and love.keyboard.isDown("lctrl") and app.selected_camtrigger then 
+    elseif button == 2 and love.keyboard.isDown("lctrl") and app.selected_camtrigger then
         app.camtriggerSideI = sign(ti - app.selected_camtrigger.x - app.selected_camtrigger.w/2)
         app.camtriggerSideJ = sign(tj - app.selected_camtrigger.y - app.selected_camtrigger.h/2)
         -- app.camtriggerSideI,app.camtriggerSideJ=ti,tj
@@ -278,28 +280,28 @@ end
 
 function tools.camtrigger.mousemoved(x,y)
     local ti,tj = mouseOverTile()
-    if not ti then return end 
-    if app.camtriggerMoveI then 
+    if not ti then return end
+    if app.camtriggerMoveI then
         app.selected_camtrigger.x=app.selected_camtrigger.x+(ti-app.camtriggerMoveI)
         app.selected_camtrigger.y=app.selected_camtrigger.y+(tj-app.camtriggerMoveJ)
         app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
-    end 
-    if app.camtriggerSideI then 
-        if app.camtriggerSideI < 0 then 
+    end
+    if app.camtriggerSideI then
+        if app.camtriggerSideI < 0 then
             local newx = math.min(ti,app.selected_camtrigger.x+app.selected_camtrigger.w-1)
             app.selected_camtrigger.w = app.selected_camtrigger.x - newx + app.selected_camtrigger.w
             app.selected_camtrigger.x = newx
         else
             app.selected_camtrigger.w = math.max(ti-app.selected_camtrigger.x+1,1)
-        end 
-        if app.camtriggerSideJ < 0 then 
+        end
+        if app.camtriggerSideJ < 0 then
             local newy = math.min(tj,app.selected_camtrigger.y+app.selected_camtrigger.h-1)
             app.selected_camtrigger.h = app.selected_camtrigger.y - newy + app.selected_camtrigger.h
             app.selected_camtrigger.y = newy
         else
             app.selected_camtrigger.h=math.max(tj-app.selected_camtrigger.y+1,1)
-        end 
-    end 
+        end
+    end
 end
 
 function tools.camtrigger.mousereleased(x, y, button)
