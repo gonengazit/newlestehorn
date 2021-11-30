@@ -95,10 +95,12 @@ function tilePanel()
             updateAutotiles()
 
             app.autotile = math.max(1, app.autotile - 1)
-            if #project.autotiles == 0 then
-                app.autotile = nil
-            end
         end
+    end
+
+    -- check for missing autotile! can happen on undo/redo
+    if not project.autotiles[app.autotile] then
+        app.autotile = nil
     end
 
     if app.autotile then
