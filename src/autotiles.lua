@@ -73,15 +73,24 @@ autotiles = {
 autotilet, autotilet_strict = {}, {}
 -- n => autotile n belongs to, if any
 -- strict excludes extra autotiles (>=16)
+autotileo = {}
+-- n => orientation of n in the autotile it belongs to, if any
 
-for k, auto in ipairs(autotiles) do
-    for nb, n in pairs(auto) do
-        autotilet[n] = k
-        if nb >= 0 and nb < 16 then
-            autotilet_strict[n] = k
+function updateAutotiles()
+    autotilet, autotielet_strict, autotileo = {}, {}, {}
+
+    for k, auto in ipairs(autotiles) do
+        for o, n in pairs(auto) do
+            autotilet[n] = k
+            autotileo[n] = o
+            if o >= 0 and o < 16 then
+                autotilet_strict[n] = k
+            end
         end
     end
 end
+
+updateAutotiles()
 
 local function isAutotile(room, i, j, strict)
     if i >= 0 and i < room.w and j >= 0 and j < room.h then

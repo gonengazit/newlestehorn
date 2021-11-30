@@ -29,6 +29,11 @@ end
 
 -- common tool panels
 
+local autolayout = {{0,  1,  3,  2,  16, 17, 18, 19},
+                    {4,  5,  7,  6,  20, 21, 22, 23},
+                    {12, 13, 15, 14, 24, 25, 26, 27},
+                    {8,  9,  11, 10, 28, 29, 30, 31}}
+
 function tilePanel()
     -- tiles
     ui:layoutRow("dynamic", 25*global_scale, 2)
@@ -38,25 +43,75 @@ function tilePanel()
         ui:layoutRow("static", 8*tms, 8*tms, 16)
         for i = 0, 15 do
             local n = i + j*16
+
             if tileButton(n, app.currentTile == n and not app.autotile) then
-                app.currentTile = n
-                app.autotile = nil
+                if app.autotileEditO then
+                    if app.autotile then
+                        if app.autotileEditO >= 16 and n == 0 then
+                            autotiles[app.autotile][app.autotileEditO] = nil
+                        else
+                            autotiles[app.autotile][app.autotileEditO] = n
+                        end
+                    end
+
+                    updateAutotiles()
+                    app.autotileEditO = nil
+                else
+                    app.currentTile = n
+                    app.autotile = nil
+                end
             end
         end
     end
 
     -- autotiles
-    --[[
-    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:layoutRow("dynamic", 25*global_scale, 3)
     ui:label("Autotiles:")
+    ui:spacing(1)
+    if ui:button("New Autotile") then
+        local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        table.insert(autotiles, auto)
+
+        updateAutotiles()
+    end
+
     ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
     for k, auto in ipairs(autotiles) do
-        if tileButton(auto[5], app.currentTile == auto[15] and app.autotile) then
+        if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
             app.autotile = k
+
+            app.autotileEditO = nil
         end
     end
-    ]]
+
+    if app.autotile then
+        ui:layoutRow("dynamic", 25*global_scale, 3)
+        ui:label("Autotile layout:")
+        ui:spacing(1)
+        if ui:button("Delete Autotile") then
+            table.remove(autotiles, app.autotile)
+
+            updateAutotiles()
+
+            app.autotile = math.max(1, app.autotile - 1)
+            if #autotiles == 0 then
+                app.autotile = nil
+            end
+        end
+    end
+
+    if app.autotile then
+        for r = 1, 4 do
+            ui:layoutRow("static", 8*tms, 8*tms, 16)
+            for i = 1, 8 do
+                local o = autolayout[r][i]
+                if tileButton(autotiles[app.autotile][o] or 0, app.autotileEditO == o, o) then
+                    app.autotileEditO = o
+                end
+            end
+        end
+    end
 end
 
 
@@ -64,6 +119,10 @@ end
 -- Brush
 
 tools.brush = newTool("Brush")
+
+function tools.brush.ondisabled()
+    app.autotileEditO = nil
+end
 
 function tools.brush.panel()
     tilePanel()
@@ -98,6 +157,10 @@ end
 -- Rectangle
 
 tools.rectangle = newTool("Rectangle")
+
+function tools.rectangle.ondisabled()
+    app.autotileEditO = nil
+end
 
 function tools.rectangle.panel()
     tilePanel()
