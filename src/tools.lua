@@ -48,9 +48,9 @@ function tilePanel()
                 if app.autotileEditO then
                     if app.autotile then
                         if app.autotileEditO >= 16 and n == 0 then
-                            autotiles[app.autotile][app.autotileEditO] = nil
+                            project.autotiles[app.autotile][app.autotileEditO] = nil
                         else
-                            autotiles[app.autotile][app.autotileEditO] = n
+                            project.autotiles[app.autotile][app.autotileEditO] = n
                         end
                     end
 
@@ -70,13 +70,13 @@ function tilePanel()
     ui:spacing(1)
     if ui:button("New Autotile") then
         local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-        table.insert(autotiles, auto)
+        table.insert(project.autotiles, auto)
 
         updateAutotiles()
     end
 
-    ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
-    for k, auto in ipairs(autotiles) do
+    ui:layoutRow("static", 8*tms, 8*tms, #project.autotiles)
+    for k, auto in ipairs(project.autotiles) do
         if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
             app.autotile = k
@@ -90,12 +90,12 @@ function tilePanel()
         ui:label("Autotile layout:")
         ui:spacing(1)
         if ui:button("Delete Autotile") then
-            table.remove(autotiles, app.autotile)
+            table.remove(project.autotiles, app.autotile)
 
             updateAutotiles()
 
             app.autotile = math.max(1, app.autotile - 1)
-            if #autotiles == 0 then
+            if #project.autotiles == 0 then
                 app.autotile = nil
             end
         end
@@ -106,7 +106,7 @@ function tilePanel()
             ui:layoutRow("static", 8*tms, 8*tms, 16)
             for i = 1, 8 do
                 local o = autolayout[r][i]
-                if tileButton(autotiles[app.autotile][o] or 0, app.autotileEditO == o, o) then
+                if tileButton(project.autotiles[app.autotile][o] or 0, app.autotileEditO == o, o) then
                     app.autotileEditO = o
                 end
             end

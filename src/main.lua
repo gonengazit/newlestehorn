@@ -60,6 +60,8 @@ function newProject()
         param_names = {}
     }
 
+    defaultAutotiles()
+
     -- basic p8data with blank spritesheet
     local data = {}
     local imgdata = love.image.newImageData(128, 64)
