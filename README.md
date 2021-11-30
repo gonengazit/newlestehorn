@@ -2,7 +2,7 @@
 
 **~~Everhorn~~ newlestehorn** is a map editor for the newleste.p8 project. It's a newlest.p8-specific version of Everhorn with UI improvements and all-new Camera Trigger support by @gonengazit!
 
-![image](https://user-images.githubusercontent.com/25254726/115297327-c0e58180-a164-11eb-960a-832990c192fc.png)
+![Screenshot-20211130130715-1300x775](https://user-images.githubusercontent.com/25254726/144027364-2d52db9a-af81-4254-8b3e-228ecb20423a.png)
 
 # How it works
 
