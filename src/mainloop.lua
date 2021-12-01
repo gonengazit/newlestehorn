@@ -2,7 +2,12 @@
 
 function tileButton(n, highlight, autotileOverlayO)
     local x, y, w, h = ui:widgetBounds()
-    ui:image({p8data.spritesheet, p8data.quads[n]})
+
+    if n ~= 0 then
+        ui:image({p8data.spritesheet, p8data.quads[n]})
+    else
+        ui:image(bgtileIm)
+    end
 
     local hov = false
     if ui:inputIsHovered(x, y, w, h) then
@@ -110,6 +115,9 @@ function love.load(args)
     love.graphics.clear(0x64/0xff,0x64/0xff,0x64/0xff)
     love.graphics.draw(checkmarkIm,checkmarkIm:getWidth()/8,checkmarkIm:getHeight()/8)
     love.graphics.setCanvas()
+
+    bgtileIm = love.graphics.newImage("bgtile.png")
+    bgtileIm:setFilter("nearest")
 end
 
 function love.update(dt)
