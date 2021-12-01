@@ -115,7 +115,7 @@ function tilePanel()
         end
 
         ui:layoutRow("dynamic", 50*global_scale, 1)
-        ui:label("16 tiles on the left will be used automatically. Extra tiles will connect to the autotile.\nDon't use tile 0, it doesn't work like you'd expect (use a different black tile if needed).", "wrap")
+        ui:label("Autotile draws with the 16 tiles on the left, connecting them to each other and to any of the extra tiles on the right.", "wrap")
     end
 end
 
