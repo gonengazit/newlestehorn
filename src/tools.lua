@@ -87,7 +87,7 @@ function tilePanel()
 
     if app.autotile then
         ui:layoutRow("dynamic", 25*global_scale, 3)
-        ui:label("Autotile layout:")
+        ui:label("Tileset:")
         ui:spacing(1)
         if ui:button("Delete Autotile") then
             table.remove(project.autotiles, app.autotile)
@@ -114,8 +114,8 @@ function tilePanel()
             end
         end
 
-        ui:layoutRow("dynamic", 80*global_scale, 1)
-        ui:label("To remap an autotile tileset, select a subtype and click on a tile to assign to it. 16 autotiles on the left will be used automatically when painting with the autotile. The rest are extra tiles: they won't be placed automatically, but they will connect to this autotile.", "wrap")
+        ui:layoutRow("dynamic", 25*global_scale, 1)
+        ui:label("16 tiles on the left will be used automatically. Extra tiles will connect to the autotile.", "wrap")
     end
 end
 

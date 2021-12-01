@@ -3,6 +3,8 @@
 --  4
 
 function updateAutotiles()
+    -- calculates auxillary tables for autotile manipulation
+
     project.autotilet, project.autotilet_strict = {}, {}
     -- n => autotile n belongs to, if any
     -- strict excludes extra autotiles (>=16)
@@ -21,7 +23,7 @@ function updateAutotiles()
 end
 
 function defaultAutotiles()
-    project.autotiles = {
+    local autotiles = {
         -- snow
         [1] = {
             [0]  = 32,
@@ -89,7 +91,7 @@ function defaultAutotiles()
         },
     }
 
-    updateAutotiles()
+    return autotiles
 end
 
 local function isAutotile(room, i, j, strict)

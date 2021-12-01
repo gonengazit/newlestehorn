@@ -48,6 +48,10 @@ function dumplua(t)
     return serpent.block(t, {comment = false})
 end
 
+function dumplualine(t)
+    return serpent.line(t, {comment = false})
+end
+
 function loadlua(s)
     f, err = loadstring("return "..s)
     if err then

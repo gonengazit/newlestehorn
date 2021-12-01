@@ -114,12 +114,31 @@ function loadpico8(filename)
 
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
+
+    -- get configuration code, if exists
+    local evhconf = string.match(code, "%-%-@conf([^@]+)%-%-@")
+    if evhconf then
+        evhconf = string.match(evhconf, "%-%-%[%[([^@]+)%]%]")
+        if evhconf then
+            local chunk, err = loadstring(evhconf)
+
+            if not err then
+                local env = {}
+                chunk = setfenv(chunk, env)
+                chunk()
+
+                data.param_names = env.param_names
+                data.autotiles = env.autotiles
+            end
+        end
+    end
+
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
     local levels, mapdata, camera_offsets
     if evh then
         -- get names of parameters from commented string
         local param_string=evh:match("%-%-\"x,y,w,h,exit_dirs,?(.-)\"")
-        data.param_names=split(param_string or "")
+        data.param_names = data.param_names or split(param_string or "")
 
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -231,7 +250,10 @@ function openPico8(filename)
     p8data = loadpico8(filename)
     project.rooms = p8data.rooms
     --store names of parameters, in order to show in the ui
-    project.param_names=p8data.param_names
+    project.param_names = p8data.param_names
+    project.autotiles = p8data.autotiles or defaultAutotiles()
+
+    updateAutotiles()
 
     app.openFileName = filename
 
@@ -365,8 +387,17 @@ function savePico8(filename)
     end
 
     local cartdata=table.concat(out, "\n")
-    -- write to levels table without overwriting the code
 
+    -- add configuration block if missing
+    if not cartdata:match("%-%-@conf") then
+        cartdata = cartdata:gsub("%-%-@begin", "--@conf\n--[[ ]]\n--@begin")
+    end
+
+    -- rewrite configuration block
+    local confcode = "param_names = "..dumplualine(project.param_names).."\nautotiles = "..dumplualine(project.autotiles)
+    cartdata = cartdata:gsub("%-%-@conf.-%-%-%[%[.-%]%]", "--@conf\n--[["..confcode.."\n]]")
+
+    -- write to levels table without overwriting the code
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(mapdata).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*camera_offsets%s*=%s*)%b{}(.*%-%-@end)","%1"..dumplua(camera_offsets).."%2")

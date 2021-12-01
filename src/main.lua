@@ -57,10 +57,9 @@ function newProject()
         rooms = {},
         selection = nil,
         selectedCamtriggerN=nil,
-        param_names = {}
+        param_names = {},
+        autotiles = {},
     }
-
-    defaultAutotiles()
 
     -- basic p8data with blank spritesheet
     local data = {}
