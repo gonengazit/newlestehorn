@@ -1,3 +1,10 @@
+function isempty(t)
+    for k, v in pairs(t) do
+        return false
+    end
+    return true
+end
+
 function fromhex(s)
     return tonumber(s, 16)
 end

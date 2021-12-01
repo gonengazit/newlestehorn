@@ -6,17 +6,19 @@ function updateAutotiles()
     -- calculates auxillary tables for autotile manipulation
 
     project.autotilet, project.autotilet_strict = {}, {}
-    -- n => autotile n belongs to, if any
+    -- n => set of autotiles n belongs to
     -- strict excludes extra autotiles (>=16)
-    project.autotileo = {}
-    -- n => orientation of n in the autotile it belongs to, if any
 
-    for k, auto in ipairs(project.autotiles) do
+    for n = 0, 255 do
+        project.autotilet[n] = {}
+        project.autotilet_strict[n] = {}
+    end
+
+    for k, auto in pairs(project.autotiles) do
         for o, n in pairs(auto) do
-            project.autotilet[n] = k
-            project.autotileo[n] = o
+            project.autotilet[n][k] = true
             if o >= 0 and o < 16 then
-                project.autotilet_strict[n] = k
+                project.autotilet_strict[n][k] = true
             end
         end
     end
@@ -94,12 +96,18 @@ function defaultAutotiles()
     return autotiles
 end
 
-local function isAutotile(room, i, j, strict)
+-- out of bounds matched all tilesets
+local oob = {}
+for n = 0, 255 do
+    oob[n] = true
+end
+
+local function matchAutotile(room, i, j, strict)
     if i >= 0 and i < room.w and j >= 0 and j < room.h then
         local t = strict and project.autotilet_strict or project.autotilet
         return t[room.data[i][j]]
     else
-        return 0 -- out-of-bounds is considered autotile 0, which connects to any other autotile
+        return oob
     end
 end
 
@@ -107,16 +115,13 @@ local function b1(b) -- converts truthy to 1, falsy to 0
     return b and 1 or 0
 end
 
-local function matches(x, k)
-    return x == 0 and true or x == k
-end
-
 function autotile(room, i, j, k)
-    if k and k == isAutotile(room, i, j, true) then
-        local nb = b1(matches(isAutotile(room, i + 1, j), k))
-                 + b1(matches(isAutotile(room, i - 1, j), k)) * 2
-                 + b1(matches(isAutotile(room, i, j + 1), k)) * 4
-                 + b1(matches(isAutotile(room, i, j - 1), k)) * 8
+    local match = matchAutotile(room, i, j, true)
+    if k and match ~= oob and match[k] then
+        local nb = b1(matchAutotile(room, i + 1, j)[k])
+                 + b1(matchAutotile(room, i - 1, j)[k]) * 2
+                 + b1(matchAutotile(room, i, j + 1)[k]) * 4
+                 + b1(matchAutotile(room, i, j - 1)[k]) * 8
         room.data[i][j] = project.autotiles[k][nb]
     end
 end
