@@ -1,11 +1,9 @@
 -- functions to read lines correctly for \r\n line endings
-local function cr_lines(s)
-    return s:gsub('\r\n?', '\n'):gmatch('(.-)\n')
-end
 
 local function cr_file_lines(file)
-    local s = file:read('*a')
-    return cr_lines(s)
+    return function()
+        return file:read("*l")
+    end
 end
 
 -- file handling
@@ -39,7 +37,7 @@ function loadpico8(filename)
     local sections = {}
     local cursec = nil
     for line in cr_file_lines(file) do
-        local sec = string.match(line, "^__(%a+)__$")
+        local sec = string.match(line, "^__([%a_]+)__$")
         if sec then
             cursec = sec
             sections[sec] = {}
@@ -387,6 +385,7 @@ function savePico8(filename)
     end
 
     local cartdata=table.concat(out, "\n")
+    print(cartdata)
 
     -- add configuration block if missing
     if not cartdata:match("%-%-@conf") then
