@@ -385,7 +385,6 @@ function savePico8(filename)
     end
 
     local cartdata=table.concat(out, "\n")
-    print(cartdata)
 
     -- add configuration block if missing
     if not cartdata:match("%-%-@conf") then
