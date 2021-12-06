@@ -174,11 +174,11 @@ function loadpico8(filename)
     if levels[1] then
         for n, s in pairs(levels) do
             local x, y, w, h, exits, params= string.match(s, "^([^,]*),([^,]*),([^,]*),([^,]*),?([^,]*),?(.*)$")
-            x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h), exits or "0b0001"
+            x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h),exits:sub(1,2)=="0b" and tonumber(exits:sub(3),2) or tonumber(exits) or 1
             params=split(params or "")
             if x and y and w and h then -- this confirms they're there and they're numbers
                 data.rooms[n] = newRoom(x*128, y*128, w*16, h*16)
-                data.rooms[n].exits={left=exits:sub(3,3)=="1", bottom=exits:sub(4,4)=="1", right=exits:sub(5,5)=="1", top=exits:sub(6,6)=="1"}
+                data.rooms[n].exits={left=bit.band(exits,2^3)~=0, bottom=bit.band(exits,2^2)~=0, right=bit.band(exits,2^1)~=0, top=bit.band(exits,2^0)~=0}
                 data.rooms[n].hex=false
                 data.rooms[n].params=params
             else
