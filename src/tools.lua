@@ -55,7 +55,9 @@ function tilePanel()
                     end
 
                     updateAutotiles()
+
                     app.autotileEditO = nil
+                    app.currentTile = project.autotiles[app.autotile][15]
                 else
                     app.currentTile = n
                     app.autotile = nil
