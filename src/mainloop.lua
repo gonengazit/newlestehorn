@@ -193,7 +193,7 @@ function love.update(dt)
             end
 
             -- some spacing
-            ui:layoutRow("dynamic", 10*global_scale, 0)
+            ui:layoutRow("dynamic", 5*global_scale, 0)
 
             -- tool panel
             tools[app.tool].panel()
