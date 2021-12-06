@@ -274,10 +274,8 @@ function savePico8(filename)
         end
     end
 
-    local file = io.open(filename, "rb")
-    if not file and app.openFileName then
-        file = io.open(app.openFileName, "rb")
-    end
+    -- use current cart as base
+    file = io.open(app.openFileName, "rb")
     if not file then
         return false
     end
@@ -384,7 +382,8 @@ function savePico8(filename)
         out[gfxstart+(j-32)*2+66] = string.sub(line, 129, 256)
     end
 
-    local cartdata=table.concat(out, "\n")
+    local cartdata=table.concat(out, "\n") .. "\n"
+    -- newline at the end to match vanilla carts
 
     -- add configuration block if missing
     if not cartdata:match("%-%-@conf") then
@@ -410,6 +409,7 @@ function savePico8(filename)
         inject = inject.." end"
         cartdata=cartdata:gsub("%-%-@end",inject.."\n--@end")
     end
+
     file = io.open(filename, "wb")
     file:write(cartdata)
     file:close()
