@@ -414,7 +414,48 @@ function savePico8(filename)
     file:write(cartdata)
     file:close()
 
-    app.saveFileName = filename
-
     return true
+end
+
+function openFile()
+    local filename = filedialog.open()
+    local openOk = false
+    if filename then
+        local ext = string.match(filename, ".(%w+)$")
+        if ext == "ahm" then
+            openOk = openMap(filename)
+        elseif ext == "p8" then
+            openOk = openPico8(filename)
+        end
+
+        if openOk then
+            app.history = {}
+            app.historyN = 0
+            pushHistory()
+        end
+    end
+    if openOk then
+        showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
+
+        app.saveFileName = filename
+    else
+        showMessage("Failed to open file")
+    end
+end
+
+function saveFile(as)
+    local filename
+    if app.saveFileName and not as then
+        filename = app.saveFileName
+    else
+        filename = filedialog.save()
+    end
+
+    if filename and savePico8(filename) then
+        showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
+
+        app.saveFileName = filename
+    else
+        showMessage("Failed to save cart")
+    end
 end

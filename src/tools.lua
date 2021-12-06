@@ -1,7 +1,7 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger", "room"}
+toolslist = {"brush", "rectangle", "select", "camtrigger", "room", "project"}
 
 
 
@@ -417,7 +417,7 @@ end
 tools.room = newTool("Room")
 
 function tools.room.panel()
-    ui:layoutRow("static", 25*global_scale, 150*global_scale, 2)
+    ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
     if ui:button("New Room") then
         local x, y = fromScreen(app.W/3, app.H/3)
         local room = newRoom(roundto8(x), roundto8(y), 16, 16)
@@ -475,5 +475,22 @@ function tools.room.panel()
             ui:edit("field", t)
             room.params[i] = t.value
         end
+    end
+end
+
+
+
+tools.project = newTool("Project")
+
+function tools.project.panel()
+    ui:layoutRow("static", 25*global_scale, 100*global_scale, 3)
+    if ui:button("Open") then
+        openFile()
+    end
+    if ui:button("Save") then
+        saveFile(false)
+    end
+    if ui:button("Save as...") then
+        saveFile(true)
     end
 end
