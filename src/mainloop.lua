@@ -141,6 +141,9 @@ function love.update(dt)
             ["normal active"] = "#000000",
             ["hover active"] = "#000000",
             ["pressed active"] = "#000000",
+            ["text normal active"] = "#00ff88",
+            ["text hover active"] = "#00ff88",
+            ["text pressed active"] = "#00ff88",
         },
         checkbox = {
             ["cursor normal"] = checkmarkIm,

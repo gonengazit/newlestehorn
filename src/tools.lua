@@ -89,7 +89,7 @@ function tilePanel()
 
     if app.autotile then
         ui:layoutRow("dynamic", 25*global_scale, 3)
-        ui:label("Tileset:")
+        ui:label("Tileset: (click to edit)")
         ui:spacing(1)
         if ui:button("Delete Autotile") then
             table.remove(project.autotiles, app.autotile)
@@ -117,7 +117,7 @@ function tilePanel()
         end
 
         ui:layoutRow("dynamic", 50*global_scale, 1)
-        ui:label("Autotile draws with the 16 tiles on the left, connecting them to each other and to any of the extra tiles on the right.", "wrap")
+        ui:label("Autotile draws with the 16 tiles on the left, connecting them to each other and to any of the extra tiles on the right. This allows connecting to other deco tiles and tiles from other tilesets. Also works when erasing.", "wrap")
     end
 end
 
@@ -458,7 +458,7 @@ function tools.room.panel()
         else
             ui:stylePush({})
         end
-        room.hex = ui:checkbox("Level Stored As Hex", room.hex or not fits_on_map)
+        room.hex = ui:checkbox("Store in code", room.hex or not fits_on_map)
         ui:stylePop()
 
         ui:layoutRow("dynamic", 25*global_scale, 5)
