@@ -77,7 +77,7 @@ function love.keypressed(key, scancode, isrepeat)
             if love.keyboard.isDown("lshift") then
                 -- cut entire room
                 if activeRoom() then
-                    local s = dumplua {"room", activeRoom()}
+                    local s = dumplualine {"room", activeRoom()}
                     love.system.setClipboardText(s)
                     table.remove(project.rooms, app.room)
                     app.room = nil
@@ -87,7 +87,7 @@ function love.keypressed(key, scancode, isrepeat)
             else
                 -- cut selection
                 if project.selection then
-                    local s = dumplua {"selection", project.selection}
+                    local s = dumplualine {"selection", project.selection}
                     love.system.setClipboardText(s)
                     project.selection = nil
 
@@ -99,7 +99,7 @@ function love.keypressed(key, scancode, isrepeat)
             if love.keyboard.isDown("lshift") then
                 -- copy entire room
                 if activeRoom() then
-                    local s = dumplua {"room", activeRoom()}
+                    local s = dumplualine {"room", activeRoom()}
                     love.system.setClipboardText(s)
 
                     showMessage("Copied room")
@@ -107,7 +107,7 @@ function love.keypressed(key, scancode, isrepeat)
             else
                 -- copy selection
                 if project.selection then
-                    local s = dumplua {"selection", project.selection}
+                    local s = dumplualine {"selection", project.selection}
                     love.system.setClipboardText(s)
                     placeSelection()
 
