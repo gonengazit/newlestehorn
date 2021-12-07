@@ -458,7 +458,7 @@ function tools.room.panel()
         else
             ui:stylePush({})
         end
-        room.hex = ui:checkbox("Store in code", room.hex or not fits_on_map)
+        room.hex = ui:checkbox("Store as hex string", room.hex or not fits_on_map)
         ui:stylePop()
 
         ui:layoutRow("dynamic", 25*global_scale, 5)
