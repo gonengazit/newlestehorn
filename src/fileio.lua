@@ -1,11 +1,9 @@
 -- functions to read lines correctly for \r\n line endings
-local function cr_lines(s)
-    return s:gsub('\r\n?', '\n'):gmatch('(.-)\n')
-end
 
 local function cr_file_lines(file)
-    local s = file:read('*a')
-    return cr_lines(s)
+    return function()
+        return file:read("*l")
+    end
 end
 
 -- file handling
@@ -39,7 +37,7 @@ function loadpico8(filename)
     local sections = {}
     local cursec = nil
     for line in cr_file_lines(file) do
-        local sec = string.match(line, "^__(%a+)__$")
+        local sec = string.match(line, "^__([%a_]+)__$")
         if sec then
             cursec = sec
             sections[sec] = {}
@@ -114,12 +112,31 @@ function loadpico8(filename)
 
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
+
+    -- get configuration code, if exists
+    local evhconf = string.match(code, "%-%-@conf([^@]+)%-%-@")
+    if evhconf then
+        evhconf = string.match(evhconf, "%-%-%[%[([^@]+)%]%]")
+        if evhconf then
+            local chunk, err = loadstring(evhconf)
+
+            if not err then
+                local env = {}
+                chunk = setfenv(chunk, env)
+                chunk()
+
+                data.param_names = env.param_names
+                data.autotiles = env.autotiles
+            end
+        end
+    end
+
     local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
     local levels, mapdata, camera_offsets
     if evh then
         -- get names of parameters from commented string
         local param_string=evh:match("%-%-\"x,y,w,h,exit_dirs,?(.-)\"")
-        data.param_names=split(param_string or "")
+        data.param_names = data.param_names or split(param_string or "")
 
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -157,11 +174,11 @@ function loadpico8(filename)
     if levels[1] then
         for n, s in pairs(levels) do
             local x, y, w, h, exits, params= string.match(s, "^([^,]*),([^,]*),([^,]*),([^,]*),?([^,]*),?(.*)$")
-            x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h), exits or "0b0001"
+            x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h),exits:sub(1,2)=="0b" and tonumber(exits:sub(3),2) or tonumber(exits) or 1
             params=split(params or "")
             if x and y and w and h then -- this confirms they're there and they're numbers
                 data.rooms[n] = newRoom(x*128, y*128, w*16, h*16)
-                data.rooms[n].exits={left=exits:sub(3,3)=="1", bottom=exits:sub(4,4)=="1", right=exits:sub(5,5)=="1", top=exits:sub(6,6)=="1"}
+                data.rooms[n].exits={left=bit.band(exits,2^3)~=0, bottom=bit.band(exits,2^2)~=0, right=bit.band(exits,2^1)~=0, top=bit.band(exits,2^0)~=0}
                 data.rooms[n].hex=false
                 data.rooms[n].params=params
             else
@@ -231,7 +248,10 @@ function openPico8(filename)
     p8data = loadpico8(filename)
     project.rooms = p8data.rooms
     --store names of parameters, in order to show in the ui
-    project.param_names=p8data.param_names
+    project.param_names = p8data.param_names
+    project.autotiles = p8data.autotiles or defaultAutotiles()
+
+    updateAutotiles()
 
     app.openFileName = filename
 
@@ -254,10 +274,8 @@ function savePico8(filename)
         end
     end
 
-    local file = io.open(filename, "rb")
-    if not file and app.openFileName then
-        file = io.open(app.openFileName, "rb")
-    end
+    -- use current cart as base
+    file = io.open(app.openFileName, "rb")
     if not file then
         return false
     end
@@ -364,9 +382,19 @@ function savePico8(filename)
         out[gfxstart+(j-32)*2+66] = string.sub(line, 129, 256)
     end
 
-    local cartdata=table.concat(out, "\n")
-    -- write to levels table without overwriting the code
+    local cartdata=table.concat(out, "\n") .. "\n"
+    -- newline at the end to match vanilla carts
 
+    -- add configuration block if missing
+    if not cartdata:match("%-%-@conf") then
+        cartdata = cartdata:gsub("%-%-@begin", "--@conf\n--[[ ]]\n--@begin")
+    end
+
+    -- rewrite configuration block
+    local confcode = "param_names = "..dumplualine(project.param_names).."\nautotiles = "..dumplualine(project.autotiles)
+    cartdata = cartdata:gsub("%-%-@conf.-%-%-%[%[.-%]%]", "--@conf\n--[["..confcode.."\n]]")
+
+    -- write to levels table without overwriting the code
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(mapdata).."%2")
     cartdata = cartdata:gsub("(%-%-@begin.*camera_offsets%s*=%s*)%b{}(.*%-%-@end)","%1"..dumplua(camera_offsets).."%2")
@@ -381,11 +409,53 @@ function savePico8(filename)
         inject = inject.." end"
         cartdata=cartdata:gsub("%-%-@end",inject.."\n--@end")
     end
+
     file = io.open(filename, "wb")
     file:write(cartdata)
     file:close()
 
-    app.saveFileName = filename
-
     return true
+end
+
+function openFile()
+    local filename = filedialog.open()
+    local openOk = false
+    if filename then
+        local ext = string.match(filename, ".(%w+)$")
+        if ext == "ahm" then
+            openOk = openMap(filename)
+        elseif ext == "p8" then
+            openOk = openPico8(filename)
+        end
+
+        if openOk then
+            app.history = {}
+            app.historyN = 0
+            pushHistory()
+        end
+    end
+    if openOk then
+        showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
+
+        app.saveFileName = filename
+    else
+        showMessage("Failed to open file")
+    end
+end
+
+function saveFile(as)
+    local filename
+    if app.saveFileName and not as then
+        filename = app.saveFileName
+    else
+        filename = filedialog.save()
+    end
+
+    if filename and savePico8(filename) then
+        showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
+
+        app.saveFileName = filename
+    else
+        showMessage("Failed to save cart")
+    end
 end

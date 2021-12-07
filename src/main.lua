@@ -18,6 +18,7 @@ function newProject()
     -- this is UI things
     love.graphics.setNewFont(12*global_scale)
     app = {
+        W, H = love.graphics.getDimensions(),
         camX = 0,
         camY = 0,
         camScale = 2, --based on camScaleSetting
@@ -57,7 +58,8 @@ function newProject()
         rooms = {},
         selection = nil,
         selectedCamtriggerN=nil,
-        param_names = {}
+        param_names = {},
+        autotiles = {},
     }
 
     -- basic p8data with blank spritesheet

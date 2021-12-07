@@ -18,6 +18,7 @@ function love.mousepressed(x, y, button, istouch, presses)
             end
             if app.room ~= oldActiveRoom then
                 app.suppressMouse = true
+                return
             end
 
             if love.keyboard.isDown("lalt") then

@@ -1,7 +1,7 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger", "room"}
+toolslist = {"brush", "rectangle", "select", "camtrigger", "room", "project"}
 
 
 
@@ -29,6 +29,11 @@ end
 
 -- common tool panels
 
+local autolayout = {{0,  1,  3,  2,  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27},
+                    {4,  5,  7,  6,  28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
+                    {12, 13, 15, 14, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51},
+                    {8,  9,  11, 10, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63}}
+
 function tilePanel()
     -- tiles
     ui:layoutRow("dynamic", 25*global_scale, 2)
@@ -38,25 +43,82 @@ function tilePanel()
         ui:layoutRow("static", 8*tms, 8*tms, 16)
         for i = 0, 15 do
             local n = i + j*16
+
             if tileButton(n, app.currentTile == n and not app.autotile) then
-                app.currentTile = n
-                app.autotile = nil
+                if app.autotileEditO then
+                    if app.autotile then
+                        if app.autotileEditO >= 16 and n == 0 then
+                            project.autotiles[app.autotile][app.autotileEditO] = nil
+                        else
+                            project.autotiles[app.autotile][app.autotileEditO] = n
+                        end
+                    end
+
+                    updateAutotiles()
+
+                    app.autotileEditO = nil
+                    app.currentTile = project.autotiles[app.autotile][15]
+                else
+                    app.currentTile = n
+                    app.autotile = nil
+                end
             end
         end
     end
 
     -- autotiles
-    --[[
-    ui:layoutRow("dynamic", 25*global_scale, 1)
+    ui:layoutRow("dynamic", 25*global_scale, 3)
     ui:label("Autotiles:")
-    ui:layoutRow("static", 8*tms, 8*tms, #autotiles)
-    for k, auto in ipairs(autotiles) do
-        if tileButton(auto[5], app.currentTile == auto[15] and app.autotile) then
+    ui:spacing(1)
+    if ui:button("New Autotile") then
+        local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+        table.insert(project.autotiles, auto)
+
+        updateAutotiles()
+    end
+
+    ui:layoutRow("static", 8*tms, 8*tms, #project.autotiles)
+    for k, auto in ipairs(project.autotiles) do
+        if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
             app.autotile = k
+
+            app.autotileEditO = nil
         end
     end
-    ]]
+
+    if app.autotile then
+        ui:layoutRow("dynamic", 25*global_scale, 3)
+        ui:label("Tileset: (click to edit)")
+        ui:spacing(1)
+        if ui:button("Delete Autotile") then
+            table.remove(project.autotiles, app.autotile)
+
+            updateAutotiles()
+
+            app.autotile = math.max(1, app.autotile - 1)
+        end
+    end
+
+    -- check for missing autotile! can happen on undo/redo
+    if not project.autotiles[app.autotile] then
+        app.autotile = nil
+    end
+
+    if app.autotile then
+        for r = 1, 4 do
+            ui:layoutRow("static", 8*tms, 8*tms, 16)
+            for i = 1, #autolayout[r] do
+                local o = autolayout[r][i]
+                if tileButton(project.autotiles[app.autotile][o] or 0, app.autotileEditO == o, o) then
+                    app.autotileEditO = o
+                end
+            end
+        end
+
+        ui:layoutRow("dynamic", 50*global_scale, 1)
+        ui:label("Autotile draws with the 16 tiles on the left, connecting them to each other and to any of the extra tiles on the right. This allows connecting to other deco tiles and tiles from other tilesets. Also works when erasing.", "wrap")
+    end
 end
 
 
@@ -65,12 +127,19 @@ end
 
 tools.brush = newTool("Brush")
 
+function tools.brush.ondisabled()
+    app.autotileEditO = nil
+end
+
 function tools.brush.panel()
     tilePanel()
 end
 
 function tools.brush.update(dt)
-    if not ui:windowIsAnyHovered() and not love.keyboard.isDown("lalt") and (love.mouse.isDown(1) or love.mouse.isDown(2)) then
+    if not ui:windowIsAnyHovered()
+    and not love.keyboard.isDown("lalt")
+    and not app.suppressMouse
+    and (love.mouse.isDown(1) or love.mouse.isDown(2)) then
         local n = app.currentTile
         if love.mouse.isDown(2) then
             n = 0
@@ -98,6 +167,10 @@ end
 -- Rectangle
 
 tools.rectangle = newTool("Rectangle")
+
+function tools.rectangle.ondisabled()
+    app.autotileEditO = nil
+end
 
 function tools.rectangle.panel()
     tilePanel()
@@ -344,7 +417,7 @@ end
 tools.room = newTool("Room")
 
 function tools.room.panel()
-    ui:layoutRow("static", 25*global_scale, 150*global_scale, 2)
+    ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
     if ui:button("New Room") then
         local x, y = fromScreen(app.W/3, app.H/3)
         local room = newRoom(roundto8(x), roundto8(y), 16, 16)
@@ -385,7 +458,7 @@ function tools.room.panel()
         else
             ui:stylePush({})
         end
-        room.hex = ui:checkbox("Level Stored As Hex", room.hex or not fits_on_map)
+        room.hex = ui:checkbox("Store as hex string", room.hex or not fits_on_map)
         ui:stylePop()
 
         ui:layoutRow("dynamic", 25*global_scale, 5)
@@ -402,5 +475,22 @@ function tools.room.panel()
             ui:edit("field", t)
             room.params[i] = t.value
         end
+    end
+end
+
+
+
+tools.project = newTool("Project")
+
+function tools.project.panel()
+    ui:layoutRow("static", 25*global_scale, 100*global_scale, 3)
+    if ui:button("Open") then
+        openFile()
+    end
+    if ui:button("Save") then
+        saveFile(false)
+    end
+    if ui:button("Save as...") then
+        saveFile(true)
     end
 end

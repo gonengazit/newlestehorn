@@ -61,27 +61,7 @@ function love.keypressed(key, scancode, isrepeat)
     if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
         -- Ctrl+O
         if key == "o" then
-            local filename = filedialog.open()
-            local openOk = false
-            if filename then
-                local ext = string.match(filename, ".(%w+)$")
-                if ext == "ahm" then
-                    openOk = openMap(filename)
-                elseif ext == "p8" then
-                    openOk = openPico8(filename)
-                end
-
-                if openOk then
-                    app.history = {}
-                    app.historyN = 0
-                    pushHistory()
-                end
-            end
-            if openOk then
-                showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
-            else
-                showMessage("Failed to open file")
-            end
+            openFile()
         -- Ctrl+R
         elseif key == "r" then
             if app.openFileName then
@@ -91,24 +71,13 @@ function love.keypressed(key, scancode, isrepeat)
             end
         -- Ctrl+S
         elseif key == "s" then
-            local filename
-            if app.saveFileName and not love.keyboard.isDown("lshift") then
-                filename = app.saveFileName
-            else
-                filename = filedialog.save()
-            end
-
-            if filename and savePico8(filename) then
-                showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
-            else
-                showMessage("Failed to save cart")
-            end
+            saveFile(love.keyboard.isDown("lshift"))
         -- Ctrl+X
         elseif key == "x" then
             if love.keyboard.isDown("lshift") then
                 -- cut entire room
                 if activeRoom() then
-                    local s = dumplua {"room", activeRoom()}
+                    local s = dumplualine {"room", activeRoom()}
                     love.system.setClipboardText(s)
                     table.remove(project.rooms, app.room)
                     app.room = nil
@@ -118,7 +87,7 @@ function love.keypressed(key, scancode, isrepeat)
             else
                 -- cut selection
                 if project.selection then
-                    local s = dumplua {"selection", project.selection}
+                    local s = dumplualine {"selection", project.selection}
                     love.system.setClipboardText(s)
                     project.selection = nil
 
@@ -130,7 +99,7 @@ function love.keypressed(key, scancode, isrepeat)
             if love.keyboard.isDown("lshift") then
                 -- copy entire room
                 if activeRoom() then
-                    local s = dumplua {"room", activeRoom()}
+                    local s = dumplualine {"room", activeRoom()}
                     love.system.setClipboardText(s)
 
                     showMessage("Copied room")
@@ -138,7 +107,7 @@ function love.keypressed(key, scancode, isrepeat)
             else
                 -- copy selection
                 if project.selection then
-                    local s = dumplua {"selection", project.selection}
+                    local s = dumplualine {"selection", project.selection}
                     love.system.setClipboardText(s)
                     placeSelection()
 

@@ -1,26 +1,51 @@
 -- UI things
 
-function tileButton(n, highlight)
+function tileButton(n, highlight, autotileOverlayO)
     local x, y, w, h = ui:widgetBounds()
-    ui:image({p8data.spritesheet, p8data.quads[n]})
+
+    if n ~= 0 then
+        ui:image({p8data.spritesheet, p8data.quads[n]})
+    else
+        ui:image(bgtileIm)
+    end
 
     local hov = false
     if ui:inputIsHovered(x, y, w, h) then
         hov = true
     end
-    if hov or highlight then
+    if hov or highlight or autotileOverlayO then
         love.graphics.setLineWidth(1)
         if hov then
             love.graphics.setColor(0, 1, 0.5)
-        else
-            love.graphics.setColor(1, 1, 1)
+        elseif highlight then
+            love.graphics.setColor(1, 0, 1)
         end
-        x, y = x - 0.5, y - 0.5
-        w, h = w + 1, h + 1
-        ui:line(x, y, x + w, y)
-        ui:line(x, y, x, y + h)
-        ui:line(x + w, y, x + w, y + h)
-        ui:line(x, y + h, x + w, y + h)
+
+        if hov or highlight then
+            local x, y = x - 0.5, y - 0.5
+            local w, h = w + 1, h + 1
+            ui:line(x, y, x + w, y)
+            ui:line(x, y, x, y + h)
+            ui:line(x + w, y, x + w, y + h)
+            ui:line(x, y + h, x + w, y + h)
+        end
+
+        if autotileOverlayO and autotileOverlayO < 16 then
+            love.graphics.setLineWidth(2)
+            love.graphics.setColor(1, 0.5, 0)
+            local x, y = x + 1.5, y + 1.5
+            local w, h = w - 3, h - 3
+
+            local r = bit.band(autotileOverlayO, 1) == 0
+            local l = bit.band(autotileOverlayO, 2) == 0
+            local d = bit.band(autotileOverlayO, 4) == 0
+            local u = bit.band(autotileOverlayO, 8) == 0
+
+            if r then ui:line(x + w, y, x + w, y + h) end
+            if l then ui:line(x, y, x, y + h) end
+            if d then ui:line(x, y + h, x + w, y + h) end
+            if u then ui:line(x, y, x + w, y) end
+        end
     end
     if ui:inputIsMousePressed("left", x, y, w, h) then
         return true
@@ -90,6 +115,9 @@ function love.load(args)
     love.graphics.clear(0x64/0xff,0x64/0xff,0x64/0xff)
     love.graphics.draw(checkmarkIm,checkmarkIm:getWidth()/8,checkmarkIm:getHeight()/8)
     love.graphics.setCanvas()
+
+    bgtileIm = love.graphics.newImage("bgtile.png")
+    bgtileIm:setFilter("nearest")
 end
 
 function love.update(dt)
@@ -113,6 +141,9 @@ function love.update(dt)
             ["normal active"] = "#000000",
             ["hover active"] = "#000000",
             ["pressed active"] = "#000000",
+            ["text normal active"] = "#00ff88",
+            ["text hover active"] = "#00ff88",
+            ["text pressed active"] = "#00ff88",
         },
         checkbox = {
             ["cursor normal"] = checkmarkIm,
@@ -162,7 +193,7 @@ function love.update(dt)
             end
 
             -- some spacing
-            ui:layoutRow("dynamic", 10*global_scale, 0)
+            ui:layoutRow("dynamic", 5*global_scale, 0)
 
             -- tool panel
             tools[app.tool].panel()

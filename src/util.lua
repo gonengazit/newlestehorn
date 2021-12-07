@@ -1,3 +1,10 @@
+function isempty(t)
+    for k, v in pairs(t) do
+        return false
+    end
+    return true
+end
+
 function fromhex(s)
     return tonumber(s, 16)
 end
@@ -46,6 +53,10 @@ end
 
 function dumplua(t)
     return serpent.block(t, {comment = false})
+end
+
+function dumplualine(t)
+    return serpent.line(t, {comment = false})
 end
 
 function loadlua(s)
