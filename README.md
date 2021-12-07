@@ -6,7 +6,7 @@
 
 # How it works
 
-Carts from the newleste.p8 repository have already been setup for you, this is just for your information (and it's slightly outdated):
+Carts from the newleste.p8 repository have already been setup for you, this is just for your information:
 
 Everhorn is a room-based editor, like Ahorn. While it is able to open and save vanilla Celeste carts, splitting them into 16x16 rooms, its true power is revealed when using [Evercore](https://github.com/CelesteClassic/evercore), which is able to load maps from variables `levels` and `mapdata`, located in the second code tab. To get started with an *evercore*-based cart, you need to open up the code in it, find the place where `levels` and `mapdata` are defined and surround them in `--@begin` and `--@end` comments like this:
 
@@ -25,6 +25,8 @@ mapdata={
 ```
 
 *Everhorn* will now be able to locate this section (*'Everhorn section'*) and **automatically** read `levels` and `mapdata` from it and write them back. Note that you can create as many rooms as you want, however, *Evercore* will actually load them into the normal PICO-8 map the moment you enter them. This means that you *must* place rooms within the boundaries of the map (shown as a grid), or you'll get fucky stuff (nothing permanent though, don't worry). However, you can simply stack rooms on top of each other and it will work fine.
+
+Newlestehorn 1.1 introduced an additional @conf block that will be added automatically before @begin; this block contains commented code (not visible to the running cart) that newlestehorn uses to store project settings, such as autotile tilesets and room parameter names.
 
 # Install
 
