@@ -1,9 +1,15 @@
 -- functions to read lines correctly for \r\n line endings
 
+local function cr_lines(s)
+    return s:gsub('\r\n?', '\n'):gmatch('(.-)\n')
+end
+
 local function cr_file_lines(file)
-    return function()
-        return file:read("*l")
+    local s = file:read('*a')
+    if s:sub(#s, #s) ~= "\n" then
+        s = s .. "\n"
     end
+    return cr_lines(s)
 end
 
 -- file handling
