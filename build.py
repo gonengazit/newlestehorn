@@ -4,7 +4,7 @@ import shutil
 import os
 
 
-platforms = ["windows", "linux", "macos"]
+platforms = ["windows", "linux", "macos", "chromeos"]
 
 
 
@@ -39,6 +39,11 @@ for platform in platforms:
             for fn in filenames:
                 with open(fn, "rb") as inf:
                         of.write(inf.read())
+    elif platform == "chromeos":
+        shutil.copytree("build/src", f"build/{platform}", dirs_exist_ok=True)
+
+        for so in ["nuklear.so", "nfd.so", "filedialog.py", "filedialog.lua"]:
+            shutil.copy(f"bin/{platform}/{so}", f"build/{platform}")
     else:
         # linux - no fancy packaging, just src and .so's
         # copy src
