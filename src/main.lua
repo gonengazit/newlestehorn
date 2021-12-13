@@ -46,7 +46,6 @@ function newProject()
         anyWindowHovered = false,
         enterPressed = false,
         roomAdded = false,
-
     }
 
     --ui:styleSetFont(love.graphics.getFont())

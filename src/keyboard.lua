@@ -2,9 +2,36 @@ function love.keypressed(key, scancode, isrepeat)
     local x, y = love.mouse.getPosition()
     local mx, my = fromScreen(x, y)
 
+    -- shortcuts that work on with a nuklear window active
+
+    -- room switching / swapping
+    if key == "down" or key == "up" then
+        if app.room then
+            local n1 = app.room
+            local n2 = key == "down" and app.room + 1 or app.room - 1
+
+            if project.rooms[n1] and project.rooms[n2] then
+                if love.keyboard.isDown("lctrl") then
+                    -- swap
+                    local tmp = project.rooms[n1]
+                    project.rooms[n1] = project.rooms[n2]
+                    project.rooms[n2] = tmp
+                end
+
+                app.room = n2
+            end
+        end
+    end
+
+
+
     if ui:keypressed(key, scancode, isrepeat) then
         return
     end
+
+
+
+    -- shortcuts that nuklear windows swallow
 
     if key == "return" then
         app.enterPressed = true
@@ -29,25 +56,6 @@ function love.keypressed(key, scancode, isrepeat)
                 redo()
             else
                 undo()
-            end
-        end
-    end
-
-    -- room switching / swapping
-    if key == "down" or key == "up" then
-        if app.room then
-            local n1 = app.room
-            local n2 = key == "down" and app.room + 1 or app.room - 1
-
-            if project.rooms[n1] and project.rooms[n2] then
-                if love.keyboard.isDown("lctrl") then
-                    -- swap
-                    local tmp = project.rooms[n1]
-                    project.rooms[n1] = project.rooms[n2]
-                    project.rooms[n2] = tmp
-                end
-
-                app.room = n2
             end
         end
     end

@@ -147,3 +147,20 @@ function split(str)
     return tbl
 end
 
+function printbg(text, x, y, fgcol, bgcol, centerx, centery)
+    local font = love.graphics.getFont()
+    local w, h = font:getWidth(text), font:getHeight(text)
+
+    if centerx then
+        x = x - w/2
+    end
+    if centery then
+        y = y - h/2
+    end
+
+    love.graphics.setColor(bgcol)
+    love.graphics.rectangle("fill", x - 4, y - 4, w + 8, h + 8)
+
+    love.graphics.setColor(fgcol)
+    love.graphics.print(text, x, y)
+end

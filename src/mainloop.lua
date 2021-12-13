@@ -172,6 +172,8 @@ function love.update(dt)
             ui:windowSetScroll(0, 100000)
             app.roomAdded = false
         end
+
+        app.roomPanelHovered = ui:windowIsHovered()
     end
     ui:windowEnd()
 
@@ -294,15 +296,37 @@ function love.draw()
         end
     end
 
-    for _, room in ipairs(project.rooms) do
+    for n, room in ipairs(project.rooms) do
         if room ~= activeRoom() then
             drawRoom(room, p8data)
             love.graphics.setColor(0.5, 0.5, 0.5, 0.4)
             love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
+
+            if app.roomPanelHovered then
+                love.graphics.push()
+                love.graphics.translate(room.x + room.w*4, room.y + room.h*4)
+                love.graphics.scale(1 / app.camScale)
+
+                printbg(n, 0, 0, {1, 1, 1}, {0, 0, 0}, true, true)
+
+                love.graphics.pop()
+            end
         end
     end
     if activeRoom() then
-        drawRoom(activeRoom(), p8data)
+        local room = activeRoom()
+
+        drawRoom(room, p8data)
+
+        if app.roomPanelHovered then
+            love.graphics.push()
+            love.graphics.translate(room.x + room.w*4, room.y + room.h*4)
+            love.graphics.scale(1 / app.camScale)
+
+            printbg(app.room, 0, 0, {0, 1, 0.5}, {0, 0, 0}, true, true)
+
+            love.graphics.pop()
+        end
     end
     if project.selection then
         drawRoom(project.selection, p8data, true)
@@ -320,12 +344,12 @@ function love.draw()
     love.graphics.setFont(app.font)
 
     if app.message then
-        love.graphics.print(app.message, 4, app.H - app.font:getHeight() - 4)
+        printbg(app.message, 4, app.H - app.font:getHeight() - 4, {0, 1, 0.5}, {0, 0, 0})
     end
 
     if app.playtesting then
         local s = app.playtesting == 1 and "[playtesting]" or "[playtesting, 2 dashes]"
-        love.graphics.print(s, 4, 4)
+        printbg(s, 4, 4, {0, 1, 0.5}, {0, 0, 0})
     end
     ui:draw()
 end
