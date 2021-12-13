@@ -41,7 +41,7 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 
     --tool mousepressed
-    tools[app.tool].mousepressed(x, y, button)
+    app.tool:mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
@@ -49,7 +49,7 @@ function love.mousereleased(x, y, button, istouch, presses)
     -- note: mousereleased is not swallowed by nuklear windows, unlike mousepressed
 
     --tool mousereleased
-    tools[app.tool].mousereleased(x, y, button)
+    app.tool:mousereleased(x, y, button)
 
     app.camMoveX, app.camMoveY = nil, nil
     app.roomMoveX, app.roomMoveY = nil, nil
@@ -82,13 +82,9 @@ function love.mousemoved(x, y, dx, dy, istouch)
             room.y = math.max(0, math.min(512 - 8*room.h, room.y))
         end
     end
-    if project.selectionMoveX and project.selection then
-        project.selection.x = roundto8(mx - project.selectionMoveX)
-        project.selection.y = roundto8(my - project.selectionMoveY)
-    end
 
     --tool mousemoved
-    tools[app.tool].mousemoved(x, y, dx, dy)
+    app.tool:mousemoved(x, y, dx, dy)
 end
 
 function love.wheelmoved(x, y)

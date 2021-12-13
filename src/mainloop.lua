@@ -52,33 +52,6 @@ function tileButton(n, highlight, autotileOverlayO)
     end
 end
 
-function toolLabel(label, tool)
-    local hov = ui:widgetIsHovered()
-    local x, y, w, h = ui:widgetBounds()
-
-    local color = "#afafaf"
-    if tool == app.tool then
-        color = "#00ff88"
-    end
-
-    if hov then
-        local bg = "#00ff88" --"#afafaf"
-        ui:rectMultiColor(x, y, w + 4, h, bg, bg, bg, bg)
-        color = "#2d2d2d"
-        ui:stylePush {
-            window = {
-                background = bg,
-            }
-        }
-
-        app.tool = tool
-    end
-
-    ui:label(label, "left", color)
-
-    if hov then ui:stylePop() end
-end
-
 function closeToolMenu()
     app.toolMenuX, app.toolMenuY = nil, nil
 end
@@ -187,10 +160,10 @@ function love.update(dt)
                     ui:layoutRow("dynamic", 25*global_scale, 4)
                 end
 
-                local tool = toolslist[1 + i]
+                local toolClass = tools[toolslist[1 + i]]
 
-                if ui:selectable(tools[tool].name, app.tool == tool) then
-                    switchTool(tool)
+                if ui:selectable(toolClass.name, app.tool:instanceOf(toolClass)) then
+                    switchTool(toolClass)
                 end
             end
 
@@ -198,7 +171,7 @@ function love.update(dt)
             ui:layoutRow("dynamic", 5*global_scale, 0)
 
             -- tool panel
-            tools[app.tool].panel()
+            app.tool:panel()
         end
         ui:windowEnd()
     end
@@ -210,7 +183,7 @@ function love.update(dt)
     ui:stylePop()
 
     -- tool update
-    tools[app.tool].update(dt)
+    app.tool:update(dt)
 
     ui:frameEnd()
 
@@ -336,7 +309,7 @@ function love.draw()
     end
 
     -- tool draw
-    tools[app.tool].draw()
+    app.tool:draw()
 
     love.graphics.reset()
     love.graphics.setColor(1, 1, 1)

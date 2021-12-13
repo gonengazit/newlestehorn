@@ -1,6 +1,7 @@
 nuklear = require 'nuklear'
 filedialog = require 'filedialog'
 serpent = require 'serpent'
+class = require '30log'
 
 require 'util'
 require 'room'
@@ -25,7 +26,7 @@ function newProject()
         camScaleSetting = 1, -- 0, 1, 2 is 1x, 2x, 3x etc, -1, -2, -3 is 0.5x, 0.25x, 0.125x
         room = nil,
         suppressMouse = false, -- disables mouse-driven editing in love.update() when a click has triggered different action, reset on release
-        tool = "brush",
+        tool = tools.Brush:new(),
         currentTile = 0,
         message = nil,
         messageTimeLeft = nil,
@@ -185,13 +186,10 @@ function selectedTrigger()
     return activeRoom() and activeRoom().camtriggers[app.selectedCamtriggerN]
 end
 
-function switchTool(tool)
-    if app.tool and app.tool ~= tool then
-        tools[app.tool].ondisabled()
-
-        app.tool = tool
-
-        tools[app.tool].onenabled()
+function switchTool(toolClass)
+    if app.tool and not app.tool:instanceOf(toolClass) then
+        app.tool:disabled()
+        app.tool = toolClass:new()
     end
 end
 

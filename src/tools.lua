@@ -1,40 +1,32 @@
 tools = {}
 
 -- this defines the order of tools on the panel
-toolslist = {"brush", "rectangle", "select", "camtrigger", "room", "project"}
+toolslist = {"Brush", "Rectangle", "Select", "Camtrigger", "Room", "Project"}
 
 
 
-baseTool = {}
-baseTool.__index = baseTool
-function baseTool.onenabled() end
-function baseTool.ondisabled() end
-function baseTool.panel() end
-function baseTool.update() end
-function baseTool.draw() end
-function baseTool.mousepressed() end
-function baseTool.mousereleased() end
-function baseTool.mousemoved() end
+Tool = class("Tool")
 
-function newTool(name)
-    local tool = {}
-    tool.name = name
-
-    setmetatable(tool, baseTool)
-
-    return tool
-end
+function Tool:disabled() end
+function Tool:panel() end
+function Tool:update() end
+function Tool:draw() end
+function Tool:mousepressed() end
+function Tool:mousereleased() end
+function Tool:mousemoved() end
 
 
 
--- common tool panels
+-- tile panel mixin
 
 local autolayout = {{0,  1,  3,  2,  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27},
                     {4,  5,  7,  6,  28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39},
                     {12, 13, 15, 14, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51},
                     {8,  9,  11, 10, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63}}
 
-function tilePanel()
+TilePanelMx = {}
+
+function TilePanelMx:tilePanel()
     -- tiles
     ui:layoutRow("dynamic", 25*global_scale, 2)
     ui:label("Tiles:")
@@ -45,18 +37,18 @@ function tilePanel()
             local n = i + j*16
 
             if tileButton(n, app.currentTile == n and not app.autotile) then
-                if app.autotileEditO then
+                if self.autotileEditO then
                     if app.autotile then
-                        if app.autotileEditO >= 16 and n == 0 then
-                            project.autotiles[app.autotile][app.autotileEditO] = nil
+                        if self.autotileEditO >= 16 and n == 0 then
+                            project.autotiles[app.autotile][self.autotileEditO] = nil
                         else
-                            project.autotiles[app.autotile][app.autotileEditO] = n
+                            project.autotiles[app.autotile][self.autotileEditO] = n
                         end
                     end
 
                     updateAutotiles()
 
-                    app.autotileEditO = nil
+                    self.autotileEditO = nil
                     app.currentTile = project.autotiles[app.autotile][15]
                 else
                     app.currentTile = n
@@ -83,7 +75,7 @@ function tilePanel()
             app.currentTile = auto[15]
             app.autotile = k
 
-            app.autotileEditO = nil
+            self.autotileEditO = nil
         end
     end
 
@@ -110,8 +102,8 @@ function tilePanel()
             ui:layoutRow("static", 8*tms, 8*tms, 16)
             for i = 1, #autolayout[r] do
                 local o = autolayout[r][i]
-                if tileButton(project.autotiles[app.autotile][o] or 0, app.autotileEditO == o, o) then
-                    app.autotileEditO = o
+                if tileButton(project.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
+                    self.autotileEditO = o
                 end
             end
         end
@@ -125,17 +117,13 @@ end
 
 -- Brush
 
-tools.brush = newTool("Brush")
+tools.Brush = Tool:extend("Brush"):with(TilePanelMx)
 
-function tools.brush.ondisabled()
-    app.autotileEditO = nil
+function tools.Brush:panel()
+    self:tilePanel()
 end
 
-function tools.brush.panel()
-    tilePanel()
-end
-
-function tools.brush.update(dt)
+function tools.Brush:update(dt)
     if not ui:windowIsAnyHovered()
     and not love.keyboard.isDown("lalt")
     and not app.suppressMouse
@@ -158,7 +146,7 @@ function tools.brush.update(dt)
     end
 end
 
-function tools.brush.draw()
+function tools.Brush:draw()
     drawMouseOverTile(nil, app.currentTile)
 end
 
@@ -166,17 +154,13 @@ end
 
 -- Rectangle
 
-tools.rectangle = newTool("Rectangle")
+tools.Rectangle = Tool:extend("Rectangle"):with(TilePanelMx)
 
-function tools.rectangle.ondisabled()
-    app.autotileEditO = nil
+function tools.Rectangle:panel()
+    self:tilePanel()
 end
 
-function tools.rectangle.panel()
-    tilePanel()
-end
-
-function tools.rectangle.draw()
+function tools.Rectangle:draw()
     local ti, tj = mouseOverTile()
 
     if not app.rectangleI then
@@ -187,7 +171,7 @@ function tools.rectangle.draw()
     end
 end
 
-function tools.rectangle.mousepressed(x, y, button)
+function tools.Rectangle:mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
 
     if button == 1 or button == 2 then
@@ -197,7 +181,7 @@ function tools.rectangle.mousepressed(x, y, button)
     end
 end
 
-function tools.rectangle.mousereleased(x, y, button)
+function tools.Rectangle:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
     if ti and app.rectangleI then
@@ -234,71 +218,76 @@ end
 
 -- Selection
 
-tools.select = newTool("Selection")
+tools.Select = Tool:extend("Selection")
 
-function tools.select.ondisabled()
+function tools.Select:disabled()
     if project.selection then
         placeSelection()
     end
 end
 
-function tools.select.draw()
+function tools.Select:draw()
     local ti, tj = mouseOverTile()
 
-    if not app.selectTileI then
+    if not self.selectTileI then
         drawMouseOverTile()
     elseif ti then
-        local i, j, w, h = rectCont2Tiles(ti, tj, app.selectTileI, app.selectTileJ)
+        local i, j, w, h = rectCont2Tiles(ti, tj, self.selectTileI, self.selectTileJ)
         drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
 
-function tools.select.mousepressed(x, y, button)
+function tools.Select:mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
     local mx, my = fromScreen(x, y)
 
     if button == 1 then
         if not project.selection then
             if ti then
-                app.selectTileI, app.selectTileJ = ti, tj
+                self.selectTileI, self.selectTileJ = ti, tj
             end
         else
-            project.selectionMoveX, project.selectionMoveY = mx - project.selection.x, my - project.selection.y
-            project.selectionStartX, project.selectionStartY = project.selection.x, project.selection.y
+            self.selectionMoveX,  self.selectionMoveY  = mx - project.selection.x, my - project.selection.y
+            self.selectionStartX, self.selectionStartY = project.selection.x, project.selection.y
         end
     end
 end
 
-function tools.select.mousereleased(x, y, button)
+function tools.Select:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
-    if ti and app.selectTileI then
+    if ti and self.selectTileI then
         placeSelection()
 
-        select(ti, tj, app.selectTileI, app.selectTileJ)
+        select(ti, tj, self.selectTileI, self.selectTileJ)
     end
 
-    if project.selection and project.selectionMoveX then
-        if project.selection.x == project.selectionStartX and project.selection.y == project.selectionStartY then
+    if project.selection and self.selectionMoveX then
+        if project.selection.x == self.selectionStartX and project.selection.y == self.selectionStartY then
             placeSelection()
         end
     end
 
-    app.selectTileI, app.selectTileJ = nil, nil
-    project.selectionMoveX, project.selectionMoveY = nil, nil
+    self.selectTileI,    self.selectTileJ    = nil, nil
+    self.selectionMoveX, self.selectionMoveY = nil, nil
+end
+
+function tools.Select:mousemoved(x, y, dx, dy)
+    local mx, my = fromScreen(x, y)
+
+    if self.selectionMoveX and project.selection then
+        project.selection.x = roundto8(mx - self.selectionMoveX)
+        project.selection.y = roundto8(my - self.selectionMoveY)
+    end
 end
 
 
 
 -- Camera Trigger
 
-tools.camtrigger = newTool("Camera Trigger")
+tools.Camtrigger = Tool:extend("Camera Trigger")
 
-function tools.camtrigger.ondisabled()
-    app.selectedCamtriggerN = nil
-end
-
-function tools.camtrigger.panel()
+function tools.Camtrigger:panel()
     ui:layoutRow("dynamic", 25*global_scale, 1)
     app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool",app.showCameraTriggers)
     if selectedTrigger() then
@@ -318,18 +307,18 @@ function tools.camtrigger.panel()
     end
 end
 
-function tools.camtrigger.draw()
+function tools.Camtrigger:draw()
     local ti, tj = mouseOverTile()
 
-    if not app.camtriggerI then
+    if not self.camtriggerI then
         drawMouseOverTile({1,0.75,0})
     elseif ti then
-        local i, j, w, h = rectCont2Tiles(ti, tj, app.camtriggerI, app.camtriggerJ)
+        local i, j, w, h = rectCont2Tiles(ti, tj, self.camtriggerI, self.camtriggerJ)
         drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {1,0.75,0}, false)
     end
 end
 
-function tools.camtrigger.mousepressed(x, y, button)
+function tools.Camtrigger:mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
     if not ti then return end
 
@@ -340,17 +329,17 @@ function tools.camtrigger.mousepressed(x, y, button)
                 app.selectedCamtriggerN = hovered
             end
             if selectedTrigger() then
-                app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
+                self.camtriggerMoveI, self.camtriggerMoveJ = ti, tj
             end
         else
-            local hovered=hoveredTriggerN()
+            local hovered = hoveredTriggerN()
             if selectedTrigger() then
-                app.selectedCamtriggerN=false
+                app.selectedCamtriggerN = nil
                 --deselect
             elseif hovered then
-                app.selectedCamtriggerN=hovered
+                app.selectedCamtriggerN = hovered
             else
-                app.camtriggerI, app.camtriggerJ = ti, tj
+                self.camtriggerI, self.camtriggerJ = ti, tj
             end
         end
     elseif button == 2 and love.keyboard.isDown("lctrl") then
@@ -358,33 +347,33 @@ function tools.camtrigger.mousepressed(x, y, button)
             app.selectedCamtriggerN = hovered
         end
         if selectedTrigger() then
-            app.camtriggerSideI = sign(ti - app.selected_camtrigger.x - app.selected_camtrigger.w/2)
-            app.camtriggerSideJ = sign(tj - app.selected_camtrigger.y - app.selected_camtrigger.h/2)
+            self.camtriggerSideI = sign(ti - selectedTrigger().x - selectedTrigger().w/2)
+            self.camtriggerSideJ = sign(tj - selectedTrigger().y - selectedTrigger().h/2)
         end
         -- app.camtriggerSideI,app.camtriggerSideJ=ti,tj
     end
 end
 
-function tools.camtrigger.mousemoved(x,y)
+function tools.Camtrigger:mousemoved(x,y)
     local ti,tj = mouseOverTile()
     if not ti then return end
 
     local trigger = selectedTrigger()
 
-    if app.camtriggerMoveI then
-        trigger.x=trigger.x+(ti-app.camtriggerMoveI)
-        trigger.y=trigger.y+(tj-app.camtriggerMoveJ)
-        app.camtriggerMoveI,app.camtriggerMoveJ=ti,tj
+    if self.camtriggerMoveI then
+        trigger.x=trigger.x+(ti-self.camtriggerMoveI)
+        trigger.y=trigger.y+(tj-self.camtriggerMoveJ)
+        self.camtriggerMoveI,self.camtriggerMoveJ=ti,tj
     end
-    if app.camtriggerSideI then
-        if app.camtriggerSideI < 0 then
+    if self.camtriggerSideI then
+        if self.camtriggerSideI < 0 then
             local newx = math.min(ti, trigger.x + trigger.w-1)
             trigger.w = trigger.x - newx + trigger.w
             trigger.x = newx
         else
             trigger.w = math.max(ti - trigger.x + 1, 1)
         end
-        if app.camtriggerSideJ < 0 then
+        if self.camtriggerSideJ < 0 then
             local newy = math.min(tj, trigger.y + trigger.h - 1)
             trigger.h = trigger.y - newy + trigger.h
             trigger.y = newy
@@ -394,29 +383,29 @@ function tools.camtrigger.mousemoved(x,y)
     end
 end
 
-function tools.camtrigger.mousereleased(x, y, button)
+function tools.Camtrigger:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
-    if ti and app.camtriggerI then
+    if ti and self.camtriggerI then
         local room = activeRoom()
-        local i0, j0, w, h = rectCont2Tiles(app.camtriggerI, app.camtriggerJ, ti, tj)
+        local i0, j0, w, h = rectCont2Tiles(self.camtriggerI, self.camtriggerJ, ti, tj)
         local trigger={x=i0,y=j0,w=w,h=h,off_x="0",off_y="0"}
         table.insert(room.camtriggers, trigger)
         app.selectedCamtriggerN = #room.camtriggers
     end
 
-    app.camtriggerI, app.camtriggerJ = nil, nil
-    app.camtriggerMoveI,app.camtriggerMoveJ=nil, nil
-    app.camtriggerSideI,app.camtriggerSideJ=nil, nil
+    self.camtriggerI,     self.camtriggerJ     = nil, nil
+    self.camtriggerMoveI, self.camtriggerMoveJ = nil, nil
+    self.camtriggerSideI, self.camtriggerSideJ = nil, nil
 end
 
 
 
 -- Room Properties
 
-tools.room = newTool("Room")
+tools.Room = Tool:extend("Room")
 
-function tools.room.panel()
+function tools.Room:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
     if ui:button("New Room") then
         local x, y = fromScreen(app.W/3, app.H/3)
@@ -480,9 +469,9 @@ end
 
 
 
-tools.project = newTool("Project")
+tools.Project = Tool:extend("Project")
 
-function tools.project.panel()
+function tools.Project:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 3)
     if ui:button("Open") then
         openFile()
