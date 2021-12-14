@@ -204,6 +204,7 @@ function love.textinput(text)
     if ui:textinput(text) then
         return
     end
+
     -- tool switching with 12...9
     for i = 1, math.min(#toolslist,9) do
         if text==tostring(i) then

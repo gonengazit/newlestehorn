@@ -163,10 +163,10 @@ end
 function tools.Rectangle:draw()
     local ti, tj = mouseOverTile()
 
-    if not app.rectangleI then
+    if not self.rectangleI then
         drawMouseOverTile(nil, app.currentTile)
     elseif ti then
-        local i, j, w, h = rectCont2Tiles(ti, tj, app.rectangleI, app.rectangleJ)
+        local i, j, w, h = rectCont2Tiles(ti, tj, self.rectangleI, self.rectangleJ)
         drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
@@ -176,7 +176,7 @@ function tools.Rectangle:mousepressed(x, y, button)
 
     if button == 1 or button == 2 then
         if ti then
-            app.rectangleI, app.rectangleJ = ti, tj
+            self.rectangleI, self.rectangleJ = ti, tj
         end
     end
 end
@@ -184,7 +184,7 @@ end
 function tools.Rectangle:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
-    if ti and app.rectangleI then
+    if ti and self.rectangleI then
         local room = activeRoom()
 
         local n = app.currentTile
@@ -192,7 +192,7 @@ function tools.Rectangle:mousereleased(x, y, button)
             n = 0
         end
 
-        local i0, j0, w, h = rectCont2Tiles(app.rectangleI, app.rectangleJ, ti, tj)
+        local i0, j0, w, h = rectCont2Tiles(self.rectangleI, self.rectangleJ, ti, tj)
         for i = i0, i0 + w - 1 do
             for j = j0, j0 + h - 1 do
                 room.data[i][j] = n
@@ -211,7 +211,7 @@ function tools.Rectangle:mousereleased(x, y, button)
         end
     end
 
-    app.rectangleI, app.rectangleJ = nil, nil
+    self.rectangleI, self.rectangleJ = nil, nil
 end
 
 
