@@ -36,7 +36,8 @@ function love.mousepressed(x, y, button, istouch, presses)
         end
     end
 
-    if button == 3 then
+    if button == 3
+    or button == 1 and love.keyboard.isDown("lshift") then
         app.camMoveX, app.camMoveY = fromScreen(x, y)
     end
 
