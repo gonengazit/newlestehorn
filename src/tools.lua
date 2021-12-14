@@ -482,4 +482,20 @@ function tools.Project:panel()
     if ui:button("Save as...") then
         saveFile(true)
     end
+
+    ui:layoutRow("dynamic", 25*global_scale, {0.8, 0.1, 0.1})
+    ui:label("Room parameter names:")
+    if ui:button("+") then
+        table.insert(project.param_names, "")
+    end
+    if ui:button("-") then
+        table.remove(project.param_names, #project.param_names)
+    end
+    for i = 1, #project.param_names do
+        ui:layoutRow("dynamic", 25*global_scale, 1)
+
+        local t = {value=project.param_names[i]}
+        ui:edit("field", t)
+        project.param_names[i] = t.value
+    end
 end
