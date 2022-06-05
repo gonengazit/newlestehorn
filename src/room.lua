@@ -34,6 +34,14 @@ function drawRoom(room, p8data, highlight)
         end
     end
 
+    -- draw shapes bigger than 1x1 (like spinners)
+    for i = 0, room.w - 1 do
+        for j = 0, room.h - 1 do
+            local n = room.data[i][j]
+            drawCompositeShape(n,room.x+8*i,room.y+8*j)
+        end
+    end
+
     if highlight then
         drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
     end

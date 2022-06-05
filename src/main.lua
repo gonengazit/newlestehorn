@@ -111,7 +111,9 @@ function drawMouseOverTile(col, tile)
     if ti then
         love.graphics.setColor(1, 1, 1)
         if tile then
-            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], activeRoom().x + ti*8, activeRoom().y + tj*8)
+            local x, y=activeRoom().x + ti*8, activeRoom().y + tj*8
+            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
+            drawCompositeShape(tile,x,y)
         end
 
         love.graphics.setColor(col)
@@ -132,6 +134,30 @@ function drawColoredRect(room, x, y, w, h, col, filled)
         love.graphics.rectangle("fill", room.x + x + 0.5 / app.camScale,
                                         room.y + y + 0.5 / app.camScale,
                                         w, h)
+    end
+end
+
+function drawCompositeShape(n, x, y)
+    if not p8data.quads[n] then print(n) end
+    love.graphics.setColor(1, 1, 1, 0.35)
+    local dx,dy
+    local shape={{76,77},{92,93}}
+    for oy=1,#shape do
+        for ox=1,#shape do
+            if shape[oy][ox]==n then
+                dx,dy=ox,oy
+            end
+        end
+    end
+    if dx then
+        for oy=1,#shape do
+            for ox=1,#shape do
+                local m=shape[oy][ox]
+                if m~= 0 then
+                    love.graphics.draw(p8data.spritesheet, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
+                end
+            end
+        end
     end
 end
 
