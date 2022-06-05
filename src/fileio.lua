@@ -133,6 +133,7 @@ function loadpico8(filename)
 
                 data.param_names = env.param_names
                 data.autotiles = env.autotiles
+                data.composite_shapes=env.composite_shapes
             end
         end
     end
@@ -256,6 +257,7 @@ function openPico8(filename)
     --store names of parameters, in order to show in the ui
     project.param_names = p8data.param_names
     project.autotiles = p8data.autotiles or defaultAutotiles()
+    project.composite_shapes = p8data.composite_shapes
 
     updateAutotiles()
 

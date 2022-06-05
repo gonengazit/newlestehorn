@@ -62,6 +62,7 @@ function newProject()
         selectedCamtriggerN=nil,
         param_names = {},
         autotiles = {},
+        composite_shapes={}
     }
 
     -- basic p8data with blank spritesheet
@@ -137,22 +138,27 @@ function drawColoredRect(room, x, y, w, h, col, filled)
     end
 end
 
-function drawCompositeShape(n, x, y)
-    if not p8data.quads[n] then print(n) end
-    love.graphics.setColor(1, 1, 1, 0.35)
-    local dx,dy
-    local shape={{76,77},{92,93}}
-    for oy=1,#shape do
-        for ox=1,#shape do
-            if shape[oy][ox]==n then
-                dx,dy=ox,oy
+function getCompositeShape(n)
+    -- get composite shape that n should draw, and the offset
+    -- returns shape,dx,dy
+    for _, shape in ipairs(project.composite_shapes) do
+        for oy=1,#shape do
+            for ox=1,#shape[oy] do
+                if shape[oy][ox]==n then
+                    return shape,ox,oy
+                end
             end
         end
     end
-    if dx then
+end
+function drawCompositeShape(n, x, y)
+    if not p8data.quads[n] then print(n) end
+    local shape,dx,dy=getCompositeShape(n)
+    love.graphics.setColor(1, 1, 1, 0.35)
+    if shape then
         for oy=1,#shape do
-            for ox=1,#shape do
-                local m=shape[oy][ox]
+            for ox=1,#shape[oy] do
+                local m=math.abs(shape[oy][ox]) --negative sprite is drawn, but not used as a source for the shape
                 if m~= 0 then
                     love.graphics.draw(p8data.spritesheet, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
                 end
