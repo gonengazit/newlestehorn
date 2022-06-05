@@ -18,8 +18,10 @@ psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 function newProject()
     -- this is UI things
     love.graphics.setNewFont(12*global_scale)
+    local w,h=love.graphics.getDimensions()
     app = {
-        W, H = love.graphics.getDimensions(),
+        W=w,
+        H=h,
         camX = 0,
         camY = 0,
         camScale = 2, --based on camScaleSetting
