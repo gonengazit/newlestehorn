@@ -60,9 +60,11 @@ function newProject()
         rooms = {},
         selection = nil,
         selectedCamtriggerN=nil,
-        param_names = {},
-        autotiles = {},
-        composite_shapes={}
+        conf = {
+			param_names = {},
+			autotiles = {},
+			composite_shapes={},
+		},
     }
 
     -- basic p8data with blank spritesheet
@@ -141,7 +143,7 @@ end
 function getCompositeShape(n)
     -- get composite shape that n should draw, and the offset
     -- returns shape,dx,dy
-    for _, shape in ipairs(project.composite_shapes) do
+    for _, shape in ipairs(project.conf.composite_shapes) do
         for oy=1,#shape do
             for ox=1,#shape[oy] do
                 if shape[oy][ox]==n then

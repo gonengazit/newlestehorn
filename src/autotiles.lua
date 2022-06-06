@@ -14,7 +14,7 @@ function updateAutotiles()
         project.autotilet_strict[n] = {}
     end
 
-    for k, auto in pairs(project.autotiles) do
+    for k, auto in pairs(project.conf.autotiles) do
         for o, n in pairs(auto) do
             project.autotilet[n][k] = true
             if o >= 0 and o < 16 then
@@ -122,7 +122,7 @@ function autotile(room, i, j, k)
                  + b1(matchAutotile(room, i - 1, j)[k]) * 2
                  + b1(matchAutotile(room, i, j + 1)[k]) * 4
                  + b1(matchAutotile(room, i, j - 1)[k]) * 8
-        room.data[i][j] = project.autotiles[k][nb]
+        room.data[i][j] = project.conf.autotiles[k][nb]
     end
 end
 
