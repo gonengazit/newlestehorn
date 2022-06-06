@@ -156,13 +156,13 @@ end
 function drawCompositeShape(n, x, y)
     if not p8data.quads[n] then print(n) end
     local shape,dx,dy=getCompositeShape(n)
-    love.graphics.setColor(1, 1, 1, 0.35)
+    love.graphics.setColor(1, 1, 1, 0.5)
     if shape then
         for oy=1,#shape do
             for ox=1,#shape[oy] do
                 local m=math.abs(shape[oy][ox]) --negative sprite is drawn, but not used as a source for the shape
                 if m~= 0 then
-                    love.graphics.draw(p8data.spritesheet, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
+                    love.graphics.draw(p8data.spritesheet_noblack, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
                 end
             end
         end

@@ -95,6 +95,11 @@ function loadpico8(filename)
             data.quads[i + j*16] = love.graphics.newQuad(i*8, j*8, 8, 8, data.spritesheet:getDimensions())
         end
     end
+    
+    -- extra spritesheet with transparent black
+    local spritesheet_data_copy = spritesheet_data:clone()
+    spritesheet_data_copy:mapPixel(function(x, y, r, g, b, a) if r == 0 and g == 0 and b == 0 then return 0, 0, 0, 0 else return r, g, b, a end end)
+    data.spritesheet_noblack = love.graphics.newImage(spritesheet_data_copy)
 
     data.map = {}
     for i = 0, 127  do

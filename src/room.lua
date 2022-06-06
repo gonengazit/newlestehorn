@@ -17,7 +17,21 @@ function newRoom(x, y, w, h)
 end
 
 function drawRoom(room, p8data, highlight)
+    --background color
+    love.graphics.setColor(0.133, 0.133, 0.133)
+    love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
+    
     love.graphics.setColor(1, 1, 1)
+    
+    -- draw shapes bigger than 1x1 (like spinners)
+    for i = 0, room.w - 1 do
+        for j = 0, room.h - 1 do
+            local n = room.data[i][j]
+            drawCompositeShape(n,room.x+8*i,room.y+8*j)
+        end
+    end
+    
+    -- tiles
     for i = 0, room.w - 1 do
         for j = 0, room.h - 1 do
             local n = room.data[i][j]
@@ -27,18 +41,8 @@ function drawRoom(room, p8data, highlight)
 
                 if n~= 0 then
                     love.graphics.draw(p8data.spritesheet, p8data.quads[n], room.x + i*8, room.y + j*8)
-                else
-                    love.graphics.draw(bgtileIm, room.x + i*8, room.y + j*8)
                 end
             end
-        end
-    end
-
-    -- draw shapes bigger than 1x1 (like spinners)
-    for i = 0, room.w - 1 do
-        for j = 0, room.h - 1 do
-            local n = room.data[i][j]
-            drawCompositeShape(n,room.x+8*i,room.y+8*j)
         end
     end
 
