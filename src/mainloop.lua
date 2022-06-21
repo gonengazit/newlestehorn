@@ -80,8 +80,6 @@ function love.load(args)
     newProject()
     pushHistory()
 
-    -- openPico8("test.p8")
-
     checkmarkIm=love.graphics.newImage("checkmark.png")
     checkmarkWithBg=love.graphics.newCanvas(checkmarkIm:getWidth()*5/4,checkmarkIm:getHeight()*5/4)
     love.graphics.setCanvas(checkmarkWithBg)

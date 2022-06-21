@@ -95,6 +95,11 @@ function loadpico8(filename)
             data.quads[i + j*16] = love.graphics.newQuad(i*8, j*8, 8, 8, data.spritesheet:getDimensions())
         end
     end
+    
+    -- extra spritesheet with transparent black
+    local spritesheet_data_copy = spritesheet_data:clone()
+    spritesheet_data_copy:mapPixel(function(x, y, r, g, b, a) if r == 0 and g == 0 and b == 0 then return 0, 0, 0, 0 else return r, g, b, a end end)
+    data.spritesheet_noblack = love.graphics.newImage(spritesheet_data_copy)
 
     data.map = {}
     for i = 0, 127  do
@@ -118,21 +123,22 @@ function loadpico8(filename)
 
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
-
+	
+	
+	data.conf = {}
+	
     -- get configuration code, if exists
     local evhconf = string.match(code, "%-%-@conf([^@]+)%-%-@")
     if evhconf then
         evhconf = string.match(evhconf, "%-%-%[%[([^@]+)%]%]")
         if evhconf then
+            
             local chunk, err = loadstring(evhconf)
 
             if not err then
-                local env = {}
-                chunk = setfenv(chunk, env)
+				-- this reads contents into data.conf
+                chunk = setfenv(chunk, data.conf)
                 chunk()
-
-                data.param_names = env.param_names
-                data.autotiles = env.autotiles
             end
         end
     end
@@ -142,7 +148,7 @@ function loadpico8(filename)
     if evh then
         -- get names of parameters from commented string
         local param_string=evh:match("%-%-\"x,y,w,h,exit_dirs,?(.-)\"")
-        data.param_names = data.param_names or split(param_string or "")
+        data.conf.param_names = data.conf.param_names or split(param_string or "")
 
         -- cut out comments - loadstring doesn't parse them for some reason
         evh = string.gsub(evh, "%-%-[^\n]*\n", "")
@@ -158,7 +164,7 @@ function loadpico8(filename)
         end
     end
     -- parameter names default to none
-    data.param_names = data.param_names or {}
+    data.conf.param_names = data.conf.param_names or {}
 
     mapdata = mapdata or {}
 
@@ -254,8 +260,7 @@ function openPico8(filename)
     p8data = loadpico8(filename)
     project.rooms = p8data.rooms
     --store names of parameters, in order to show in the ui
-    project.param_names = p8data.param_names
-    project.autotiles = p8data.autotiles or defaultAutotiles()
+    project.conf = p8data.conf
 
     updateAutotiles()
 
@@ -324,10 +329,10 @@ function savePico8(filename)
             end
         end
     end
+    
     -- map section
 
     -- start out by making sure both sections exist, and are sized to max size
-
 
     local gfxexist, mapexist=false,false
     for k = 1, #out do
@@ -397,8 +402,11 @@ function savePico8(filename)
     end
 
     -- rewrite configuration block
-    local confcode = "param_names = "..dumplualine(project.param_names).."\nautotiles = "..dumplualine(project.autotiles)
-    cartdata = cartdata:gsub("%-%-@conf.-%-%-%[%[.-%]%]", "--@conf\n--[["..confcode.."\n]]")
+    local confcode = ""
+    for key, value in pairs(project.conf) do
+		confcode = confcode .. key .. "=" .. dumplualine(value) .. "\n"
+    end
+    cartdata = cartdata:gsub("%-%-@conf.-%-%-%[%[.-%]%]", "--@conf\n--[[\n"..confcode.."]]")
 
     -- write to levels table without overwriting the code
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")

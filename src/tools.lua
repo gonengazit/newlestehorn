@@ -40,16 +40,16 @@ function TilePanelMx:tilePanel()
                 if self.autotileEditO then
                     if app.autotile then
                         if self.autotileEditO >= 16 and n == 0 then
-                            project.autotiles[app.autotile][self.autotileEditO] = nil
+                            project.conf.autotiles[app.autotile][self.autotileEditO] = nil
                         else
-                            project.autotiles[app.autotile][self.autotileEditO] = n
+                            project.conf.autotiles[app.autotile][self.autotileEditO] = n
                         end
                     end
 
                     updateAutotiles()
 
                     self.autotileEditO = nil
-                    app.currentTile = project.autotiles[app.autotile][15]
+                    app.currentTile = project.conf.autotiles[app.autotile][15]
                 else
                     app.currentTile = n
                     app.autotile = nil
@@ -64,13 +64,13 @@ function TilePanelMx:tilePanel()
     ui:spacing(1)
     if ui:button("New Autotile") then
         local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-        table.insert(project.autotiles, auto)
+        table.insert(project.conf.autotiles, auto)
 
         updateAutotiles()
     end
 
-    ui:layoutRow("static", 8*tms, 8*tms, #project.autotiles)
-    for k, auto in ipairs(project.autotiles) do
+    ui:layoutRow("static", 8*tms, 8*tms, #project.conf.autotiles)
+    for k, auto in ipairs(project.conf.autotiles) do
         if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
             app.autotile = k
@@ -84,7 +84,7 @@ function TilePanelMx:tilePanel()
         ui:label("Tileset: (click to edit)")
         ui:spacing(1)
         if ui:button("Delete Autotile") then
-            table.remove(project.autotiles, app.autotile)
+            table.remove(project.conf.autotiles, app.autotile)
 
             updateAutotiles()
 
@@ -93,7 +93,7 @@ function TilePanelMx:tilePanel()
     end
 
     -- check for missing autotile! can happen on undo/redo
-    if not project.autotiles[app.autotile] then
+    if not project.conf.autotiles[app.autotile] then
         app.autotile = nil
     end
 
@@ -102,7 +102,7 @@ function TilePanelMx:tilePanel()
             ui:layoutRow("static", 8*tms, 8*tms, 16)
             for i = 1, #autolayout[r] do
                 local o = autolayout[r][i]
-                if tileButton(project.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
+                if tileButton(project.conf.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
                     self.autotileEditO = o
                 end
             end
@@ -428,7 +428,7 @@ function tools.Room:panel()
 
     local room = activeRoom()
     if room then
-        local param_n = math.max(#project.param_names,#room.params)
+        local param_n = math.max(#project.conf.param_names,#room.params)
 
         local x,y=div8(room.x),div8(room.y)
         local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
@@ -458,7 +458,7 @@ function tools.Room:panel()
 
         for i=1, param_n do
             ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
-            ui:label(project.param_names[i] or "")
+            ui:label(project.conf.param_names[i] or "")
 
             local t = {value=room.params[i] or 0}
             ui:edit("field", t)
@@ -486,16 +486,16 @@ function tools.Project:panel()
     ui:layoutRow("dynamic", 25*global_scale, {0.8, 0.1, 0.1})
     ui:label("Room parameter names:")
     if ui:button("+") then
-        table.insert(project.param_names, "")
+        table.insert(project.conf.param_names, "")
     end
     if ui:button("-") then
-        table.remove(project.param_names, #project.param_names)
+        table.remove(project.conf.param_names, #project.param_names)
     end
-    for i = 1, #project.param_names do
+    for i = 1, #project.conf.param_names do
         ui:layoutRow("dynamic", 25*global_scale, 1)
 
-        local t = {value=project.param_names[i]}
+        local t = {value=project.conf.param_names[i]}
         ui:edit("field", t)
-        project.param_names[i] = t.value
+        project.conf.param_names[i] = t.value
     end
 end
