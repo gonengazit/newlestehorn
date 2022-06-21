@@ -259,8 +259,11 @@ function openPico8(filename)
     -- loads into global p8data as well, for spritesheet
     p8data = loadpico8(filename)
     project.rooms = p8data.rooms
-    --store names of parameters, in order to show in the ui
-    project.conf = p8data.conf
+
+    for k, v in pairs(p8data.conf) do
+        project.conf[k] = v
+    end
+    print(dumplualine(project.conf))
 
     updateAutotiles()
 

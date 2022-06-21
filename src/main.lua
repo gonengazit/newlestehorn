@@ -59,11 +59,11 @@ function newProject()
     project = {
         rooms = {},
         selection = nil,
-        selectedCamtriggerN=nil,
+        selectedCamtriggerN = nil,
         conf = {
 			param_names = {},
 			autotiles = {},
-			composite_shapes={},
+			composite_shapes = {},
 		},
     }
 
