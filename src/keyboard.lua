@@ -165,7 +165,7 @@ function love.keypressed(key, scancode, isrepeat)
         end
     else -- if ctrl is not down
         if key == "delete" and love.keyboard.isDown("lshift") then
-            if app.room then
+            if activeRoom() then
                 table.remove(project.rooms, app.room)
                 if not activeRoom() then
                     app.room = #project.rooms

@@ -418,7 +418,7 @@ function tools.Room:panel()
         app.roomAdded = true
     end
     if ui:button("Delete Room") then
-        if app.room then
+        if activeRoom() then
             table.remove(project.rooms, app.room)
             if not activeRoom() then
                 app.room = #project.rooms

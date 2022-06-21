@@ -3,6 +3,8 @@ function love.mousepressed(x, y, button, istouch, presses)
         return
     end
 
+    local clickedRoom = false
+
     local mx, my = fromScreen(x, y)
     if button == 1 then
         if not app.toolMenuX then
@@ -10,6 +12,8 @@ function love.mousepressed(x, y, button, istouch, presses)
             for i, room in ipairs(project.rooms) do
                 if mx >= room.x and mx <= room.x + room.w*8
                 and my >= room.y and my <= room.y + room.h*8 then
+                    clickedRoom = true
+
                     app.room = i
                     if app.room == oldActiveRoom then
                         break
@@ -22,7 +26,7 @@ function love.mousepressed(x, y, button, istouch, presses)
             end
 
             if love.keyboard.isDown("lalt") then
-                if app.room then
+                if activeRoom() then
                     app.roomMoveX, app.roomMoveY = mx - activeRoom().x, my - activeRoom().y
                 end
                 return
@@ -37,7 +41,7 @@ function love.mousepressed(x, y, button, istouch, presses)
     end
 
     if button == 3
-    or button == 1 and love.keyboard.isDown("lshift") then
+    or button == 1 and (love.keyboard.isDown("lshift") or not clickedRoom) then
         app.camMoveX, app.camMoveY = fromScreen(x, y)
     end
 
