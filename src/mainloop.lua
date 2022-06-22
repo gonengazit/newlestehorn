@@ -58,6 +58,31 @@ end
 
 
 
+-- PLUGINS
+
+function loadPlugins(path)
+    local files = love.filesystem.getDirectoryItems(path)
+    for i, fileName in ipairs(files) do
+        local filePath = path .. "/" .. fileName
+        local info = love.filesystem.getInfo(filePath)
+
+        -- load all .lua files
+        if info.type == "file" then
+            if fileName:match("^.+%.lua$") then
+                -- convert into a path of the form plugins.subdirectory.filename
+                -- as used by require
+                local modulePath = filePath:gsub(".lua", ""):gsub("/", ".")
+                
+                require(modulePath)
+            end
+        elseif info.type == "directory" then
+            loadPlugins(filePath)
+        end
+    end
+end
+
+
+
 -- MAIN LOOP
 
 function love.load(args)
@@ -75,7 +100,7 @@ function love.load(args)
         end
     end
 
-    --p8data = loadpico8(love.filesystem.getSource().."\\celeste.p8")
+    loadPlugins("plugins")
 
     newProject()
     pushHistory()

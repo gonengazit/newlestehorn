@@ -147,6 +147,13 @@ function split(str)
     return tbl
 end
 
+function contains(t, v)
+    for k, w in pairs(t) do
+        if v == w then return true end
+    end
+    return false
+end
+
 function printbg(text, x, y, fgcol, bgcol, centerx, centery)
     local font = love.graphics.getFont()
     local w, h = font:getWidth(text), font:getHeight(text)

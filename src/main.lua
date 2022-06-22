@@ -272,5 +272,4 @@ end
 
 require 'fileio'
 require 'mainloop'
-require 'keyboard'
 require 'mouse'

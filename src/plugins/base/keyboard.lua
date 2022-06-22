@@ -1,6 +1,42 @@
+local keyboard = {}
+
+
+-- base static keyboard shortcut class
+keyboard.Shortcut = class("Shortcut", {mod = {}, key = nil})
+
+function keyboard.Shortcut:checkModifiers()
+    local ctrl  = contains(self.mod, "ctrl")
+    local shift = contains(self.mod, "shift")
+    local alt   = contains(self.mod, "alt")
+
+    return ctrl  == love.keyboard.isDown("lctrl")
+    and    shift == love.keyboard.isDown("lshift")
+    and    alt   == love.keyboard.isDown("lalt")
+end
+
+function keyboard.Shortcut:checkKey(key)
+    return key == self.key
+end
+
+function keyboard.Shortcut:check(key)
+    return self:checkModifiers() and self:checkKey(key)
+end
+
+function keyboard.Shortcut:run()
+end
+
+
+
 function love.keypressed(key, scancode, isrepeat)
     local x, y = love.mouse.getPosition()
     local mx, my = fromScreen(x, y)
+
+    -- generic shortcuts
+    for _, S in pairs(keyboard.Shortcut:subclasses()) do
+        if S:check(key) then
+            S:run()
+        end
+    end
 
     -- shortcuts that work on with a nuklear window active
 
@@ -22,8 +58,6 @@ function love.keypressed(key, scancode, isrepeat)
             end
         end
     end
-
-
 
     if ui:keypressed(key, scancode, isrepeat) then
         return
@@ -67,11 +101,8 @@ function love.keypressed(key, scancode, isrepeat)
     -- non-repeatable global shortcuts
 
     if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
-        -- Ctrl+O
-        if key == "o" then
-            openFile()
         -- Ctrl+R
-        elseif key == "r" then
+        if key == "r" then
             if app.openFileName then
                 local data = loadpico8(app.openFileName)
                 p8data.spritesheet = data.spritesheet
@@ -226,3 +257,7 @@ function love.textinput(text)
         app.showToolPanel = not app.showToolPanel
     end
 end
+
+
+
+return keyboard
