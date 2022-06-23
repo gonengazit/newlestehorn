@@ -38,7 +38,7 @@ Go to the Releases section at the top of the page.
 * **Ctrl+S**, **Ctrl+Shift+S** - **Save/Save As**.
 * **Ctrl+R** - **reload** the spritesheet from the currently opened cart.
 * **Ctrl+Z**, **Ctrl+Shift+Z** - **Undo/Redo**. Can undo pretty much anything (including something like deleting a room).
-* **Middle click** pans camera, **Scroll** zooms in/out.
+* **Middle click** or  **Shift+Left click** pans camera, **Scroll** zooms in/out.
 * **N** - **create** new room.
 * **Alt+Left/Right Mouse Button** - **move** and **resize** rooms.
 * **Up/Down, Ctrl+Up/Down** - **switch** between rooms and **reorder** them (can also click to switch).
