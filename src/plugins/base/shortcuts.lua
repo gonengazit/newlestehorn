@@ -1,4 +1,5 @@
-local keyboard = require "plugins.base.keyboard"
+local keyboard = require 'plugins.base.keyboard'
+local tools = require 'plugins.base.tools'
 
 local shortcuts = {}
 
@@ -220,7 +221,10 @@ end
 -- NAVIGATION
 
 -- this one's a bit more hardcodey for now
-shortcuts.SwitchRoom = keyboard.Shortcut:extend("SwitchRoom", {input = ""})
+shortcuts.SwitchRoom = keyboard.Shortcut:extend("SwitchRoom", {input = "", repeatable = true})
+function shortcuts.SwitchRoom:checkModifiers()
+    return not love.keyboard.isDown("lctrl") and not love.keyboard.isDown("lalt")
+end
 function shortcuts.SwitchRoom:checkKey(key)
     return key == "up" or key == "down"
 end
@@ -230,7 +234,7 @@ function shortcuts.SwitchRoom:run(key)
         local n2 = key == "down" and app.room + 1 or app.room - 1
 
         if project.rooms[n1] and project.rooms[n2] then
-            if love.keyboard.isDown("lctrl") then
+            if love.keyboard.isDown("lshift") then
                 -- swap
                 local tmp = project.rooms[n1]
                 project.rooms[n1] = project.rooms[n2]
@@ -246,15 +250,15 @@ end
 shortcuts.SwitchTool = keyboard.Shortcut:extend("SwitchTool", {input = ""})
 function shortcuts.SwitchTool:onKeypressed(key)
     if self:checkModifiers() then
-        for i = 1, math.min(#toolslist, 9) do
+        for i = 1, math.min(#tools.Tool.list, 9) do
             if key == tostring(i) then
-                switchTool(tools[toolslist[i]])
+                switchTool(tools.Tool.list[i])
             end
         end
     end
 end
 
-shortcuts.MoveSelection = keyboard.Shortcut:extend("MoveSelection", {input = ""})
+shortcuts.MoveSelection = keyboard.Shortcut:extend("MoveSelection", {input = "", repeatable = true})
 function shortcuts.MoveSelection:onKeypressed(key)
     if self:checkModifiers() then
         local dx, dy = 0, 0

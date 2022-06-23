@@ -1,3 +1,5 @@
+local tools = require 'plugins.base.tools'
+
 -- UI things
 
 function tileButton(n, highlight, autotileOverlayO)
@@ -178,12 +180,12 @@ function love.update(dt)
         local tpw = 16*8*tms + 18
         if ui:windowBegin("Tool panel", app.W - tpw, 0, tpw, app.H) then
             -- tools list
-            for i = 0, #toolslist - 1 do
+            for i = 0, #tools.Tool.list - 1 do
                 if i%4 == 0 then
                     ui:layoutRow("dynamic", 25*global_scale, 4)
                 end
 
-                local toolClass = tools[toolslist[1 + i]]
+                local toolClass = tools.Tool.list[1 + i]
 
                 if ui:selectable(toolClass.name, app.tool:instanceOf(toolClass)) then
                     switchTool(toolClass)

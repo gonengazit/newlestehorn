@@ -1,3 +1,5 @@
+local tools = require 'plugins.base.tools'
+
 function newRoom(x, y, w, h)
     local room = {
         x = x or 0,

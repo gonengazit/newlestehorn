@@ -3,10 +3,10 @@ filedialog = require 'filedialog'
 serpent = require 'serpent'
 class = require '30log'
 
+local tools = require 'plugins.base.tools'
 require 'util'
 require 'room'
 require 'autotiles'
-require 'tools'
 
 
 
@@ -18,16 +18,16 @@ psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 function newProject()
     -- this is UI things
     love.graphics.setNewFont(12*global_scale)
-    local w,h=love.graphics.getDimensions()
+    local w , h = love.graphics.getDimensions()
     app = {
-        W=w,
-        H=h,
+        W = w,
+        H = h,
         camX = 0,
         camY = 0,
         camScale = 2, --based on camScaleSetting
         camScaleSetting = 1, -- 0, 1, 2 is 1x, 2x, 3x etc, -1, -2, -3 is 0.5x, 0.25x, 0.125x
         room = nil,
-        suppressMouse = false, -- disables mouse-driven editing in love.update() when a click has triggered different action, reset on release
+        suppressMouse = false, -- disables mouse-driven editing in love.update() when a click has triggered a different action, reset on release
         tool = tools.Brush:new(),
         currentTile = 0,
         message = nil,

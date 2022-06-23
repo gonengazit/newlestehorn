@@ -1,21 +1,20 @@
-tools = {}
-
--- this defines the order of tools on the panel
-toolslist = {"Brush", "Rectangle", "Select", "Camtrigger", "Room", "Project"}
+local tools = {}
 
 
 
-Tool = class("Tool")
+tools.Tool = class("Tool", {list = {}})
 
-function Tool:disabled() end
-function Tool:panel() end
-function Tool:update() end
-function Tool:draw() end
-function Tool:mousepressed() end
-function Tool:mousereleased() end
-function Tool:mousemoved() end
+function tools.Tool:disabled() end
+function tools.Tool:panel() end
+function tools.Tool:update() end
+function tools.Tool:draw() end
+function tools.Tool:mousepressed() end
+function tools.Tool:mousereleased() end
+function tools.Tool:mousemoved() end
 
-
+function tools.Tool:registerTool(T)
+    table.insert(self.list, T)
+end
 
 -- tile panel mixin
 
@@ -24,7 +23,7 @@ local autolayout = {{0,  1,  3,  2,  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
                     {12, 13, 15, 14, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51},
                     {8,  9,  11, 10, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63}}
 
-TilePanelMx = {}
+local TilePanelMx = {}
 
 function TilePanelMx:tilePanel()
     -- tiles
@@ -117,7 +116,8 @@ end
 
 -- Brush
 
-tools.Brush = Tool:extend("Brush"):with(TilePanelMx)
+tools.Brush = tools.Tool:extend("Brush"):with(TilePanelMx)
+tools.Tool:registerTool(tools.Brush)
 
 function tools.Brush:panel()
     self:tilePanel()
@@ -154,7 +154,8 @@ end
 
 -- Rectangle
 
-tools.Rectangle = Tool:extend("Rectangle"):with(TilePanelMx)
+tools.Rectangle = tools.Tool:extend("Rectangle"):with(TilePanelMx)
+tools.Tool:registerTool(tools.Rectangle)
 
 function tools.Rectangle:panel()
     self:tilePanel()
@@ -218,7 +219,8 @@ end
 
 -- Selection
 
-tools.Select = Tool:extend("Selection")
+tools.Select = tools.Tool:extend("Selection")
+tools.Tool:registerTool(tools.Select)
 
 function tools.Select:disabled()
     if project.selection then
@@ -285,11 +287,12 @@ end
 
 -- Camera Trigger
 
-tools.Camtrigger = Tool:extend("Camera Trigger")
+tools.Camtrigger = tools.Tool:extend("Camera Trigger")
+tools.Tool:registerTool(tools.Camtrigger)
 
 function tools.Camtrigger:panel()
     ui:layoutRow("dynamic", 25*global_scale, 1)
-    app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool",app.showCameraTriggers)
+    app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool", app.showCameraTriggers)
     if selectedTrigger() then
         local trigger = selectedTrigger()
 
@@ -403,7 +406,8 @@ end
 
 -- Room Properties
 
-tools.Room = Tool:extend("Room")
+tools.Room = tools.Tool:extend("Room")
+tools.Tool:registerTool(tools.Room)
 
 function tools.Room:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
@@ -469,7 +473,8 @@ end
 
 
 
-tools.Project = Tool:extend("Project")
+tools.Project = tools.Tool:extend("Project")
+tools.Tool:registerTool(tools.Project)
 
 function tools.Project:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 3)
@@ -499,3 +504,5 @@ function tools.Project:panel()
         project.conf.param_names[i] = t.value
     end
 end
+
+return tools
