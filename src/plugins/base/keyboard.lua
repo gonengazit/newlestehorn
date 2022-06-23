@@ -25,11 +25,19 @@ function keyboard.Shortcut:checkKey(key)
     return key == self.key
 end
 
-function keyboard.Shortcut:keypressed(key, isrepeat)
-    return self:checkModifiers() and self:checkKey(key) and (not isrepeat or self.repeatable)
+function keyboard.Shortcut:onKeypressed(key, isrepeat)
+    if self:checkModifiers() and self:checkKey(key) and (not isrepeat or self.repeatable) then
+        self:run(key)
+    end
 end
 
 function keyboard.Shortcut:run(key)
+end
+
+function keyboard.Shortcut:keypressed(key, isrepeat)
+    for _, S in pairs(self:subclasses()) do
+        S:onKeypressed(key, isrepeat)
+    end
 end
 
 
@@ -39,20 +47,14 @@ function love.keypressed(key, scancode, isrepeat)
     local mx, my = fromScreen(x, y)
 
     -- generic shortcuts
-    for _, S in pairs(keyboard.Shortcut:subclasses()) do
-        if S:keypressed(key, isrepeat) then
-            S:run(key)
-        end
-    end
+    keyboard.Shortcut:keypressed(key, isrepeat)
 
     -- shortcuts that work on with a nuklear window active
-
     if ui:keypressed(key, scancode, isrepeat) then
         return
     end
 
     -- shortcuts that nuklear windows swallow
-
     if key == "return" then
         app.enterPressed = true
     end

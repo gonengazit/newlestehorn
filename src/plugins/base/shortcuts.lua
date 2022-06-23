@@ -220,10 +220,7 @@ end
 -- NAVIGATION
 
 -- this one's a bit more hardcodey for now
-shortcuts.SwitchRoom = keyboard.Shortcut:extend("SwitchRoom")
-function shortcuts.SwitchRoom:checkModifiers()
-    return not love.keyboard.isDown("lshift") and not love.keyboard.isDown("lalt")
-end
+shortcuts.SwitchRoom = keyboard.Shortcut:extend("SwitchRoom", {input = ""})
 function shortcuts.SwitchRoom:checkKey(key)
     return key == "up" or key == "down"
 end
@@ -246,31 +243,29 @@ function shortcuts.SwitchRoom:run(key)
 end
 
 -- ditto
-shortcuts.SwitchTool = keyboard.Shortcut:extend("SwitchTool")
-function shortcuts.SwitchTool:checkKey(key)
-    return true
-end
-function shortcuts.SwitchTool:run(key)
-    for i = 1, math.min(#toolslist, 9) do
-        if key == tostring(i) then
-            switchTool(tools[toolslist[i]])
+shortcuts.SwitchTool = keyboard.Shortcut:extend("SwitchTool", {input = ""})
+function shortcuts.SwitchTool:onKeypressed(key)
+    if self:checkModifiers() then
+        for i = 1, math.min(#toolslist, 9) do
+            if key == tostring(i) then
+                switchTool(tools[toolslist[i]])
+            end
         end
     end
 end
 
-shortcuts.MoveSelection = keyboard.Shortcut:extend("MoveSelection")
-function shortcuts.MoveSelection:checkKey(key)
-    return true
-end
-function shortcuts.MoveSelection:run(key)
-    local dx, dy = 0, 0
-    if key == "left" then dx = -1 end
-    if key == "right" then dx = 1 end
-    if key == "up" then dy = -1 end
-    if key == "down" then dy = 1 end
-    if project.selection then
-        project.selection.x = project.selection.x + dx*8
-        project.selection.y = project.selection.y + dy*8
+shortcuts.MoveSelection = keyboard.Shortcut:extend("MoveSelection", {input = ""})
+function shortcuts.MoveSelection:onKeypressed(key)
+    if self:checkModifiers() then
+        local dx, dy = 0, 0
+        if key == "left" then dx = -1 end
+        if key == "right" then dx = 1 end
+        if key == "up" then dy = -1 end
+        if key == "down" then dy = 1 end
+        if project.selection then
+            project.selection.x = project.selection.x + dx*8
+            project.selection.y = project.selection.y + dy*8
+        end
     end
 end
 
