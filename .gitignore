@@ -2,4 +2,5 @@ src/*.so
 src/*.dll
 src/*.p8
 src/filedialog.py
+*.dll
 build
