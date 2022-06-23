@@ -244,30 +244,6 @@ function pushHistory()
     end
 end
 
-function undo()
-    if app.historyN >= 2 then
-        app.historyN = app.historyN - 1
-
-        local err
-        project, err = loadproject(app.history[app.historyN])
-        if err then error(err) end
-    end
-
-    if not activeRoom() then app.room = nil end
-end
-
-function redo()
-    if app.historyN <= #app.history - 1 then
-        app.historyN = app.historyN + 1
-
-        local err
-        project, err = loadproject(app.history[app.historyN])
-        if err then error(err) end
-    end
-
-    if not activeRoom() then app.room = nil end
-end
-
 
 
 require 'fileio'

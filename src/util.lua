@@ -171,3 +171,10 @@ function printbg(text, x, y, fgcol, bgcol, centerx, centery)
     love.graphics.setColor(fgcol)
     love.graphics.print(text, x, y)
 end
+
+function getMouse()
+    local x, y = love.mouse.getPosition()
+    local mx, my = fromScreen(x, y)
+
+    return mx, my
+end

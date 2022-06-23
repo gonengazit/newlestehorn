@@ -263,7 +263,6 @@ function openPico8(filename)
     for k, v in pairs(p8data.conf) do
         project.conf[k] = v
     end
-    print(dumplualine(project.conf))
 
     updateAutotiles()
 
