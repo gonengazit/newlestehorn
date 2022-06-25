@@ -4,7 +4,6 @@ local nfd = require 'nfd'
 
 function filedialog.open()
     local r = nfd.open("p8")
-    print(r)
     return r
 end
 

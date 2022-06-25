@@ -130,14 +130,15 @@ function love.update(dt)
         window = {
             spacing = {x = 1, y = 1},
             padding = {x = 1, y = 1},
+            ["scrollbar size"] = {x = 1, y = 0},
         },
         selectable = {
             padding = {x = 0, y = 0},
             ["normal"] = "#262626",
-            ["hover"] = "#262626",
+            --["hover"] = "#262626",
             ["pressed"] = "#262626",
             ["normal active"] = "#000000",
-            ["hover active"] = "#000000",
+            ["hover active"] = "#131313",
             ["pressed active"] = "#000000",
             ["text normal active"] = "#00ff88",
             ["text hover active"] = "#00ff88",
@@ -146,6 +147,15 @@ function love.update(dt)
         checkbox = {
             ["cursor normal"] = checkmarkIm,
             ["cursor hover"] = checkmarkIm
+        },
+        scrollv = {
+            ["normal"] = "#2d2d2d",
+            ["hover"] = "#2d2d2d",
+            ["active"] = "#2d2d2d",
+            ["border"] = 0,
+            ["cursor normal"] = "#00ff88",
+            ["cursor hover"] = "#00ff88",
+            ["cursor active"] = "#2d2d2d",
         }
     }
 
@@ -275,7 +285,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(0.25, 0.25, 0.25)
+    love.graphics.clear(0.3, 0.3, 0.3)
     love.graphics.reset()
     love.graphics.setLineStyle("rough")
 
@@ -286,8 +296,8 @@ function love.draw()
     love.graphics.translate(math.floor(ox), math.floor(oy))
     love.graphics.scale(app.camScale)
 
-    love.graphics.setColor(0.28, 0.28, 0.28)
-    love.graphics.setLineWidth(2)
+    love.graphics.setColor(0.4, 0.4, 0.4)
+    love.graphics.setLineWidth(2 / app.camScale)
     for i = 0, 7 do
         for j = 0, 3 do
             love.graphics.rectangle("line", i*128, j*128, 128, 128)
@@ -297,7 +307,7 @@ function love.draw()
     for n, room in ipairs(project.rooms) do
         if room ~= activeRoom() then
             drawRoom(room, p8data)
-            love.graphics.setColor(0.5, 0.5, 0.5, 0.4)
+            love.graphics.setColor(0.5, 0.5, 0.5, 0.3)
             love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
 
             if app.roomPanelHovered then
