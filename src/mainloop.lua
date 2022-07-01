@@ -98,7 +98,7 @@ function love.load(args)
     for _,v in ipairs(args) do
         if v=="--hidpi" then
             global_scale = 2
-            tms = 4*global_scale
+            tms = tms*global_scale
         end
     end
 
@@ -134,11 +134,11 @@ function love.update(dt)
         },
         selectable = {
             padding = {x = 0, y = 0},
-            ["normal"] = "#262626",
-            --["hover"] = "#262626",
-            ["pressed"] = "#262626",
+            ["normal"] = "#222222",
+            ["hover"] = "#282828",
+            ["pressed"] = "#282828",
             ["normal active"] = "#000000",
-            ["hover active"] = "#131313",
+            ["hover active"] = "#040404",
             ["pressed active"] = "#000000",
             ["text normal active"] = "#00ff88",
             ["text hover active"] = "#00ff88",
@@ -297,7 +297,7 @@ function love.draw()
     love.graphics.scale(app.camScale)
 
     love.graphics.setColor(0.4, 0.4, 0.4)
-    love.graphics.setLineWidth(2 / app.camScale)
+    love.graphics.setLineWidth(1 / app.camScale)
     for i = 0, 7 do
         for j = 0, 3 do
             love.graphics.rectangle("line", i*128, j*128, 128, 128)
