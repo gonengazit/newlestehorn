@@ -44,6 +44,13 @@ function App:fromScreen(x, y)
            (y - self.top)/self.camScale - self.camY
 end
 
+function App:getMouse()
+    local x, y = love.mouse.getPosition()
+    local mx, my = self:fromScreen(x, y)
+
+    return mx, my
+end
+
 function App:activeRoom()
     return self.room and project.rooms[self.room]
 end
@@ -212,6 +219,13 @@ end
 
 function App:selectedTrigger()
     return self:activeRoom() and self:activeRoom().camtriggers[self.selectedCamtriggerN]
+end
+
+function App:switchTool(toolClass)
+    if self.tool and not self.tool:instanceOf(toolClass) then
+        self.tool:disabled()
+        self.tool = toolClass:new()
+    end
 end
 
 return App

@@ -52,13 +52,6 @@ function newProject()
     p8data = data
 end
 
-function switchTool(toolClass)
-    if app.tool and not app.tool:instanceOf(toolClass) then
-        app.tool:disabled()
-        app.tool = toolClass:new()
-    end
-end
-
 
 
 require 'fileio'

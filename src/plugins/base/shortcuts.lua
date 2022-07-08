@@ -41,7 +41,7 @@ end
 shortcuts.SelectAll = keyboard.Shortcut:extend("SelectAll", {input = "ctrl a"})
 function shortcuts.SelectAll:run()
     if app:activeRoom() then
-        switchTool(tools.Select)
+        app:switchTool(tools.Select)
         app:select(0, 0, app:activeRoom().w - 1, app:activeRoom().h - 1)
     end
 end
@@ -111,7 +111,7 @@ end
 
 shortcuts.Paste = keyboard.Shortcut:extend("Paste", {input = "ctrl v"})
 function shortcuts.Paste:run()
-    local mx, my = getMouse()
+    local mx, my = app:getMouse()
     
     app:placeSelection() -- to clean selection first
 
@@ -123,7 +123,7 @@ function shortcuts.Paste:run()
                 project.selection = s
                 project.selection.x = roundto8(mx - s.w*4)
                 project.selection.y = roundto8(my - s.h*4)
-                switchTool(tools.Select)
+                app:switchTool(tools.Select)
 
                 app:showMessage("Pasted")
             elseif t[1] == "room" then
@@ -150,7 +150,7 @@ end
 
 shortcuts.NewRoom = keyboard.Shortcut:extend("NewRoom", {input = "n"})
 function shortcuts.NewRoom:run()
-    local mx, my = getMouse()
+    local mx, my = app:getMouse()
     local room = newRoom(roundto8(mx - 64), roundto8(my - 64), 16, 16)
 
     room.title = ""
@@ -236,7 +236,7 @@ function shortcuts.SwitchTool:onKeypressed(key)
     if self:checkModifiers() then
         for i = 1, math.min(#tools.Tool.list, 9) do
             if key == tostring(i) then
-                switchTool(tools.Tool.list[i])
+                app:switchTool(tools.Tool.list[i])
             end
         end
     end

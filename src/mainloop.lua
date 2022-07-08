@@ -198,7 +198,7 @@ function love.update(dt)
                 local toolClass = tools.Tool.list[1 + i]
 
                 if ui:selectable(toolClass.name, app.tool:instanceOf(toolClass)) then
-                    switchTool(toolClass)
+                    app:switchTool(toolClass)
                 end
             end
 
