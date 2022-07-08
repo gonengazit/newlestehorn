@@ -223,7 +223,7 @@ function love.update(dt)
     ui:frameEnd()
 
     local x, y = love.mouse.getPosition()
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
     if app.roomResizeSideX and app.room then
         local room = activeRoom()
@@ -290,9 +290,9 @@ function love.draw()
     love.graphics.setLineStyle("rough")
 
     local x, y = love.mouse.getPosition()
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
-    local ox, oy = toScreen(0, 0)
+    local ox, oy = app:toScreen(0, 0)
     love.graphics.translate(math.floor(ox), math.floor(oy))
     love.graphics.scale(app.camScale)
 

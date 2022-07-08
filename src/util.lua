@@ -174,7 +174,7 @@ end
 
 function getMouse()
     local x, y = love.mouse.getPosition()
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
     return mx, my
 end

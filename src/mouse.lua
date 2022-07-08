@@ -5,7 +5,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 
     local clickedRoom = false
 
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
     if button == 1 then
         if not app.toolMenuX then
             local oldActiveRoom = app.room
@@ -42,7 +42,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 
     if button == 3
     or button == 1 and (love.keyboard.isDown("lshift") or not clickedRoom) then
-        app.camMoveX, app.camMoveY = fromScreen(x, y)
+        app.camMoveX, app.camMoveY = app:fromScreen(x, y)
     end
 
     --tool mousepressed
@@ -71,7 +71,7 @@ function love.mousemoved(x, y, dx, dy, istouch)
         return
     end
 
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
     local ti, tj = div8(mx), div8(my)
     if app.camMoveX then
         app.camX = app.camX + mx - app.camMoveX
@@ -102,7 +102,7 @@ function love.wheelmoved(x, y)
 
     if y ~= 0 then
         local mx, my = love.mouse.getPosition()
-        rmx, rmy = fromScreen(mx, my)
+        rmx, rmy = app:fromScreen(mx, my)
 
         if y > 0 then
             app.camScaleSetting = app.camScaleSetting + 1
@@ -112,7 +112,7 @@ function love.wheelmoved(x, y)
         app.camScaleSetting = math.min(math.max(app.camScaleSetting, -3), 20)
         app.camScale = app.camScaleSetting > 0 and (app.camScaleSetting + 1) or 2 ^ app.camScaleSetting
 
-        nrmx, nrmy = fromScreen(mx, my)
+        nrmx, nrmy = app:fromScreen(mx, my)
         app.camX = app.camX + nrmx - rmx
         app.camY = app.camY + nrmy - rmy
     end

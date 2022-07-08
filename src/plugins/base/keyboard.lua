@@ -44,7 +44,7 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
     local x, y = love.mouse.getPosition()
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
     -- generic shortcuts
     keyboard.Shortcut:keypressed(key, isrepeat)

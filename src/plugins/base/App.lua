@@ -34,4 +34,14 @@ function App:init()
     self.suppressMouse = false -- disables mouse-driven editing in love.update() when a click has triggered a different action, reset on release
 end
 
+function App:toScreen(x, y)
+    return (self.camX + x) * self.camScale + self.left,
+           (self.camY + y) * self.camScale + self.top
+end
+
+function App:fromScreen(x, y)
+    return (x - self.left)/self.camScale - self.camX,
+           (y - self.top)/self.camScale - self.camY
+end
+
 return App

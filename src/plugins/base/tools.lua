@@ -241,7 +241,7 @@ end
 
 function tools.Select:mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
     if button == 1 then
         if not project.selection then
@@ -275,7 +275,7 @@ function tools.Select:mousereleased(x, y, button)
 end
 
 function tools.Select:mousemoved(x, y, dx, dy)
-    local mx, my = fromScreen(x, y)
+    local mx, my = app:fromScreen(x, y)
 
     if self.selectionMoveX and project.selection then
         project.selection.x = roundto8(mx - self.selectionMoveX)
@@ -412,7 +412,7 @@ tools.Tool:registerTool(tools.Room)
 function tools.Room:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
     if ui:button("New Room") then
-        local x, y = fromScreen(app.W/3, app.H/3)
+        local x, y = app:fromScreen(app.W/3, app.H/3)
         local room = newRoom(roundto8(x), roundto8(y), 16, 16)
 
         room.title = ""

@@ -52,16 +52,6 @@ function newProject()
     p8data = data
 end
 
-function toScreen(x, y)
-    return (app.camX + x) * app.camScale + app.left,
-           (app.camY + y) * app.camScale + app.top
-end
-
-function fromScreen(x, y)
-    return (x - app.left)/app.camScale - app.camX,
-           (y - app.top)/app.camScale - app.camY
-end
-
 function activeRoom()
     return app.room and project.rooms[app.room]
 end
@@ -69,7 +59,7 @@ end
 function mouseOverTile()
     if activeRoom() then
         local x, y = love.mouse.getPosition()
-        local mx, my = fromScreen(x, y)
+        local mx, my = app:fromScreen(x, y)
         local ti, tj = div8(mx - activeRoom().x), div8(my - activeRoom().y)
         if ti >= 0 and ti < activeRoom().w and tj >= 0 and tj < activeRoom().h then
             return ti, tj
