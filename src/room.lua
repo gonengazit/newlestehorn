@@ -49,7 +49,7 @@ function drawRoom(room, p8data, highlight)
     end
 
     if highlight then
-        drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
+        app:drawColoredRect(room, 0, 0, room.w*8, room.h*8, {0, 1, 0.5}, true)
     end
 
     if app.tool:instanceOf(tools.Camtrigger) or app.showCameraTriggers then
@@ -66,7 +66,7 @@ function drawRoom(room, p8data, highlight)
                 col = {1,0.75,0}
             end
 
-            drawColoredRect(room, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
+            app:drawColoredRect(room, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
         end
     end
 end

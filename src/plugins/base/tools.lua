@@ -133,7 +133,7 @@ function tools.Brush:update(dt)
             n = 0
         end
 
-        local ti, tj = mouseOverTile()
+        local ti, tj = app:mouseOverTile()
         if ti then
             local room = app:activeRoom()
 
@@ -147,7 +147,7 @@ function tools.Brush:update(dt)
 end
 
 function tools.Brush:draw()
-    drawMouseOverTile(nil, app.currentTile)
+    app:drawMouseOverTile(nil, app.currentTile)
 end
 
 
@@ -162,18 +162,18 @@ function tools.Rectangle:panel()
 end
 
 function tools.Rectangle:draw()
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if not self.rectangleI then
-        drawMouseOverTile(nil, app.currentTile)
+        app:drawMouseOverTile(nil, app.currentTile)
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.rectangleI, self.rectangleJ)
-        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
+        app:drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
 
 function tools.Rectangle:mousepressed(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if button == 1 or button == 2 then
         if ti then
@@ -183,7 +183,7 @@ function tools.Rectangle:mousepressed(x, y, button)
 end
 
 function tools.Rectangle:mousereleased(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if ti and self.rectangleI then
         local room = app:activeRoom()
@@ -229,18 +229,18 @@ function tools.Select:disabled()
 end
 
 function tools.Select:draw()
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if not self.selectTileI then
-        drawMouseOverTile()
+        app:drawMouseOverTile()
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.selectTileI, self.selectTileJ)
-        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
+        app:drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
 
 function tools.Select:mousepressed(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
     local mx, my = app:fromScreen(x, y)
 
     if button == 1 then
@@ -256,7 +256,7 @@ function tools.Select:mousepressed(x, y, button)
 end
 
 function tools.Select:mousereleased(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if ti and self.selectTileI then
         placeSelection()
@@ -311,18 +311,18 @@ function tools.Camtrigger:panel()
 end
 
 function tools.Camtrigger:draw()
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if not self.camtriggerI then
-        drawMouseOverTile({1,0.75,0})
+        app:drawMouseOverTile({1,0.75,0})
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.camtriggerI, self.camtriggerJ)
-        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {1,0.75,0}, false)
+        app:drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {1,0.75,0}, false)
     end
 end
 
 function tools.Camtrigger:mousepressed(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
     if not ti then return end
 
     local hovered=hoveredTriggerN()
@@ -358,7 +358,7 @@ function tools.Camtrigger:mousepressed(x, y, button)
 end
 
 function tools.Camtrigger:mousemoved(x,y)
-    local ti,tj = mouseOverTile()
+    local ti,tj = app:mouseOverTile()
     if not ti then return end
 
     local trigger = selectedTrigger()
@@ -387,7 +387,7 @@ function tools.Camtrigger:mousemoved(x,y)
 end
 
 function tools.Camtrigger:mousereleased(x, y, button)
-    local ti, tj = mouseOverTile()
+    local ti, tj = app:mouseOverTile()
 
     if ti and self.camtriggerI then
         local room = app:activeRoom()

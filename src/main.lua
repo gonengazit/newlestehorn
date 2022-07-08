@@ -52,50 +52,6 @@ function newProject()
     p8data = data
 end
 
-function mouseOverTile()
-    if app:activeRoom() then
-        local x, y = love.mouse.getPosition()
-        local mx, my = app:fromScreen(x, y)
-        local ti, tj = div8(mx - app:activeRoom().x), div8(my - app:activeRoom().y)
-        if ti >= 0 and ti < app:activeRoom().w and tj >= 0 and tj < app:activeRoom().h then
-            return ti, tj
-        end
-    end
-end
-
-function drawMouseOverTile(col, tile)
-    local col = col or {0, 1, 0.5}
-
-    local ti, tj = mouseOverTile()
-    if ti then
-        love.graphics.setColor(1, 1, 1)
-        if tile then
-            local x, y=app:activeRoom().x + ti*8, app:activeRoom().y + tj*8
-            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
-            drawCompositeShape(tile,x,y)
-        end
-
-        love.graphics.setColor(col)
-        love.graphics.setLineWidth(1 / app.camScale)
-        love.graphics.rectangle("line", app:activeRoom().x + ti*8 + 0.5 / app.camScale,
-                                        app:activeRoom().y + tj*8 + 0.5 / app.camScale, 8, 8)
-    end
-end
-
-function drawColoredRect(room, x, y, w, h, col, filled)
-    love.graphics.setColor(col)
-    love.graphics.setLineWidth(1 / app.camScale)
-    love.graphics.rectangle("line", room.x + x + 0.5 / app.camScale,
-                                    room.y + y + 0.5 / app.camScale,
-                                    w, h)
-    if filled then
-        love.graphics.setColor(col[1], col[2], col[3], 0.25)
-        love.graphics.rectangle("fill", room.x + x + 0.5 / app.camScale,
-                                        room.y + y + 0.5 / app.camScale,
-                                        w, h)
-    end
-end
-
 function getCompositeShape(n)
     -- get composite shape that n should draw, and the offset
     -- returns shape,dx,dy
@@ -166,7 +122,7 @@ function hoveredTriggerN()
     local room=app:activeRoom()
     if room then
         for n, trigger in ipairs(room.camtriggers) do
-            local ti, tj = mouseOverTile()
+            local ti, tj = app:mouseOverTile()
             if ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
                 return n
             end

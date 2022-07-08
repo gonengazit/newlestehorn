@@ -45,7 +45,52 @@ function App:fromScreen(x, y)
 end
 
 function App:activeRoom()
-    return app.room and project.rooms[app.room]
+    return self.room and project.rooms[self.room]
+end
+
+
+function App:mouseOverTile()
+    if self:activeRoom() then
+        local x, y = love.mouse.getPosition()
+        local mx, my = self:fromScreen(x, y)
+        local ti, tj = div8(mx - self:activeRoom().x), div8(my - self:activeRoom().y)
+        if ti >= 0 and ti < self:activeRoom().w and tj >= 0 and tj < self:activeRoom().h then
+            return ti, tj
+        end
+    end
+end
+
+function App:drawMouseOverTile(col, tile)
+    local col = col or {0, 1, 0.5}
+
+    local ti, tj = self:mouseOverTile()
+    if ti then
+        love.graphics.setColor(1, 1, 1)
+        if tile then
+            local x, y=self:activeRoom().x + ti*8, self:activeRoom().y + tj*8
+            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
+            drawCompositeShape(tile, x, y)
+        end
+
+        love.graphics.setColor(col)
+        love.graphics.setLineWidth(1 / self.camScale)
+        love.graphics.rectangle("line", self:activeRoom().x + ti*8 + 0.5 / self.camScale,
+                                        self:activeRoom().y + tj*8 + 0.5 / self.camScale, 8, 8)
+    end
+end
+
+function App:drawColoredRect(room, x, y, w, h, col, filled)
+    love.graphics.setColor(col)
+    love.graphics.setLineWidth(1 / self.camScale)
+    love.graphics.rectangle("line", room.x + x + 0.5 / self.camScale,
+                                    room.y + y + 0.5 / self.camScale,
+                                    w, h)
+    if filled then
+        love.graphics.setColor(col[1], col[2], col[3], 0.25)
+        love.graphics.rectangle("fill", room.x + x + 0.5 / self.camScale,
+                                        room.y + y + 0.5 / self.camScale,
+                                        w, h)
+    end
 end
 
 return App
