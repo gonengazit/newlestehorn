@@ -69,7 +69,7 @@ function App:drawMouseOverTile(col, tile)
         if tile then
             local x, y=self:activeRoom().x + ti*8, self:activeRoom().y + tj*8
             love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
-            drawCompositeShape(tile, x, y)
+            self:drawCompositeShape(tile, x, y)
         end
 
         love.graphics.setColor(col)
@@ -90,6 +90,36 @@ function App:drawColoredRect(room, x, y, w, h, col, filled)
         love.graphics.rectangle("fill", room.x + x + 0.5 / self.camScale,
                                         room.y + y + 0.5 / self.camScale,
                                         w, h)
+    end
+end
+
+function App:getCompositeShape(n)
+    -- get composite shape that n should draw, and the offset
+    -- returns shape,dx,dy
+    for _, shape in ipairs(project.conf.composite_shapes) do
+        for oy=1,#shape do
+            for ox=1,#shape[oy] do
+                if shape[oy][ox]==n then
+                    return shape,ox,oy
+                end
+            end
+        end
+    end
+end
+
+function App:drawCompositeShape(n, x, y)
+    if not p8data.quads[n] then print(n) end
+    local shape, dx, dy = self:getCompositeShape(n)
+    love.graphics.setColor(1, 1, 1, 0.5)
+    if shape then
+        for oy=1,#shape do
+            for ox=1,#shape[oy] do
+                local m=math.abs(shape[oy][ox]) --negative sprite is drawn, but not used as a source for the shape
+                if m~= 0 then
+                    love.graphics.draw(p8data.spritesheet_noblack, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
+                end
+            end
+        end
     end
 end
 
