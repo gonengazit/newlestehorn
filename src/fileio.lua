@@ -451,11 +451,11 @@ function openFile()
         end
     end
     if openOk then
-        showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
+        app:showMessage("Opened "..string.match(filename, psep.."([^"..psep.."]*)$"))
 
         app.saveFileName = filename
     else
-        showMessage("Failed to open file")
+        app:showMessage("Failed to open file")
     end
 end
 
@@ -468,10 +468,10 @@ function saveFile(as)
     end
 
     if filename and savePico8(filename) then
-        showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
+        app:showMessage("Saved "..string.match(filename, psep.."([^"..psep.."]*)$"))
 
         app.saveFileName = filename
     else
-        showMessage("Failed to save cart")
+        app:showMessage("Failed to save cart")
     end
 end

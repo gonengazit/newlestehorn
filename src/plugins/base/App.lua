@@ -123,4 +123,9 @@ function App:drawCompositeShape(n, x, y)
     end
 end
 
+function App:showMessage(msg)
+    self.message = msg
+    self.messageTimeLeft = 4
+end
+
 return App

@@ -88,7 +88,7 @@ function shortcuts.Cut:run()
         love.system.setClipboardText(s)
         project.selection = nil
 
-        showMessage("Cut")
+        app:showMessage("Cut")
     end
 end
 
@@ -100,7 +100,7 @@ function shortcuts.CutRoom:run()
         table.remove(project.rooms, app.room)
         app.room = nil
 
-        showMessage("Cut room")
+        app:showMessage("Cut room")
     end
 end
 
@@ -111,7 +111,7 @@ function shortcuts.Copy:run()
         love.system.setClipboardText(s)
         placeSelection()
 
-        showMessage("Copied")
+        app:showMessage("Copied")
     end
 end
 
@@ -121,7 +121,7 @@ function shortcuts.CopyRoom:run()
         local s = dumplualine {"room", app:activeRoom()}
         love.system.setClipboardText(s)
 
-        showMessage("Copied room")
+        app:showMessage("Copied room")
     end
 end
 
@@ -141,7 +141,7 @@ function shortcuts.Paste:run()
                 project.selection.y = roundto8(my - s.h*4)
                 switchTool(tools.Select)
 
-                showMessage("Pasted")
+                app:showMessage("Pasted")
             elseif t[1] == "room" then
                 local r = t[2]
                 r.x = roundto8(mx - r.w*4)
@@ -156,7 +156,7 @@ function shortcuts.Paste:run()
         end
     end
     if err then
-        showMessage("Failed to paste (did you paste something you're not supposed to?)")
+        app:showMessage("Failed to paste (did you paste something you're not supposed to?)")
     end
 end
 

@@ -29,7 +29,7 @@ function drawRoom(room, p8data, highlight)
     for i = 0, room.w - 1 do
         for j = 0, room.h - 1 do
             local n = room.data[i][j]
-            self:drawCompositeShape(n,room.x+8*i,room.y+8*j)
+            app:drawCompositeShape(n,room.x+8*i,room.y+8*j)
         end
     end
     
