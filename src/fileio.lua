@@ -447,7 +447,7 @@ function openFile()
         if openOk then
             app.history = {}
             app.historyN = 0
-            pushHistory()
+            app:pushHistory()
         end
     end
     if openOk then

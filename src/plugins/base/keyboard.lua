@@ -62,7 +62,7 @@ end
 
 function love.keyreleased(key, scancode)
     -- just save history every time a key is released lol
-    pushHistory()
+    app:pushHistory()
 
     if ui:keyreleased(key, scancode) then
         return

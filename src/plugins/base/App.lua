@@ -128,4 +128,41 @@ function App:showMessage(msg)
     self.messageTimeLeft = 4
 end
 
+function App:pushHistory()
+    local s = dumpproject(project)
+    if s ~= self.history[self.historyN] then
+        self.historyN = self.historyN + 1
+
+        for i = self.historyN, #self.history do
+            self.history[i] = nil
+        end
+
+        self.history[self.historyN] = s
+    end
+end
+
+function App:undo()
+    if self.historyN >= 2 then
+        self.historyN = self.historyN - 1
+
+        local err
+        project, err = loadproject(self.history[self.historyN])
+        if err then error(err) end
+    end
+
+    if not self:activeRoom() then self.room = nil end
+end
+
+function App:redo()
+    if self.historyN <= #self.history - 1 then
+        self.historyN = self.historyN + 1
+
+        local err
+        project, err = loadproject(self.history[self.historyN])
+        if err then error(err) end
+    end
+
+    if not self:activeRoom() then self.room = nil end
+end
+
 return App

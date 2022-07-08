@@ -55,7 +55,8 @@ end
 function placeSelection()
     if project.selection and app.room then
         local sel, room = project.selection, app:activeRoom()
-        local i0, j0 = div8(sel.x - room.x), div8(sel.y - room.y)
+        local i0, j0 = div8(sel.
+        x - room.x), div8(sel.y - room.y)
         for i = 0, sel.w - 1 do
             if i0 + i >= 0 and i0 + i < room.w then
                 for j = 0, sel.h - 1 do
@@ -104,21 +105,6 @@ function switchTool(toolClass)
     if app.tool and not app.tool:instanceOf(toolClass) then
         app.tool:disabled()
         app.tool = toolClass:new()
-    end
-end
-
-function pushHistory()
-    local s = dumpproject(project)
-    if s ~= app.history[app.historyN] then
-        --print("BEFORE: "..tostring(app.history[app.historyN]))
-        --print("AFTER: "..s)
-        app.historyN = app.historyN + 1
-
-        for i = app.historyN, #app.history do
-            app.history[i] = nil
-        end
-
-        app.history[app.historyN] = s
     end
 end
 

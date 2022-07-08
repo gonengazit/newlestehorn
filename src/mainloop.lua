@@ -105,7 +105,7 @@ function love.load(args)
     loadPlugins("plugins")
 
     newProject()
-    pushHistory()
+    app:pushHistory()
 
     checkmarkIm=love.graphics.newImage("checkmark.png")
     checkmarkWithBg=love.graphics.newCanvas(checkmarkIm:getWidth()*5/4,checkmarkIm:getHeight()*5/4)

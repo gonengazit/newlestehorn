@@ -26,28 +26,12 @@ end
 
 shortcuts.Undo = keyboard.Shortcut:extend("Undo", {input = "ctrl z", repeatable = true})
 function shortcuts.Undo:run()
-    if app.historyN >= 2 then
-        app.historyN = app.historyN - 1
-
-        local err
-        project, err = loadproject(app.history[app.historyN])
-        if err then error(err) end
-    end
-
-    if not app:activeRoom() then app.room = nil end
+   app:undo()
 end
 
 shortcuts.Redo = keyboard.Shortcut:extend("Redo", {input = "ctrl shift z", repeatable = true})
 function shortcuts.Redo:run()
-    if app.historyN <= #app.history - 1 then
-        app.historyN = app.historyN + 1
-
-        local err
-        project, err = loadproject(app.history[app.historyN])
-        if err then error(err) end
-    end
-
-    if not app:activeRoom() then app.room = nil end
+    app:redo()
 end
 
 

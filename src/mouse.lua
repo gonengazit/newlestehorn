@@ -63,7 +63,7 @@ function love.mousereleased(x, y, button, istouch, presses)
     app.suppressMouse = false
 
     -- just save history every time a mouse button is released lol
-    pushHistory()
+    app:pushHistory()
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
