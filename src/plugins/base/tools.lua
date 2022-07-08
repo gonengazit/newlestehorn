@@ -224,7 +224,7 @@ tools.Tool:registerTool(tools.Select)
 
 function tools.Select:disabled()
     if project.selection then
-        placeSelection()
+        app:placeSelection()
     end
 end
 
@@ -259,14 +259,14 @@ function tools.Select:mousereleased(x, y, button)
     local ti, tj = app:mouseOverTile()
 
     if ti and self.selectTileI then
-        placeSelection()
+        app:placeSelection()
 
-        select(ti, tj, self.selectTileI, self.selectTileJ)
+        app:select(ti, tj, self.selectTileI, self.selectTileJ)
     end
 
     if project.selection and self.selectionMoveX then
         if project.selection.x == self.selectionStartX and project.selection.y == self.selectionStartY then
-            placeSelection()
+            app:placeSelection()
         end
     end
 
@@ -293,8 +293,8 @@ tools.Tool:registerTool(tools.Camtrigger)
 function tools.Camtrigger:panel()
     ui:layoutRow("dynamic", 25*global_scale, 1)
     app.showCameraTriggers = ui:checkbox("Show camera triggers when not using the tool", app.showCameraTriggers)
-    if selectedTrigger() then
-        local trigger = selectedTrigger()
+    if app:selectedTrigger() then
+        local trigger = app:selectedTrigger()
 
         local editX = {value = trigger.off_x}
         local editY = {value = trigger.off_y}
@@ -325,18 +325,18 @@ function tools.Camtrigger:mousepressed(x, y, button)
     local ti, tj = app:mouseOverTile()
     if not ti then return end
 
-    local hovered=hoveredTriggerN()
+    local hovered=app:hoveredTriggerN()
     if button == 1 then
         if love.keyboard.isDown("lctrl") then
-            if not selectedTrigger() and hovered then
+            if not app:selectedTrigger() and hovered then
                 app.selectedCamtriggerN = hovered
             end
-            if selectedTrigger() then
+            if app:selectedTrigger() then
                 self.camtriggerMoveI, self.camtriggerMoveJ = ti, tj
             end
         else
-            local hovered = hoveredTriggerN()
-            if selectedTrigger() then
+            local hovered = app:hoveredTriggerN()
+            if app:selectedTrigger() then
                 app.selectedCamtriggerN = nil
                 --deselect
             elseif hovered then
@@ -346,12 +346,12 @@ function tools.Camtrigger:mousepressed(x, y, button)
             end
         end
     elseif button == 2 and love.keyboard.isDown("lctrl") then
-        if not selectedTrigger() and hovered then
+        if not app:selectedTrigger() and hovered then
             app.selectedCamtriggerN = hovered
         end
-        if selectedTrigger() then
-            self.camtriggerSideI = sign(ti - selectedTrigger().x - selectedTrigger().w/2)
-            self.camtriggerSideJ = sign(tj - selectedTrigger().y - selectedTrigger().h/2)
+        if app:selectedTrigger() then
+            self.camtriggerSideI = sign(ti - app:selectedTrigger().x - app:selectedTrigger().w/2)
+            self.camtriggerSideJ = sign(tj - app:selectedTrigger().y - app:selectedTrigger().h/2)
         end
         -- app.camtriggerSideI,app.camtriggerSideJ=ti,tj
     end
@@ -361,7 +361,7 @@ function tools.Camtrigger:mousemoved(x,y)
     local ti,tj = app:mouseOverTile()
     if not ti then return end
 
-    local trigger = selectedTrigger()
+    local trigger = app:selectedTrigger()
 
     if self.camtriggerMoveI then
         trigger.x=trigger.x+(ti-self.camtriggerMoveI)

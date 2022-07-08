@@ -165,4 +165,53 @@ function App:redo()
     if not self:activeRoom() then self.room = nil end
 end
 
+function App:select(i1, j1, i2, j2)
+    local i0, j0, w, h = rectCont2Tiles(i1, j1, i2, j2)
+    if w > 1 or h > 1 then
+        local r = self:activeRoom()
+        local selection = newRoom(r.x + i0*8, r.y + j0*8, w, h)
+        for i = 0, w - 1 do
+            for j = 0, h - 1 do
+                selection.data[i][j] = r.data[i0 + i][j0 + j]
+                r.data[i0 + i][j0 + j] = 0
+            end
+        end
+        project.selection = selection
+    end
+end
+
+function App:placeSelection()
+    if project.selection and self.room then
+        local sel, room = project.selection, self:activeRoom()
+        local i0, j0 = div8(sel.
+        x - room.x), div8(sel.y - room.y)
+        for i = 0, sel.w - 1 do
+            if i0 + i >= 0 and i0 + i < room.w then
+                for j = 0, sel.h - 1 do
+                    if j0 + j >= 0 and j0 + j < room.h then
+                        room.data[i0 + i][j0 + j] = sel.data[i][j]
+                    end
+                end
+            end
+        end
+    end
+    project.selection = nil
+end
+
+function App:hoveredTriggerN()
+    local room=app:activeRoom()
+    if room then
+        for n, trigger in ipairs(room.camtriggers) do
+            local ti, tj = self:mouseOverTile()
+            if ti and ti>=trigger.x and ti<trigger.x+trigger.w and tj>=trigger.y and tj<trigger.y+trigger.h then
+                return n
+            end
+        end
+    end
+end
+
+function App:selectedTrigger()
+    return self:activeRoom() and self:activeRoom().camtriggers[self.selectedCamtriggerN]
+end
+
 return App

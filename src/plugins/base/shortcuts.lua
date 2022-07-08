@@ -42,13 +42,13 @@ shortcuts.SelectAll = keyboard.Shortcut:extend("SelectAll", {input = "ctrl a"})
 function shortcuts.SelectAll:run()
     if app:activeRoom() then
         switchTool(tools.Select)
-        select(0, 0, app:activeRoom().w - 1, app:activeRoom().h - 1)
+        app:select(0, 0, app:activeRoom().w - 1, app:activeRoom().h - 1)
     end
 end
 
 shortcuts.PlaceSelection = keyboard.Shortcut:extend("PlaceSelection", {input = "return"})
 function shortcuts.PlaceSelection:run()
-    placeSelection()
+    app:placeSelection()
 end
 
 shortcuts.DeleteSelection = keyboard.Shortcut:extend("DeleteSelection", {input = "delete"})
@@ -93,7 +93,7 @@ function shortcuts.Copy:run()
     if project.selection then
         local s = dumplualine {"selection", project.selection}
         love.system.setClipboardText(s)
-        placeSelection()
+        app:placeSelection()
 
         app:showMessage("Copied")
     end
@@ -113,7 +113,7 @@ shortcuts.Paste = keyboard.Shortcut:extend("Paste", {input = "ctrl v"})
 function shortcuts.Paste:run()
     local mx, my = getMouse()
     
-    placeSelection() -- to clean selection first
+    app:placeSelection() -- to clean selection first
 
     local t, err = loadlua(love.system.getClipboardText())
     if not err then

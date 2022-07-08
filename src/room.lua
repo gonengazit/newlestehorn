@@ -53,7 +53,7 @@ function drawRoom(room, p8data, highlight)
     end
 
     if app.tool:instanceOf(tools.Camtrigger) or app.showCameraTriggers then
-        local highlighted = app.tool:instanceOf(tools.Camtrigger) and (app.selectedCamtriggerN or hoveredTriggerN())
+        local highlighted = app.tool:instanceOf(tools.Camtrigger) and (app.selectedCamtriggerN or app:hoveredTriggerN())
         for n, trigger in ipairs(room.camtriggers) do
             local col
             if room == app:activeRoom() and n == highlighted then
