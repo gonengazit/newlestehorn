@@ -258,10 +258,10 @@ function openPico8(filename)
 
     -- loads into global p8data as well, for spritesheet
     p8data = loadpico8(filename)
-    project.rooms = p8data.rooms
+    app.project.rooms = p8data.rooms
 
     for k, v in pairs(p8data.conf) do
-        project.conf[k] = v
+        app.project.conf[k] = v
     end
 
     updateAutotiles()
@@ -274,7 +274,7 @@ end
 function savePico8(filename)
     local map = fill2d0s(128, 64)
 
-    for _, room in ipairs(project.rooms) do
+    for _, room in ipairs(app.project.rooms) do
         if not room.hex then
             local i0, j0 = div8(room.x), div8(room.y)
             for i = 0, room.w - 1 do
@@ -304,8 +304,8 @@ function savePico8(filename)
     file:close()
 
     local levels, mapdata, camera_offsets = {}, {}, {}
-    for n = 1, #project.rooms do
-        local room = project.rooms[n]
+    for n = 1, #app.project.rooms do
+        local room = app.project.rooms[n]
         local exit_string="0b"
         for _,v in pairs({"left","bottom","right","top"}) do
             if room.exits[v] then
@@ -405,7 +405,7 @@ function savePico8(filename)
 
     -- rewrite configuration block
     local confcode = ""
-    for key, value in pairs(project.conf) do
+    for key, value in pairs(app.project.conf) do
 		confcode = confcode .. key .. "=" .. dumplualine(value) .. "\n"
     end
     cartdata = cartdata:gsub("%-%-@conf.-%-%-%[%[.-%]%]", "--@conf\n--[[\n"..confcode.."]]")

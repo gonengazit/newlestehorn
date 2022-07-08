@@ -92,7 +92,7 @@ function love.load(args)
 
     ui = nuklear.newUI()
 
-    global_scale=1 -- global scale, to run nicely on hi dpi displays
+    global_scale = 1 -- global scale, to run nicely on hi dpi displays
     tms = 4 -- tile menu scale
 
     for _,v in ipairs(args) do
@@ -101,6 +101,8 @@ function love.load(args)
             tms = tms*global_scale
         end
     end
+
+    love.graphics.setNewFont(12*global_scale)
 
     loadPlugins("plugins")
 
@@ -156,13 +158,15 @@ function love.update(dt)
             ["cursor normal"] = "#00ff88",
             ["cursor hover"] = "#00ff88",
             ["cursor active"] = "#2d2d2d",
-        }
+        },
+
+        font = app.font,
     }
 
     -- room panel
     if ui:windowBegin("Room Panel", 0, 0, rpw, app.H, {"scrollbar"}) then
         ui:layoutRow("dynamic", 25*global_scale, 1)
-        for n, room in ipairs(project.rooms) do
+        for n, room in ipairs(app.project.rooms) do
             local line = "["..n..""
             line = line .. (room.exits.left and "l" or "")
             line = line .. (room.exits.bottom and "d" or "")
@@ -304,7 +308,7 @@ function love.draw()
         end
     end
 
-    for n, room in ipairs(project.rooms) do
+    for n, room in ipairs(app.project.rooms) do
         if room ~= app:activeRoom() then
             drawRoom(room, p8data)
             love.graphics.setColor(0.5, 0.5, 0.5, 0.3)
@@ -336,11 +340,11 @@ function love.draw()
             love.graphics.pop()
         end
     end
-    if project.selection then
-        drawRoom(project.selection, p8data, true)
+    if app.project.selection then
+        drawRoom(app.project.selection, p8data, true)
         love.graphics.setColor(0, 1, 0.5)
         love.graphics.setLineWidth(1 / app.camScale)
-        love.graphics.rectangle("line", project.selection.x + 0.5 / app.camScale, project.selection.y + 0.5 / app.camScale, project.selection.w*8, project.selection.h*8)
+        love.graphics.rectangle("line", app.project.selection.x + 0.5 / app.camScale, app.project.selection.y + 0.5 / app.camScale, app.project.selection.w*8, app.project.selection.h*8)
     end
 
     -- tool draw

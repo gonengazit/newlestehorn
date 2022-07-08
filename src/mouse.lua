@@ -9,7 +9,7 @@ function love.mousepressed(x, y, button, istouch, presses)
     if button == 1 then
         if not app.toolMenuX then
             local oldActiveRoom = app.room
-            for i, room in ipairs(project.rooms) do
+            for i, room in ipairs(app.project.rooms) do
                 if mx >= room.x and mx <= room.x + room.w*8
                 and my >= room.y and my <= room.y + room.h*8 then
                     clickedRoom = true

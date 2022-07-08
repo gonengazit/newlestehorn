@@ -52,7 +52,7 @@ function div8(x)
 end
 
 function dumplua(t)
-    return serpent.block(t, {comment = false})
+    return serpent.block(t, {comment = false, metatostring = false, nocode = true, keyignore = {class = true, super = true}})
 end
 
 function dumplualine(t)

@@ -4,6 +4,18 @@ local tools = require 'plugins.base.tools'
 function App:init()
     local w, h = love.graphics.getDimensions()
 
+    -- this is what goes into history and (mostly) gets saved
+    self.project = {
+        rooms = {},
+        selection = nil,
+        selectedCamtriggerN = nil,
+        conf = {
+			param_names = {},
+			autotiles = {},
+			composite_shapes = {},
+		},
+    }
+
     self.W, self.H = w, h
     self.camX, self.camY = 0, 0
     self.camScale = 2 -- calculated based on camScaleSetting
@@ -52,7 +64,7 @@ function App:getMouse()
 end
 
 function App:activeRoom()
-    return self.room and project.rooms[self.room]
+    return self.room and self.project.rooms[self.room]
 end
 
 
@@ -103,7 +115,7 @@ end
 function App:getCompositeShape(n)
     -- get composite shape that n should draw, and the offset
     -- returns shape,dx,dy
-    for _, shape in ipairs(project.conf.composite_shapes) do
+    for _, shape in ipairs(self.project.conf.composite_shapes) do
         for oy=1,#shape do
             for ox=1,#shape[oy] do
                 if shape[oy][ox]==n then
@@ -136,7 +148,7 @@ function App:showMessage(msg)
 end
 
 function App:pushHistory()
-    local s = dumpproject(project)
+    local s = dumpproject(self.project)
     if s ~= self.history[self.historyN] then
         self.historyN = self.historyN + 1
 
@@ -153,7 +165,7 @@ function App:undo()
         self.historyN = self.historyN - 1
 
         local err
-        project, err = loadproject(self.history[self.historyN])
+        self.project, err = loadproject(self.history[self.historyN])
         if err then error(err) end
     end
 
@@ -165,7 +177,7 @@ function App:redo()
         self.historyN = self.historyN + 1
 
         local err
-        project, err = loadproject(self.history[self.historyN])
+        self.project, err = loadproject(self.history[self.historyN])
         if err then error(err) end
     end
 
@@ -183,13 +195,13 @@ function App:select(i1, j1, i2, j2)
                 r.data[i0 + i][j0 + j] = 0
             end
         end
-        project.selection = selection
+        self.project.selection = selection
     end
 end
 
 function App:placeSelection()
-    if project.selection and self.room then
-        local sel, room = project.selection, self:activeRoom()
+    if self.project.selection and self.room then
+        local sel, room = self.project.selection, self:activeRoom()
         local i0, j0 = div8(sel.
         x - room.x), div8(sel.y - room.y)
         for i = 0, sel.w - 1 do
@@ -202,7 +214,7 @@ function App:placeSelection()
             end
         end
     end
-    project.selection = nil
+    self.project.selection = nil
 end
 
 function App:hoveredTriggerN()

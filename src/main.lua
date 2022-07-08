@@ -17,25 +17,7 @@ psep = love.system.getOS() == "Windows" and "\\" or "/" -- path separator
 
 function newProject()
     -- this is UI things
-    love.graphics.setNewFont(12*global_scale)
-    
     app = App:new()
-
-    --ui:styleSetFont(love.graphics.getFont())
-    ui:stylePush({['font']=app.font})
-    --print(app.font:getHeight())
-
-    -- this is what goes into history and (mostly) gets saved
-    project = {
-        rooms = {},
-        selection = nil,
-        selectedCamtriggerN = nil,
-        conf = {
-			param_names = {},
-			autotiles = {},
-			composite_shapes = {},
-		},
-    }
 
     -- basic p8data with blank spritesheet
     local data = {}
@@ -51,7 +33,6 @@ function newProject()
 
     p8data = data
 end
-
 
 
 require 'fileio'

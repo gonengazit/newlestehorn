@@ -5,20 +5,20 @@
 function updateAutotiles()
     -- calculates auxillary tables for autotile manipulation
 
-    project.autotilet, project.autotilet_strict = {}, {}
+    app.project.autotilet, app.project.autotilet_strict = {}, {}
     -- n => set of autotiles n belongs to
     -- strict excludes extra autotiles (>=16)
 
     for n = 0, 255 do
-        project.autotilet[n] = {}
-        project.autotilet_strict[n] = {}
+        app.project.autotilet[n] = {}
+        app.project.autotilet_strict[n] = {}
     end
 
-    for k, auto in pairs(project.conf.autotiles) do
+    for k, auto in pairs(app.project.conf.autotiles) do
         for o, n in pairs(auto) do
-            project.autotilet[n][k] = true
+            app.project.autotilet[n][k] = true
             if o >= 0 and o < 16 then
-                project.autotilet_strict[n][k] = true
+                app.project.autotilet_strict[n][k] = true
             end
         end
     end
@@ -104,7 +104,7 @@ end
 
 local function matchAutotile(room, i, j, strict)
     if i >= 0 and i < room.w and j >= 0 and j < room.h then
-        local t = strict and project.autotilet_strict or project.autotilet
+        local t = strict and app.project.autotilet_strict or app.project.autotilet
         return t[room.data[i][j]]
     else
         return oob
@@ -122,7 +122,7 @@ function autotile(room, i, j, k)
                  + b1(matchAutotile(room, i - 1, j)[k]) * 2
                  + b1(matchAutotile(room, i, j + 1)[k]) * 4
                  + b1(matchAutotile(room, i, j - 1)[k]) * 8
-        room.data[i][j] = project.conf.autotiles[k][nb]
+        room.data[i][j] = app.project.conf.autotiles[k][nb]
     end
 end
 

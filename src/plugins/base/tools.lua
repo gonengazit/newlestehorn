@@ -39,16 +39,16 @@ function TilePanelMx:tilePanel()
                 if self.autotileEditO then
                     if app.autotile then
                         if self.autotileEditO >= 16 and n == 0 then
-                            project.conf.autotiles[app.autotile][self.autotileEditO] = nil
+                            app.project.conf.autotiles[app.autotile][self.autotileEditO] = nil
                         else
-                            project.conf.autotiles[app.autotile][self.autotileEditO] = n
+                            app.project.conf.autotiles[app.autotile][self.autotileEditO] = n
                         end
                     end
 
                     updateAutotiles()
 
                     self.autotileEditO = nil
-                    app.currentTile = project.conf.autotiles[app.autotile][15]
+                    app.currentTile = app.project.conf.autotiles[app.autotile][15]
                 else
                     app.currentTile = n
                     app.autotile = nil
@@ -63,13 +63,13 @@ function TilePanelMx:tilePanel()
     ui:spacing(1)
     if ui:button("New Autotile") then
         local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-        table.insert(project.conf.autotiles, auto)
+        table.insert(app.project.conf.autotiles, auto)
 
         updateAutotiles()
     end
 
-    ui:layoutRow("static", 8*tms, 8*tms, #project.conf.autotiles)
-    for k, auto in ipairs(project.conf.autotiles) do
+    ui:layoutRow("static", 8*tms, 8*tms, #app.project.conf.autotiles)
+    for k, auto in ipairs(app.project.conf.autotiles) do
         if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
             app.autotile = k
@@ -83,7 +83,7 @@ function TilePanelMx:tilePanel()
         ui:label("Tileset: (click to edit)")
         ui:spacing(1)
         if ui:button("Delete Autotile") then
-            table.remove(project.conf.autotiles, app.autotile)
+            table.remove(app.project.conf.autotiles, app.autotile)
 
             updateAutotiles()
 
@@ -92,7 +92,7 @@ function TilePanelMx:tilePanel()
     end
 
     -- check for missing autotile! can happen on undo/redo
-    if not project.conf.autotiles[app.autotile] then
+    if not app.project.conf.autotiles[app.autotile] then
         app.autotile = nil
     end
 
@@ -101,7 +101,7 @@ function TilePanelMx:tilePanel()
             ui:layoutRow("static", 8*tms, 8*tms, 16)
             for i = 1, #autolayout[r] do
                 local o = autolayout[r][i]
-                if tileButton(project.conf.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
+                if tileButton(app.project.conf.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
                     self.autotileEditO = o
                 end
             end
@@ -223,7 +223,7 @@ tools.Select = tools.Tool:extend("Selection")
 tools.Tool:registerTool(tools.Select)
 
 function tools.Select:disabled()
-    if project.selection then
+    if app.project.selection then
         app:placeSelection()
     end
 end
@@ -244,13 +244,13 @@ function tools.Select:mousepressed(x, y, button)
     local mx, my = app:fromScreen(x, y)
 
     if button == 1 then
-        if not project.selection then
+        if not app.project.selection then
             if ti then
                 self.selectTileI, self.selectTileJ = ti, tj
             end
         else
-            self.selectionMoveX,  self.selectionMoveY  = mx - project.selection.x, my - project.selection.y
-            self.selectionStartX, self.selectionStartY = project.selection.x, project.selection.y
+            self.selectionMoveX,  self.selectionMoveY  = mx - app.project.selection.x, my - app.project.selection.y
+            self.selectionStartX, self.selectionStartY = app.project.selection.x, app.project.selection.y
         end
     end
 end
@@ -264,8 +264,8 @@ function tools.Select:mousereleased(x, y, button)
         app:select(ti, tj, self.selectTileI, self.selectTileJ)
     end
 
-    if project.selection and self.selectionMoveX then
-        if project.selection.x == self.selectionStartX and project.selection.y == self.selectionStartY then
+    if app.project.selection and self.selectionMoveX then
+        if app.project.selection.x == self.selectionStartX and app.project.selection.y == self.selectionStartY then
             app:placeSelection()
         end
     end
@@ -277,9 +277,9 @@ end
 function tools.Select:mousemoved(x, y, dx, dy)
     local mx, my = app:fromScreen(x, y)
 
-    if self.selectionMoveX and project.selection then
-        project.selection.x = roundto8(mx - self.selectionMoveX)
-        project.selection.y = roundto8(my - self.selectionMoveY)
+    if self.selectionMoveX and app.project.selection then
+        app.project.selection.x = roundto8(mx - self.selectionMoveX)
+        app.project.selection.y = roundto8(my - self.selectionMoveY)
     end
 end
 
@@ -417,22 +417,22 @@ function tools.Room:panel()
 
         room.title = ""
 
-        table.insert(project.rooms, room)
-        app.room = #project.rooms
+        table.insert(app.project.rooms, room)
+        app.room = #app.project.rooms
         app.roomAdded = true
     end
     if ui:button("Delete Room") then
         if app:activeRoom() then
-            table.remove(project.rooms, app.room)
+            table.remove(app.project.rooms, app.room)
             if not app:activeRoom() then
-                app.room = #project.rooms
+                app.room = #app.project.rooms
             end
         end
     end
 
     local room = app:activeRoom()
     if room then
-        local param_n = math.max(#project.conf.param_names,#room.params)
+        local param_n = math.max(#app.project.conf.param_names,#room.params)
 
         local x,y=div8(room.x),div8(room.y)
         local fits_on_map=x>=0 and x+room.w<=128 and y>=0 and y+room.h<=64
@@ -462,7 +462,7 @@ function tools.Room:panel()
 
         for i=1, param_n do
             ui:layoutRow("dynamic", 25*global_scale, {0.25,0.75} )
-            ui:label(project.conf.param_names[i] or "")
+            ui:label(app.project.conf.param_names[i] or "")
 
             local t = {value=room.params[i] or 0}
             ui:edit("field", t)
@@ -491,17 +491,17 @@ function tools.Project:panel()
     ui:layoutRow("dynamic", 25*global_scale, {0.8, 0.1, 0.1})
     ui:label("Room parameter names:")
     if ui:button("+") then
-        table.insert(project.conf.param_names, "")
+        table.insert(app.project.conf.param_names, "")
     end
     if ui:button("-") then
-        table.remove(project.conf.param_names, #project.param_names)
+        table.remove(app.project.conf.param_names, #app.project.param_names)
     end
-    for i = 1, #project.conf.param_names do
+    for i = 1, #app.project.conf.param_names do
         ui:layoutRow("dynamic", 25*global_scale, 1)
 
-        local t = {value=project.conf.param_names[i]}
+        local t = {value=app.project.conf.param_names[i]}
         ui:edit("field", t)
-        project.conf.param_names[i] = t.value
+        app.project.conf.param_names[i] = t.value
     end
 end
 

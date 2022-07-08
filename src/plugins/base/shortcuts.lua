@@ -53,7 +53,7 @@ end
 
 shortcuts.DeleteSelection = keyboard.Shortcut:extend("DeleteSelection", {input = "delete"})
 function shortcuts.DeleteSelection:run()
-    project.selection = nil
+    app.project.selection = nil
 
     local room = app:activeRoom()
     if app.selectedCamtriggerN and room then
@@ -67,10 +67,10 @@ end
 
 shortcuts.Cut = keyboard.Shortcut:extend("Cut", {input = "ctrl x"})
 function shortcuts.Cut:run()
-    if project.selection then
-        local s = dumplualine {"selection", project.selection}
+    if app.project.selection then
+        local s = dumplualine {"selection", app.project.selection}
         love.system.setClipboardText(s)
-        project.selection = nil
+        app.project.selection = nil
 
         app:showMessage("Cut")
     end
@@ -81,7 +81,7 @@ function shortcuts.CutRoom:run()
     if app:activeRoom() then
         local s = dumplualine {"room", app:activeRoom()}
         love.system.setClipboardText(s)
-        table.remove(project.rooms, app.room)
+        table.remove(app.project.rooms, app.room)
         app.room = nil
 
         app:showMessage("Cut room")
@@ -90,8 +90,8 @@ end
 
 shortcuts.Copy = keyboard.Shortcut:extend("Copy", {input = "ctrl c"})
 function shortcuts.Copy:run()
-    if project.selection then
-        local s = dumplualine {"selection", project.selection}
+    if app.project.selection then
+        local s = dumplualine {"selection", app.project.selection}
         love.system.setClipboardText(s)
         app:placeSelection()
 
@@ -120,9 +120,9 @@ function shortcuts.Paste:run()
         if type(t) == "table" then
             if t[1] == "selection" then
                 local s = t[2]
-                project.selection = s
-                project.selection.x = roundto8(mx - s.w*4)
-                project.selection.y = roundto8(my - s.h*4)
+                app.project.selection = s
+                app.project.selection.x = roundto8(mx - s.w*4)
+                app.project.selection.y = roundto8(my - s.h*4)
                 app:switchTool(tools.Select)
 
                 app:showMessage("Pasted")
@@ -130,8 +130,8 @@ function shortcuts.Paste:run()
                 local r = t[2]
                 r.x = roundto8(mx - r.w*4)
                 r.y = roundto8(my - r.h*4)
-                table.insert(project.rooms, r)
-                app.room = #project.rooms
+                table.insert(app.project.rooms, r)
+                app.room = #app.project.rooms
             else
                 err = true
             end
@@ -155,17 +155,17 @@ function shortcuts.NewRoom:run()
 
     room.title = ""
 
-    table.insert(project.rooms, room)
-    app.room = #project.rooms
+    table.insert(app.project.rooms, room)
+    app.room = #app.project.rooms
     app.roomAdded = true
 end
 
 shortcuts.DeleteRoom = keyboard.Shortcut:extend("DeleteRoom", {input = "shift delete"})
 function shortcuts.DeleteRoom:run()
     if app:activeRoom() then
-        table.remove(project.rooms, app.room)
+        table.remove(app.project.rooms, app.room)
         if not app:activeRoom() then
-            app.room = #project.rooms
+            app.room = #app.project.rooms
         end
     end
 end
@@ -217,12 +217,12 @@ function shortcuts.SwitchRoom:run(key)
         local n1 = app.room
         local n2 = key == "down" and app.room + 1 or app.room - 1
 
-        if project.rooms[n1] and project.rooms[n2] then
+        if app.project.rooms[n1] and app.project.rooms[n2] then
             if love.keyboard.isDown("lshift") then
                 -- swap
-                local tmp = project.rooms[n1]
-                project.rooms[n1] = project.rooms[n2]
-                project.rooms[n2] = tmp
+                local tmp = app.project.rooms[n1]
+                app.project.rooms[n1] = app.project.rooms[n2]
+                app.project.rooms[n2] = tmp
             end
 
             app.room = n2
@@ -250,9 +250,9 @@ function shortcuts.MoveSelection:onKeypressed(key)
         if key == "right" then dx = 1 end
         if key == "up" then dy = -1 end
         if key == "down" then dy = 1 end
-        if project.selection then
-            project.selection.x = project.selection.x + dx*8
-            project.selection.y = project.selection.y + dy*8
+        if app.project.selection then
+            app.project.selection.x = app.project.selection.x + dx*8
+            app.project.selection.y = app.project.selection.y + dy*8
         end
     end
 end
