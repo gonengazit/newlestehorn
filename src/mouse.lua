@@ -26,16 +26,16 @@ function love.mousepressed(x, y, button, istouch, presses)
             end
 
             if love.keyboard.isDown("lalt") then
-                if activeRoom() then
-                    app.roomMoveX, app.roomMoveY = mx - activeRoom().x, my - activeRoom().y
+                if app:activeRoom() then
+                    app.roomMoveX, app.roomMoveY = mx - app:activeRoom().x, my - app:activeRoom().y
                 end
                 return
             end
         end
     elseif button == 2 then
         if love.keyboard.isDown("lalt") and app.room then
-            app.roomResizeSideX = sign(mx - activeRoom().x - activeRoom().w*8/2)
-            app.roomResizeSideY = sign(my - activeRoom().y - activeRoom().h*8/2)
+            app.roomResizeSideX = sign(mx - app:activeRoom().x - app:activeRoom().w*8/2)
+            app.roomResizeSideY = sign(my - app:activeRoom().y - app:activeRoom().h*8/2)
             return
         end
     end
@@ -78,7 +78,7 @@ function love.mousemoved(x, y, dx, dy, istouch)
         app.camY = app.camY + my - app.camMoveY
     end
     if app.roomMoveX and app.room then
-        local room=activeRoom()
+        local room=app:activeRoom()
         room.x = roundto8(mx - app.roomMoveX)
         room.y = roundto8(my - app.roomMoveY)
         if not room.hex then

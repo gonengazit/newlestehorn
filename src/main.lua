@@ -52,16 +52,12 @@ function newProject()
     p8data = data
 end
 
-function activeRoom()
-    return app.room and project.rooms[app.room]
-end
-
 function mouseOverTile()
-    if activeRoom() then
+    if app:activeRoom() then
         local x, y = love.mouse.getPosition()
         local mx, my = app:fromScreen(x, y)
-        local ti, tj = div8(mx - activeRoom().x), div8(my - activeRoom().y)
-        if ti >= 0 and ti < activeRoom().w and tj >= 0 and tj < activeRoom().h then
+        local ti, tj = div8(mx - app:activeRoom().x), div8(my - app:activeRoom().y)
+        if ti >= 0 and ti < app:activeRoom().w and tj >= 0 and tj < app:activeRoom().h then
             return ti, tj
         end
     end
@@ -74,15 +70,15 @@ function drawMouseOverTile(col, tile)
     if ti then
         love.graphics.setColor(1, 1, 1)
         if tile then
-            local x, y=activeRoom().x + ti*8, activeRoom().y + tj*8
+            local x, y=app:activeRoom().x + ti*8, app:activeRoom().y + tj*8
             love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
             drawCompositeShape(tile,x,y)
         end
 
         love.graphics.setColor(col)
         love.graphics.setLineWidth(1 / app.camScale)
-        love.graphics.rectangle("line", activeRoom().x + ti*8 + 0.5 / app.camScale,
-                                        activeRoom().y + tj*8 + 0.5 / app.camScale, 8, 8)
+        love.graphics.rectangle("line", app:activeRoom().x + ti*8 + 0.5 / app.camScale,
+                                        app:activeRoom().y + tj*8 + 0.5 / app.camScale, 8, 8)
     end
 end
 
@@ -136,7 +132,7 @@ end
 
 function placeSelection()
     if project.selection and app.room then
-        local sel, room = project.selection, activeRoom()
+        local sel, room = project.selection, app:activeRoom()
         local i0, j0 = div8(sel.x - room.x), div8(sel.y - room.y)
         for i = 0, sel.w - 1 do
             if i0 + i >= 0 and i0 + i < room.w then
@@ -154,7 +150,7 @@ end
 function select(i1, j1, i2, j2)
     local i0, j0, w, h = rectCont2Tiles(i1, j1, i2, j2)
     if w > 1 or h > 1 then
-        local r = activeRoom()
+        local r = app:activeRoom()
         local selection = newRoom(r.x + i0*8, r.y + j0*8, w, h)
         for i = 0, w - 1 do
             for j = 0, h - 1 do
@@ -167,7 +163,7 @@ function select(i1, j1, i2, j2)
 end
 
 function hoveredTriggerN()
-    local room=activeRoom()
+    local room=app:activeRoom()
     if room then
         for n, trigger in ipairs(room.camtriggers) do
             local ti, tj = mouseOverTile()
@@ -179,7 +175,7 @@ function hoveredTriggerN()
 end
 
 function selectedTrigger()
-    return activeRoom() and activeRoom().camtriggers[app.selectedCamtriggerN]
+    return app:activeRoom() and app:activeRoom().camtriggers[app.selectedCamtriggerN]
 end
 
 function switchTool(toolClass)

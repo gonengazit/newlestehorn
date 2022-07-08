@@ -34,7 +34,7 @@ function shortcuts.Undo:run()
         if err then error(err) end
     end
 
-    if not activeRoom() then app.room = nil end
+    if not app:activeRoom() then app.room = nil end
 end
 
 shortcuts.Redo = keyboard.Shortcut:extend("Redo", {input = "ctrl shift z", repeatable = true})
@@ -47,7 +47,7 @@ function shortcuts.Redo:run()
         if err then error(err) end
     end
 
-    if not activeRoom() then app.room = nil end
+    if not app:activeRoom() then app.room = nil end
 end
 
 
@@ -56,9 +56,9 @@ end
 
 shortcuts.SelectAll = keyboard.Shortcut:extend("SelectAll", {input = "ctrl a"})
 function shortcuts.SelectAll:run()
-    if activeRoom() then
+    if app:activeRoom() then
         switchTool(tools.Select)
-        select(0, 0, activeRoom().w - 1, activeRoom().h - 1)
+        select(0, 0, app:activeRoom().w - 1, app:activeRoom().h - 1)
     end
 end
 
@@ -71,7 +71,7 @@ shortcuts.DeleteSelection = keyboard.Shortcut:extend("DeleteSelection", {input =
 function shortcuts.DeleteSelection:run()
     project.selection = nil
 
-    local room = activeRoom()
+    local room = app:activeRoom()
     if app.selectedCamtriggerN and room then
         table.remove(room.camtriggers, app.selectedCamtriggerN)
         app.selectedCamtriggerN = nil
@@ -94,8 +94,8 @@ end
 
 shortcuts.CutRoom = keyboard.Shortcut:extend("CutRoom", {input = "ctrl shift x"})
 function shortcuts.CutRoom:run()
-    if activeRoom() then
-        local s = dumplualine {"room", activeRoom()}
+    if app:activeRoom() then
+        local s = dumplualine {"room", app:activeRoom()}
         love.system.setClipboardText(s)
         table.remove(project.rooms, app.room)
         app.room = nil
@@ -117,8 +117,8 @@ end
 
 shortcuts.CopyRoom = keyboard.Shortcut:extend("CopyRoom", {input = "ctrl shift c"})
 function shortcuts.CopyRoom:run()
-    if activeRoom() then
-        local s = dumplualine {"room", activeRoom()}
+    if app:activeRoom() then
+        local s = dumplualine {"room", app:activeRoom()}
         love.system.setClipboardText(s)
 
         showMessage("Copied room")
@@ -178,9 +178,9 @@ end
 
 shortcuts.DeleteRoom = keyboard.Shortcut:extend("DeleteRoom", {input = "shift delete"})
 function shortcuts.DeleteRoom:run()
-    if activeRoom() then
+    if app:activeRoom() then
         table.remove(project.rooms, app.room)
-        if not activeRoom() then
+        if not app:activeRoom() then
             app.room = #project.rooms
         end
     end

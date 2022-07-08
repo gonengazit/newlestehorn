@@ -8,7 +8,7 @@ function App:init()
     self.camX, self.camY = 0, 0
     self.camScale = 2 -- calculated based on camScaleSetting
     self.camScaleSetting = 1 -- 0, 1, 2 is 1x, 2x, 3x etc, -1, -2, -3 is 0.5x, 0.25x, 0.125x
-    self.room = nil
+    self.room = nil -- room NUMBER
     
     self.tool = tools.Brush:new()
     self.currentTile = 0
@@ -27,7 +27,7 @@ function App:init()
 
     self.left, self.top = 0, 0 -- top left corner of editing area
 
-    -- these are used in various hacks to work around nuklear being big dumb (or me idk)
+    -- these are used in various hacks to work around nuklear being big dumb (or myself idk)
     self.anyWindowHovered = false
     self.enterPressed = false
     self.roomAdded = false
@@ -42,6 +42,10 @@ end
 function App:fromScreen(x, y)
     return (x - self.left)/self.camScale - self.camX,
            (y - self.top)/self.camScale - self.camY
+end
+
+function App:activeRoom()
+    return app.room and project.rooms[app.room]
 end
 
 return App

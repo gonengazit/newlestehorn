@@ -226,7 +226,7 @@ function love.update(dt)
     local mx, my = app:fromScreen(x, y)
 
     if app.roomResizeSideX and app.room then
-        local room = activeRoom()
+        local room = app:activeRoom()
 
         if not room.hex then
             -- if the room is stored in mapdata, it still has to fit when resizing
@@ -305,7 +305,7 @@ function love.draw()
     end
 
     for n, room in ipairs(project.rooms) do
-        if room ~= activeRoom() then
+        if room ~= app:activeRoom() then
             drawRoom(room, p8data)
             love.graphics.setColor(0.5, 0.5, 0.5, 0.3)
             love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
@@ -321,8 +321,8 @@ function love.draw()
             end
         end
     end
-    if activeRoom() then
-        local room = activeRoom()
+    if app:activeRoom() then
+        local room = app:activeRoom()
 
         drawRoom(room, p8data)
 

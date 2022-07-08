@@ -135,12 +135,12 @@ function tools.Brush:update(dt)
 
         local ti, tj = mouseOverTile()
         if ti then
-            local room = activeRoom()
+            local room = app:activeRoom()
 
-            activeRoom().data[ti][tj] = n
+            app:activeRoom().data[ti][tj] = n
 
             if app.autotile then
-                autotileWithNeighbors(activeRoom(), ti, tj, app.autotile)
+                autotileWithNeighbors(app:activeRoom(), ti, tj, app.autotile)
             end
         end
     end
@@ -168,7 +168,7 @@ function tools.Rectangle:draw()
         drawMouseOverTile(nil, app.currentTile)
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.rectangleI, self.rectangleJ)
-        drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
+        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
 
@@ -186,7 +186,7 @@ function tools.Rectangle:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
     if ti and self.rectangleI then
-        local room = activeRoom()
+        local room = app:activeRoom()
 
         local n = app.currentTile
         if button == 2 then
@@ -235,7 +235,7 @@ function tools.Select:draw()
         drawMouseOverTile()
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.selectTileI, self.selectTileJ)
-        drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
+        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {0, 1, 0.5}, false)
     end
 end
 
@@ -317,7 +317,7 @@ function tools.Camtrigger:draw()
         drawMouseOverTile({1,0.75,0})
     elseif ti then
         local i, j, w, h = rectCont2Tiles(ti, tj, self.camtriggerI, self.camtriggerJ)
-        drawColoredRect(activeRoom(), i*8, j*8, w*8, h*8, {1,0.75,0}, false)
+        drawColoredRect(app:activeRoom(), i*8, j*8, w*8, h*8, {1,0.75,0}, false)
     end
 end
 
@@ -390,7 +390,7 @@ function tools.Camtrigger:mousereleased(x, y, button)
     local ti, tj = mouseOverTile()
 
     if ti and self.camtriggerI then
-        local room = activeRoom()
+        local room = app:activeRoom()
         local i0, j0, w, h = rectCont2Tiles(self.camtriggerI, self.camtriggerJ, ti, tj)
         local trigger={x=i0,y=j0,w=w,h=h,off_x="0",off_y="0"}
         table.insert(room.camtriggers, trigger)
@@ -422,15 +422,15 @@ function tools.Room:panel()
         app.roomAdded = true
     end
     if ui:button("Delete Room") then
-        if activeRoom() then
+        if app:activeRoom() then
             table.remove(project.rooms, app.room)
-            if not activeRoom() then
+            if not app:activeRoom() then
                 app.room = #project.rooms
             end
         end
     end
 
-    local room = activeRoom()
+    local room = app:activeRoom()
     if room then
         local param_n = math.max(#project.conf.param_names,#room.params)
 
