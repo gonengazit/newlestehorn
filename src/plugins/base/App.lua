@@ -1,20 +1,15 @@
-local App = class("App")
+local Project = require 'plugins.base.Project'
 local tools = require 'plugins.base.tools'
+
+local App = class("App")
+
+
 
 function App:init()
     local w, h = love.graphics.getDimensions()
 
     -- this is what goes into history and (mostly) gets saved
-    self.project = {
-        rooms = {},
-        selection = nil,
-        selectedCamtriggerN = nil,
-        conf = {
-			param_names = {},
-			autotiles = {},
-			composite_shapes = {},
-		},
-    }
+    self.project = Project:new()
 
     self.W, self.H = w, h
     self.camX, self.camY = 0, 0
@@ -148,7 +143,8 @@ function App:showMessage(msg)
 end
 
 function App:pushHistory()
-    local s = dumpproject(self.project)
+    local s = self.project:getState()
+
     if s ~= self.history[self.historyN] then
         self.historyN = self.historyN + 1
 
@@ -164,9 +160,7 @@ function App:undo()
     if self.historyN >= 2 then
         self.historyN = self.historyN - 1
 
-        local err
-        self.project, err = loadproject(self.history[self.historyN])
-        if err then error(err) end
+        self.project:setState(self.history[self.historyN])
     end
 
     if not self:activeRoom() then self.room = nil end
@@ -176,9 +170,7 @@ function App:redo()
     if self.historyN <= #self.history - 1 then
         self.historyN = self.historyN + 1
 
-        local err
-        self.project, err = loadproject(self.history[self.historyN])
-        if err then error(err) end
+        self.project:setState(self.history[self.historyN])
     end
 
     if not self:activeRoom() then self.room = nil end
