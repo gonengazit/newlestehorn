@@ -1,7 +1,7 @@
 nuklear = require 'nuklear'
 filedialog = require 'filedialog'
-serpent = require 'serpent'
-class = require '30log'
+serpent = require 'lib.serpent'
+class = require 'lib.30log'
 
 local App = require 'plugins.base.App'
 require 'util'
