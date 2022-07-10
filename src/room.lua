@@ -1,21 +1,8 @@
 local tools = require 'plugins.base.tools'
+local Room = require 'plugins.base.Room'
 
 function newRoom(x, y, w, h)
-    local room = {
-        x = x or 0,
-        y = y or 0,
-        w = w or 16,
-        h = h or 16,
-        hex=true,
-        data = {},
-        exits={left=false, bottom=false, right=false, top=true},
-        params = {},
-        title = "",
-        camtriggers={}
-    }
-    room.data = fill2d0s(room.w, room.h)
-
-    return room
+    return Room:new(x, y, w, h)
 end
 
 function drawRoom(room, p8data, highlight)

@@ -1,5 +1,8 @@
 local Project = class("Project")
 
+local util = require 'util'
+local Room = require 'plugins.base.Room'
+
 
 
 function Project:init()
@@ -14,26 +17,22 @@ function Project:init()
 end
 
 function Project:getState()
-    -- this is an optimization that i decided to disable for now
-    -- for n, room in pairs(self.rooms) do
-    --     roomMakeStr(room)
-    -- end
-    -- roomMakeStr(self.selection)
-
-    local s = serpent.line(self, {compact = true, comment = false, metatostring = false, keyignore = {data = true, class = true, super = true}})
+    local s = serpent.line(self, {compact = true, comment = false, metatostring = false, keyignore = {class = true, super = true}})
     return s
 end
 
 function Project:setState(s)
     local p = loadlua(s)
+
+    -- instantiate self with pairs from table
     for k, v in pairs(p) do
         self[k] = v
     end
 
-    -- for n, room in pairs(self.rooms) do
-    --     roomMakeData(room)
-    -- end
-    -- roomMakeData(self.selection)
+    -- convert rooms into Room instances
+    for n, room in pairs(self.rooms) do
+        self.rooms[n] = util.instanceFromTable(Room, room)
+    end
 end
 
 

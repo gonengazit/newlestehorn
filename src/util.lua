@@ -1,3 +1,7 @@
+local util = {}
+
+
+
 function isempty(t)
     for k, v in pairs(t) do
         return false
@@ -171,3 +175,17 @@ function printbg(text, x, y, fgcol, bgcol, centerx, centery)
     love.graphics.setColor(fgcol)
     love.graphics.print(text, x, y)
 end
+
+
+
+function util.instanceFromTable(C, t)
+    local o = C:create()
+    for k, v in pairs(t) do
+        o[k] = v
+    end
+    return o
+end
+
+
+
+return util
