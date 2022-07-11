@@ -88,13 +88,7 @@ function loadpico8(filename)
     end
 
     -- upscale 16x
-    local scaled_spritesheet_data = love.image.newImageData(128 * app.upscale, 128 * app.upscale)
-    for x = 0, scaled_spritesheet_data:getWidth() - 1 do
-        for y = 0, scaled_spritesheet_data:getHeight() - 1 do
-            local r, g, b, a = spritesheet_data:getPixel(math.floor(x/app.upscale), math.floor(y/app.upscale))
-            scaled_spritesheet_data:setPixel(x, y, r, g, b, a)
-        end
-    end
+    local scaled_spritesheet_data = util.upscale(spritesheet_data, app.upscale)
 
     data.spritesheet = love.graphics.newImage(scaled_spritesheet_data)
 
