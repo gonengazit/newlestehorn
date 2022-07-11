@@ -37,11 +37,13 @@ function TilePanelMx:tilePanel()
 
     --ui:layoutRow("dynamic", 25*global_scale, 3)
     ui:layoutTemplateBegin(40*global_scale)
+    ui:layoutTemplatePush("dynamic")
     ui:layoutTemplatePush("static", 40*global_scale)
     ui:layoutTemplatePush("dynamic")
     ui:layoutTemplatePush("dynamic")
     ui:layoutTemplateEnd()
 
+    ui:label("Tiles")
     tileButton(app.currentTile, false, false, true)
     ui:spacing(1)
     app.showGarbageTiles = ui:checkbox("Show 2nd half", app.showGarbageTiles)
@@ -81,7 +83,7 @@ function TilePanelMx:tilePanel()
 
     -- autotiles
     ui:layoutRow("dynamic", 25*global_scale, 3)
-    ui:label("Autotiles:")
+    ui:label("Autotiles")
     ui:spacing(1)
     if ui:button("New Autotile") then
         local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}

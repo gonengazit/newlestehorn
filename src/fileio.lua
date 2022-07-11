@@ -1,5 +1,9 @@
 -- functions to read lines correctly for \r\n line endings
 
+local util = require 'util'
+
+
+
 local function cr_lines(s)
     return s:gsub('\r\n?', '\n'):gmatch('(.-)\n')
 end

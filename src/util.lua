@@ -146,7 +146,7 @@ function util.upscale(imgdata, upscale)
         end
     end
 
-    return imgdata
+    return scaled_imgdata
 end
 
 
