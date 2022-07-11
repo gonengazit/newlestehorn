@@ -135,6 +135,20 @@ function util.instanceFromTable(C, t)
     return o
 end
 
+function util.upscale(imgdata, upscale)
+    local w, h = imgdata:getDimensions()
+    local scaled_imgdata = love.image.newImageData(w * upscale, h * upscale)
+
+    for x = 0, scaled_imgdata:getWidth() - 1 do
+        for y = 0, scaled_imgdata:getHeight() - 1 do
+            local r, g, b, a = imgdata:getPixel(math.floor(x/upscale), math.floor(y/upscale))
+            scaled_imgdata:setPixel(x, y, r, g, b, a)
+        end
+    end
+
+    return imgdata
+end
+
 
 
 return util
