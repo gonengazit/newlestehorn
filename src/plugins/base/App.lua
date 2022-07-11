@@ -31,6 +31,7 @@ function App:init()
     self.historyN = 0 -- index of current history item (can be less than #history to support redo)
 
     self.font = love.graphics.getFont()
+    self.upscale = 16
 
     self.left, self.top = 0, 0 -- top left corner of editing area
 
@@ -81,8 +82,8 @@ function App:drawMouseOverTile(col, tile)
     if ti then
         love.graphics.setColor(1, 1, 1)
         if tile then
-            local x, y=self:activeRoom().x + ti*8, self:activeRoom().y + tj*8
-            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x,y)
+            local x, y = self:activeRoom().x + ti*8, self:activeRoom().y + tj*8
+            love.graphics.draw(p8data.spritesheet, p8data.quads[tile], x, y, 0, 1/app.upscale)
             self:drawCompositeShape(tile, x, y)
         end
 
@@ -116,9 +117,9 @@ function App:drawCompositeShape(n, x, y)
     if shape then
         for oy=1,#shape do
             for ox=1,#shape[oy] do
-                local m=math.abs(shape[oy][ox]) --negative sprite is drawn, but not used as a source for the shape
+                local m = math.abs(shape[oy][ox]) --negative sprite is drawn, but not used as a source for the shape
                 if m~= 0 then
-                    love.graphics.draw(p8data.spritesheet_noblack, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8)
+                    love.graphics.draw(p8data.spritesheet_noblack, p8data.quads[m], x + (ox-dx)*8, y + (oy-dy)*8, 0, 1/app.upscale)
                 end
             end
         end

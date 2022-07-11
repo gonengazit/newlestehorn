@@ -27,11 +27,30 @@ local TilePanelMx = {}
 
 function TilePanelMx:tilePanel()
     -- tiles
-    ui:layoutRow("dynamic", 25*global_scale, 2)
-    ui:label("Tiles:")
-    app.showGarbageTiles = ui:checkbox("Show garbage tiles", app.showGarbageTiles)
+    local tileSize = math.floor((app.tpw - 3) / 16)
+
+    ui:stylePush {
+        window = {
+            spacing = {x = 0, y = 0},
+        }
+    }
+
+    --ui:layoutRow("dynamic", 25*global_scale, 3)
+    ui:layoutTemplateBegin(40*global_scale)
+    ui:layoutTemplatePush("static", 40*global_scale)
+    ui:layoutTemplatePush("dynamic")
+    ui:layoutTemplatePush("dynamic")
+    ui:layoutTemplateEnd()
+
+    tileButton(app.currentTile, false, false, true)
+    ui:spacing(1)
+    app.showGarbageTiles = ui:checkbox("Show 2nd half", app.showGarbageTiles)
+
+    -- spacing
+    ui:layoutRow("dynamic", 1*global_scale, 0)
+
     for j = 0, app.showGarbageTiles and 15 or 7 do
-        ui:layoutRow("static", 8*tms, 8*tms, 16)
+        ui:layoutRow("static", tileSize, tileSize, 16)
         for i = 0, 15 do
             local n = i + j*16
 
@@ -57,6 +76,9 @@ function TilePanelMx:tilePanel()
         end
     end
 
+    -- spacing
+    ui:layoutRow("dynamic", 1*global_scale, 0)
+
     -- autotiles
     ui:layoutRow("dynamic", 25*global_scale, 3)
     ui:label("Autotiles:")
@@ -68,7 +90,7 @@ function TilePanelMx:tilePanel()
         updateAutotiles()
     end
 
-    ui:layoutRow("static", 8*tms, 8*tms, #app.project.conf.autotiles)
+    ui:layoutRow("static", tileSize, tileSize, #app.project.conf.autotiles)
     for k, auto in ipairs(app.project.conf.autotiles) do
         if tileButton(auto[5], app.autotile == k) then
             app.currentTile = auto[15]
@@ -98,7 +120,7 @@ function TilePanelMx:tilePanel()
 
     if app.autotile then
         for r = 1, 4 do
-            ui:layoutRow("static", 8*tms, 8*tms, 16)
+            ui:layoutRow("static", tileSize, tileSize, 16)
             for i = 1, #autolayout[r] do
                 local o = autolayout[r][i]
                 if tileButton(app.project.conf.autotiles[app.autotile][o] or 0, self.autotileEditO == o, o) then
@@ -110,6 +132,8 @@ function TilePanelMx:tilePanel()
         ui:layoutRow("dynamic", 50*global_scale, 1)
         ui:label("Autotile draws with the 16 tiles on the left, connecting them to each other and to any of the extra tiles on the right. This allows connecting to other deco tiles and tiles from other tilesets. Also works when erasing.", "wrap")
     end
+
+    ui:stylePop()
 end
 
 

@@ -41,7 +41,7 @@ function Room:draw(p8data, highlight)
                 love.graphics.setColor(1, 1, 1)
 
                 if n~= 0 then
-                    love.graphics.draw(p8data.spritesheet, p8data.quads[n], self.x + i*8, self.y + j*8)
+                    love.graphics.draw(p8data.spritesheet, p8data.quads[n], self.x + i*8, self.y + j*8, 0, 1/app.upscale)
                 end
             end
         end

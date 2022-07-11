@@ -2,7 +2,7 @@ local tools = require 'plugins.base.tools'
 
 -- UI things
 
-function tileButton(n, highlight, autotileOverlayO)
+function tileButton(n, highlight, autotileOverlayO, nohover)
     local x, y, w, h = ui:widgetBounds()
 
     if n ~= 0 then
@@ -15,7 +15,7 @@ function tileButton(n, highlight, autotileOverlayO)
     if ui:inputIsHovered(x, y, w, h) then
         hov = true
     end
-    if hov or highlight or autotileOverlayO then
+    if (hov and not nohover) or highlight or autotileOverlayO then
         love.graphics.setLineWidth(1)
         if hov then
             love.graphics.setColor(0, 1, 0.5)
@@ -24,8 +24,8 @@ function tileButton(n, highlight, autotileOverlayO)
         end
 
         if hov or highlight then
-            local x, y = x - 0.5, y - 0.5
-            local w, h = w + 1, h + 1
+            --local x, y = x - 0.5, y - 0.5
+            local w, h = w - 1, h - 1
             ui:line(x, y, x + w, y)
             ui:line(x, y, x, y + h)
             ui:line(x + w, y, x + w, y + h)
@@ -117,7 +117,6 @@ function love.load(args)
     love.graphics.setCanvas()
 
     bgtileIm = love.graphics.newImage("assets/bgtile.png")
-    bgtileIm:setFilter("nearest")
 end
 
 function love.update(dt)
@@ -126,7 +125,6 @@ function love.update(dt)
     app.left, app.top = rpw, 0
 
     ui:frameBegin()
-    --ui:scale(2)
 
     ui:stylePush {
         window = {
@@ -191,8 +189,9 @@ function love.update(dt)
 
     -- tool panel
     if app.showToolPanel then
-        local tpw = 16*8*tms + 18
-        if ui:windowBegin("Tool panel", app.W - tpw, 0, tpw, app.H) then
+        --local tpw = 16*8*tms + 18
+        app.tpw = math.floor(app.W * 0.3 / 16) * 16 + 3
+        if ui:windowBegin("Tool panel", app.W - app.tpw, 0, app.tpw, app.H) then
             -- tools list
             for i = 0, #tools.Tool.list - 1 do
                 if i%4 == 0 then
@@ -207,7 +206,7 @@ function love.update(dt)
             end
 
             -- some spacing
-            ui:layoutRow("dynamic", 5*global_scale, 0)
+            --ui:layoutRow("dynamic", 1*global_scale, 0)
 
             -- tool panel
             app.tool:panel()

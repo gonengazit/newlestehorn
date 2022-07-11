@@ -15,7 +15,7 @@ end
 -- file handling
 
 function loadpico8(filename)
-    love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.setDefaultFilter("linear", "linear")
 
     local file, err = io.open(filename, "rb")
 
@@ -76,7 +76,7 @@ function loadpico8(filename)
         end
     end
 
-    for j =8,15 do
+    for j = 8,15 do
         for i = 0, 15 do
             local id=i+16*(j-8)
             local d1=math.floor(id/16)
@@ -87,12 +87,21 @@ function loadpico8(filename)
         end
     end
 
-    data.spritesheet = love.graphics.newImage(spritesheet_data)
+    -- upscale 16x
+    local scaled_spritesheet_data = love.image.newImageData(128 * app.upscale, 128 * app.upscale)
+    for x = 0, scaled_spritesheet_data:getWidth() - 1 do
+        for y = 0, scaled_spritesheet_data:getHeight() - 1 do
+            local r, g, b, a = spritesheet_data:getPixel(math.floor(x/app.upscale), math.floor(y/app.upscale))
+            scaled_spritesheet_data:setPixel(x, y, r, g, b, a)
+        end
+    end
+
+    data.spritesheet = love.graphics.newImage(scaled_spritesheet_data)
 
     data.quads = {}
     for i = 0, 15 do
         for j = 0, 15 do
-            data.quads[i + j*16] = love.graphics.newQuad(i*8, j*8, 8, 8, data.spritesheet:getDimensions())
+            data.quads[i + j*16] = love.graphics.newQuad(i*8*app.upscale, j*8*app.upscale, 8*app.upscale, 8*app.upscale, data.spritesheet)
         end
     end
     
