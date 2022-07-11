@@ -126,6 +126,20 @@ function App:drawCompositeShape(n, x, y)
     end
 end
 
+function App:drawColoredRect(room, x, y, w, h, col, filled)
+    love.graphics.setColor(col)
+    love.graphics.setLineWidth(1 / self.camScale)
+    love.graphics.rectangle("line", room.x + x + 0.5 / self.camScale,
+                                    room.y + y + 0.5 / self.camScale,
+                                    w, h)
+    if filled then
+        love.graphics.setColor(col[1], col[2], col[3], 0.25)
+        love.graphics.rectangle("fill", room.x + x + 0.5 / self.camScale,
+                                        room.y + y + 0.5 / self.camScale,
+                                        w, h)
+    end
+end
+
 function App:showMessage(msg)
     self.message = msg
     self.messageTimeLeft = 4

@@ -1,5 +1,6 @@
 local Room = class("Room")
 
+local util = require 'util'
 local tools = require 'plugins.base.tools'
 
 
@@ -48,7 +49,7 @@ function Room:draw(p8data, highlight)
     end
 
     if highlight then
-        util.drawColoredRect(self, 0, 0, self.w*8, self.h*8, {0, 1, 0.5}, true)
+        app:drawColoredRect(self, 0, 0, self.w*8, self.h*8, {0, 1, 0.5}, true)
     end
 
     if app.tool:instanceOf(tools.Camtrigger) or app.showCameraTriggers then
@@ -65,7 +66,7 @@ function Room:draw(p8data, highlight)
                 col = {1,0.75,0}
             end
 
-            util.drawColoredRect(self, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
+            app:drawColoredRect(self, trigger.x*8, trigger.y*8, trigger.w*8, trigger.h*8, col, true)
         end
     end
 end
