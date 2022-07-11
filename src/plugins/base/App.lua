@@ -180,10 +180,9 @@ function App:select(i1, j1, i2, j2)
 end
 
 function App:placeSelection()
-    if self.project.selection and self.room then
+    if self.project.selection and self:activeRoom() then
         local sel, room = self.project.selection, self:activeRoom()
-        local i0, j0 = div8(sel.
-        x - room.x), div8(sel.y - room.y)
+        local i0, j0 = div8(sel.x - room.x), div8(sel.y - room.y)
         for i = 0, sel.w - 1 do
             if i0 + i >= 0 and i0 + i < room.w then
                 for j = 0, sel.h - 1 do
