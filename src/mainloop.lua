@@ -309,7 +309,7 @@ function love.draw()
 
     for n, room in ipairs(app.project.rooms) do
         if room ~= app:activeRoom() then
-            drawRoom(room, p8data)
+            room:draw(p8data)
             love.graphics.setColor(0.5, 0.5, 0.5, 0.3)
             love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
 
@@ -327,7 +327,7 @@ function love.draw()
     if app:activeRoom() then
         local room = app:activeRoom()
 
-        drawRoom(room, p8data)
+        room:draw(p8data)
 
         if app.roomPanelHovered then
             love.graphics.push()
@@ -340,7 +340,7 @@ function love.draw()
         end
     end
     if app.project.selection then
-        drawRoom(app.project.selection, p8data, true)
+        app.project.selection:draw(p8data, true)
         love.graphics.setColor(0, 1, 0.5)
         love.graphics.setLineWidth(1 / app.camScale)
         love.graphics.rectangle("line", app.project.selection.x + 0.5 / app.camScale, app.project.selection.y + 0.5 / app.camScale, app.project.selection.w*8, app.project.selection.h*8)

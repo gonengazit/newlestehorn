@@ -3,7 +3,7 @@ filedialog = require 'filedialog'
 serpent = require 'lib.serpent'
 class = require 'lib.30log'
 
-local App = require 'plugins.base.App'
+local App = require 'App'
 local util = require 'util'
 require 'room'
 require 'autotiles'

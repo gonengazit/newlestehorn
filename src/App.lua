@@ -1,4 +1,5 @@
-local Project = require 'plugins.base.Project'
+local Project = require 'Project'
+local Room = require 'Room'
 local tools = require 'plugins.base.tools'
 
 local App = class("App")
@@ -183,7 +184,7 @@ function App:select(i1, j1, i2, j2)
     local i0, j0, w, h = rectCont2Tiles(i1, j1, i2, j2)
     if w > 1 or h > 1 then
         local r = self:activeRoom()
-        local selection = newRoom(r.x + i0*8, r.y + j0*8, w, h)
+        local selection = Room:new(r.x + i0*8, r.y + j0*8, w, h)
         for i = 0, w - 1 do
             for j = 0, h - 1 do
                 selection.data[i][j] = r.data[i0 + i][j0 + j]

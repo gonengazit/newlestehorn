@@ -1,7 +1,7 @@
 local Project = class("Project")
 
 local util = require 'util'
-local Room = require 'plugins.base.Room'
+local Room = require 'Room'
 
 
 

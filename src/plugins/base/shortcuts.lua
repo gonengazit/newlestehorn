@@ -1,7 +1,10 @@
+local shortcuts = {}
+
 local keyboard = require 'plugins.base.keyboard'
 local tools = require 'plugins.base.tools'
+local Room = require 'Room'
 
-local shortcuts = {}
+
 
 -- FILE OPERATIONS
 
@@ -151,7 +154,7 @@ end
 shortcuts.NewRoom = keyboard.Shortcut:extend("NewRoom", {input = "n"})
 function shortcuts.NewRoom:run()
     local mx, my = app:getMouse()
-    local room = newRoom(roundto8(mx - 64), roundto8(my - 64), 16, 16)
+    local room = Room:new(roundto8(mx - 64), roundto8(my - 64), 16, 16)
 
     room.title = ""
 

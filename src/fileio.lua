@@ -1,7 +1,7 @@
 -- functions to read lines correctly for \r\n line endings
 
 local util = require 'util'
-
+local Room = require 'Room'
 
 
 local function cr_lines(s)
@@ -196,7 +196,7 @@ function loadpico8(filename)
             x, y, w, h, exits = tonumber(x), tonumber(y), tonumber(w), tonumber(h),exits:sub(1,2)=="0b" and tonumber(exits:sub(3),2) or tonumber(exits) or 1
             params=split(params or "")
             if x and y and w and h then -- this confirms they're there and they're numbers
-                data.rooms[n] = newRoom(x*128, y*128, w*16, h*16)
+                data.rooms[n] = Room:new(x*128, y*128, w*16, h*16)
                 data.rooms[n].exits={left=bit.band(exits,2^3)~=0, bottom=bit.band(exits,2^2)~=0, right=bit.band(exits,2^1)~=0, top=bit.band(exits,2^0)~=0}
                 data.rooms[n].hex=false
                 data.rooms[n].params=params
@@ -207,7 +207,7 @@ function loadpico8(filename)
     else
         for J = 0, 3 do
             for I = 0, 7 do
-                local room=newRoom(I*128, J*128, 16, 16)
+                local room=Room:new(I*128, J*128, 16, 16)
                 room.hex = false
                 --b.title=""
                 table.insert(data.rooms, room)

@@ -1,4 +1,8 @@
-local tools = {}
+-- GLOBAL
+-- TEMPORARY WORKAROUND FOR CYCLIC DEPENDENCY
+tools = {}
+
+local Room = require 'Room'
 
 
 
@@ -439,7 +443,7 @@ function tools.Room:panel()
     ui:layoutRow("static", 25*global_scale, 100*global_scale, 2)
     if ui:button("New Room") then
         local x, y = app:fromScreen(app.W/3, app.H/3)
-        local room = newRoom(roundto8(x), roundto8(y), 16, 16)
+        local room = Room:new(roundto8(x), roundto8(y), 16, 16)
 
         room.title = ""
 
