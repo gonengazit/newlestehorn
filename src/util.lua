@@ -57,10 +57,11 @@ end
 
 function dumplua(t)
     return serpent.block(t, {comment = false, metatostring = false})
+    
 end
 
 function dumplualine(t)
-    return serpent.line(t, {comment = false})
+    return serpent.line(t, {compact = true, comment = false, metatostring = false, keyignore = {class = true, super = true}})
 end
 
 function loadlua(s)

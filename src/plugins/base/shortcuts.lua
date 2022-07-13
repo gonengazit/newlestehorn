@@ -2,6 +2,7 @@ local shortcuts = {}
 
 local keyboard = require 'plugins.base.keyboard'
 local tools = require 'plugins.base.tools'
+local util = require 'util'
 local Room = require 'Room'
 
 
@@ -122,7 +123,7 @@ function shortcuts.Paste:run()
     if not err then
         if type(t) == "table" then
             if t[1] == "selection" then
-                local s = t[2]
+                local s = util.instanceFromTable(Room, t[2])
                 app.project.selection = s
                 app.project.selection.x = roundto8(mx - s.w*4)
                 app.project.selection.y = roundto8(my - s.h*4)

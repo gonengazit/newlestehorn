@@ -17,7 +17,7 @@ function Project:init()
 end
 
 function Project:getState()
-    local s = serpent.line(self, {compact = true, comment = false, metatostring = false, keyignore = {class = true, super = true}})
+    local s = dumplualine(self)
     return s
 end
 
