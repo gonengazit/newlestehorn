@@ -1,7 +1,7 @@
 local shortcuts = {}
 
-local keyboard = require 'plugins.base.keyboard'
-local tools = require 'plugins.base.tools'
+local keyboard = require 'keyboard'
+local tools = require 'tools'
 local util = require 'util'
 local Room = require 'Room'
 

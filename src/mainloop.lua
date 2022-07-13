@@ -1,4 +1,4 @@
-local tools = require 'plugins.base.tools'
+local tools = require 'tools'
 
 -- UI things
 
