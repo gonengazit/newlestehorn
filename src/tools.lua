@@ -70,7 +70,7 @@ function TilePanelMx:tilePanel()
                         end
                     end
 
-                    updateAutotiles()
+                    app.autotileManager:update(app.project.conf)
 
                     self.autotileEditO = nil
                     app.currentTile = app.project.conf.autotiles[app.autotile][15]
@@ -93,7 +93,7 @@ function TilePanelMx:tilePanel()
         local auto = {[0] = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
         table.insert(app.project.conf.autotiles, auto)
 
-        updateAutotiles()
+        app.autotileManager:update(app.project.conf)
     end
 
     ui:layoutRow("static", tileSize, tileSize, #app.project.conf.autotiles)
@@ -113,7 +113,7 @@ function TilePanelMx:tilePanel()
         if ui:button("Delete Autotile") then
             table.remove(app.project.conf.autotiles, app.autotile)
 
-            updateAutotiles()
+            app.autotileManager:update(app.project.conf)
 
             app.autotile = math.max(1, app.autotile - 1)
         end
@@ -170,7 +170,7 @@ function tools.Brush:update(dt)
             app:activeRoom().data[ti][tj] = n
 
             if app.autotile then
-                autotileWithNeighbors(app:activeRoom(), ti, tj, app.autotile)
+                app.autotileManager:tileWithNeighbors(app:activeRoom(), ti, tj, app.autotile)
             end
         end
     end
@@ -232,12 +232,12 @@ function tools.Rectangle:mousereleased(x, y, button)
 
         if app.autotile then
             for i = i0, i0 + w - 1 do
-                autotileWithNeighbors(room, i, j0, app.autotile)
-                autotileWithNeighbors(room, i, j0 + h - 1, app.autotile)
+                app.autotileManager:tileWithNeighbors(room, i, j0, app.autotile)
+                app.autotileManager:tileWithNeighbors(room, i, j0 + h - 1, app.autotile)
             end
             for j = j0 + 1, j0 + h - 2 do
-                autotileWithNeighbors(room, i0, j, app.autotile)
-                autotileWithNeighbors(room, i0 + w - 1, j, app.autotile)
+                app.autotileManager:tileWithNeighbors(room, i0, j, app.autotile)
+                app.autotileManager:tileWithNeighbors(room, i0 + w - 1, j, app.autotile)
             end
         end
     end

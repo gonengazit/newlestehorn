@@ -6,7 +6,6 @@ class = require 'lib.30log'
 local App = require 'App'
 local util = require 'util'
 require 'room'
-require 'autotiles'
 
 
 
@@ -33,6 +32,7 @@ function newProject()
 
     p8data = data
 end
+
 
 
 require 'fileio'

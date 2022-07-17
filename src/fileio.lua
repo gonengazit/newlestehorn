@@ -271,7 +271,7 @@ function openPico8(filename)
         app.project.conf[k] = v
     end
 
-    updateAutotiles()
+    app.autotileManager:update(app.project.conf)
 
     app.openFileName = filename
 

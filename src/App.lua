@@ -1,8 +1,9 @@
+local App = class("App")
+
 local Project = require 'Project'
 local Room = require 'Room'
+local AutotileManager = require 'AutotileManager'
 local tools = require 'tools'
-
-local App = class("App")
 
 
 
@@ -11,6 +12,7 @@ function App:init()
 
     -- this is what goes into history and (mostly) gets saved
     self.project = Project:new()
+    self.autotileManager = AutotileManager:new(self.conf)
 
     self.W, self.H = w, h
     self.camX, self.camY = 0, 0
@@ -213,7 +215,7 @@ function App:placeSelection()
 end
 
 function App:hoveredTriggerN()
-    local room=app:activeRoom()
+    local room = app:activeRoom()
     if room then
         for n, trigger in ipairs(room.camtriggers) do
             local ti, tj = self:mouseOverTile()
