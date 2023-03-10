@@ -6,7 +6,7 @@ function love.keypressed(key, scancode, isrepeat)
 
     -- room switching / swapping
     if key == "down" or key == "up" then
-        if app.room then
+        if app.room and not project.selection then
             local n1 = app.room
             local n2 = key == "down" and app.room + 1 or app.room - 1
 
