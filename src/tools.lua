@@ -134,9 +134,14 @@ function tools.Brush:update(dt)
         end
 
         local ti, tj = mouseOverTile()
-        if ti then
-            local room = activeRoom()
+        if not ti then return end
 
+        local room = activeRoom()
+
+        if love.keyboard.isDown("lshift","rshift") and love.mouse.isDown(2) then
+            --select tile from map with shift+click
+            app.currentTile=activeRoom().data[ti][tj]
+        else
             activeRoom().data[ti][tj] = n
 
             if app.autotile then
@@ -174,10 +179,12 @@ end
 function tools.Rectangle:mousepressed(x, y, button)
     local ti, tj = mouseOverTile()
 
-    if button == 1 or button == 2 then
-        if ti then
-            self.rectangleI, self.rectangleJ = ti, tj
-        end
+    if not ti then return end
+    --select tile from map with shift+right click
+    if button == 2 and love.keyboard.isDown("lshift","rshift") then
+        app.currentTile=activeRoom().data[ti][tj]
+    elseif button == 1 or button == 2 then
+        self.rectangleI, self.rectangleJ = ti, tj
     end
 end
 
