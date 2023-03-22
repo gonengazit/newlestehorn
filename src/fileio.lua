@@ -95,7 +95,7 @@ function loadpico8(filename)
             data.quads[i + j*16] = love.graphics.newQuad(i*8, j*8, 8, 8, data.spritesheet:getDimensions())
         end
     end
-    
+
     -- extra spritesheet with transparent black
     local spritesheet_data_copy = spritesheet_data:clone()
     spritesheet_data_copy:mapPixel(function(x, y, r, g, b, a) if r == 0 and g == 0 and b == 0 then return 0, 0, 0, 0 else return r, g, b, a end end)
@@ -123,16 +123,16 @@ function loadpico8(filename)
 
     -- code: look for the magic comment
     local code = table.concat(sections["lua"], "\n")
-	
-	
+
+
 	data.conf = {}
-	
+
     -- get configuration code, if exists
     local evhconf = string.match(code, "%-%-@conf([^@]+)%-%-@")
     if evhconf then
         evhconf = string.match(evhconf, "%-%-%[%[([^@]+)%]%]")
         if evhconf then
-            
+
             local chunk, err = loadstring(evhconf)
 
             if not err then
@@ -332,7 +332,7 @@ function savePico8(filename)
             end
         end
     end
-    
+
     -- map section
 
     -- start out by making sure both sections exist, and are sized to max size
@@ -356,7 +356,7 @@ function savePico8(filename)
     for k,v in ipairs(out) do
         if out[k]=="__gfx__" or out[k]=="__map__" then
             local j=k+1
-            while j<#out and not out[j]:match("__%a+__") do
+            while j<=#out and not out[j]:match("__%a+__") do
                 j=j+1
             end
             local emptyline=""
