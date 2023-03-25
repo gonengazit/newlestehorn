@@ -275,6 +275,12 @@ end
 function savePico8(filename)
     local map = fill2d0s(128, 64)
 
+    --boolean 128x64 table which marks which tiles are part of rooms
+    local is_room={}
+    for i=0,127 do
+        is_room[i]={}
+    end
+
     for _, room in ipairs(project.rooms) do
         if not room.hex then
             local i0, j0 = div8(room.x), div8(room.y)
@@ -282,6 +288,7 @@ function savePico8(filename)
                 for j = 0, room.h - 1 do
                     if map[i0+i] then
                         map[i0+i][j0+j] = room.data[i][j]
+                        is_room[i0+i][j0+j]=true
                     end
                 end
             end
@@ -388,9 +395,15 @@ function savePico8(filename)
         out[mapstart+j+1] = line
     end
     for j = 32, 63 do
+        local gfxline=out[gfxstart+(j-32)*2+65]..out[gfxstart+(j-32)*2+66]
         local line = ""
         for i = 0, 127 do
-            line = line .. tohex_swapnibbles(map[i][j])
+            --build mapdata string, but for values that aren't part of a room, perserve the spritesheet data
+            if is_room[i][j] then
+                line = line .. tohex_swapnibbles(map[i][j])
+            else
+                line= line .. gfxline:sub(2*i+1,2*i+2)
+            end
         end
         out[gfxstart+(j-32)*2+65] = string.sub(line, 1, 128)
         out[gfxstart+(j-32)*2+66] = string.sub(line, 129, 256)
