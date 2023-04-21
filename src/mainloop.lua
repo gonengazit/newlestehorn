@@ -134,7 +134,13 @@ function love.update(dt)
             line = line .. (room.is_string and "s" or "")
             line = line .. "] " .. room.title
 
-            if ui:selectable(line, n == app.room) then
+            local selection={value=n==app.room}
+            if ui:selectable(line, selection) then
+                if app.room==n then
+                    --center camera around room
+                    app.camX,app.camY=-room.x-4*room.w+app.W/(3*app.camScale), -room.y-4*room.h+app.H/(2*app.camScale)
+
+                end
                 app.room = n
             end
         end
