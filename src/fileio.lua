@@ -143,7 +143,7 @@ function loadpico8(filename)
         end
     end
 
-    local evh = string.match(code, "%-%-@begin([^@]+)%-%-@end")
+    local evh = string.match(code, "%-%-@begin(.-)%-%-@end")
     local levels, mapdata, camera_offsets
     if evh then
         -- get names of parameters from commented string
