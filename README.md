@@ -50,7 +50,8 @@ Go to the Releases section at the top of the page.
 * * **Rectangle** - same but in rectangles.
 * * **Select** - basic selection tool, click and drag to select a rectangle, then you can move it, place it, copy or cut it with **Ctrl+C**, **Ctrl+X** and paste with **Ctrl+V**.
 * * **Camera Trigger** - tool for adding, moving and resizing n.p8 camera triggers. Use **Ctrl+Left/Right Mouse Button** to move/resize.
-* * **Room** - currently allows setting room exits and whether the room is stored in code ("hex") or in mapdata.
+* * **Room** - currently allows setting room exits and whether the room is stored in code inside a string, or in mapdata.
+* * **Project** - allows adding/removing level parameters, and configuring whether string levels are saved in base256 or hex format (defaults to whichever the cart uses, or base256 if the cart has no string levels)
 * **Tab** toggles **playtesting mode**. When it's enabled, saving a cart will also inject a line of code that spawns you right in the current room and disables music. (conveniently, in PICO-8 you can press **Ctrl+R** to restart the cart and it will reload the map as well!). Press Tab again to enable **2 dashes**.
 * **CTRL+H** - shows/hides **garbage tiles** on the tool panel
 * **CTRL+T** - shows/hides **camera triggers** when not using the dedicated tool

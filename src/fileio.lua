@@ -151,8 +151,8 @@ function loadpico8(filename)
         data.conf.param_names = data.conf.param_names or split(param_string or "")
 
         -- cut out comments - loadstring doesn't parse them for some reason
-        evh = string.gsub(evh, "%-%-[^\n]*\n", "")
-        evh = string.gsub(evh, "//[^\n]*\n", "")
+        -- evh = string.gsub(evh, "%-%-[^\n]*\n", "")
+        -- evh = string.gsub(evh, "//[^\n]*\n", "")
 
         local chunk, err = loadstring(evh)
         if not err then
@@ -191,7 +191,7 @@ function loadpico8(filename)
             if x and y and w and h then -- this confirms they're there and they're numbers
                 data.rooms[n] = newRoom(x*128, y*128, w*16, h*16)
                 data.rooms[n].exits={left=bit.band(exits,2^3)~=0, bottom=bit.band(exits,2^2)~=0, right=bit.band(exits,2^1)~=0, top=bit.band(exits,2^0)~=0}
-                data.rooms[n].hex=false
+                data.rooms[n].is_string=false
                 data.rooms[n].params=params
             else
                 print("wat", s)
@@ -201,7 +201,7 @@ function loadpico8(filename)
         for J = 0, 3 do
             for I = 0, 7 do
                 local room=newRoom(I*128, J*128, 16, 16)
-                room.hex = false
+                room.is_string = false
                 --b.title=""
                 table.insert(data.rooms, room)
             end
@@ -209,19 +209,33 @@ function loadpico8(filename)
     end
 
     -- load mapdata
+
+    data.store_strings_as_hex=false
     if mapdata then
+        local all_hex=true
         for n, levelstr in pairs(mapdata) do
             local room = data.rooms[n]
             if room then
-                loadroomdata(room, levelstr)
-                room.hex=true
+                if levelstr:match("[%da-f]") and #levelstr==room.w*room.h*2 then
+                    loadroomdata_hex(room, levelstr)
+                else
+                    loadroomdata_base256(room, levelstr)
+                    all_hex=false
+                end
+                room.is_string=true
             end
+        end
+
+        -- if all string levels were stored as hex, (and there are nonzero of them), default to storing them as hex
+        -- in all other cases, default to storing them in base256
+        if all_hex and next(mapdata)~=nil then
+            data.store_strings_as_hex=true
         end
     end
 
     -- fill rooms with no mapdata from p8 map
     for n, room in ipairs(data.rooms) do
-        if not room.hex then
+        if not room.is_string then
             for i = 0, room.w - 1 do
                 for j = 0, room.h - 1 do
                     local i1, j1 = div8(room.x) + i, div8(room.y) + j
@@ -260,6 +274,8 @@ function openPico8(filename)
     p8data = loadpico8(filename)
     project.rooms = p8data.rooms
 
+    app.store_strings_as_hex = p8data.store_strings_as_hex
+
     for k, v in pairs(p8data.conf) do
         project.conf[k] = v
     end
@@ -282,7 +298,7 @@ function savePico8(filename)
     end
 
     for _, room in ipairs(project.rooms) do
-        if not room.hex then
+        if not room.is_string then
             local i0, j0 = div8(room.x), div8(room.y)
             for i = 0, room.w - 1 do
                 for j = 0, room.h - 1 do
@@ -327,8 +343,12 @@ function savePico8(filename)
             levels[n]=levels[n]..","..v
         end
 
-        if room.hex then
-            mapdata[n] = dumproomdata(room)
+        if room.is_string then
+            if app.store_strings_as_hex then
+                mapdata[n] = dumproomdata_hex(room)
+            else
+                mapdata[n] = dumproomdata_base256(room)
+            end
         end
 
         if room.camtriggers then

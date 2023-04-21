@@ -33,6 +33,7 @@ function newProject()
         message = nil,
         messageTimeLeft = nil,
         playtesting = false,
+        store_strings_as_hex=false,
         showToolPanel = true,
         showGarbageTiles=false,
         showCameraTriggers=true,

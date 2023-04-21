@@ -454,7 +454,7 @@ function tools.Room:panel()
         else
             ui:stylePush({})
         end
-        room.hex = ui:checkbox("Store as hex string", room.hex or not fits_on_map)
+        room.is_string = ui:checkbox("Store as string", room.is_string or not fits_on_map)
         ui:stylePop()
 
         ui:layoutRow("dynamic", 25*global_scale, 5)
@@ -489,6 +489,15 @@ function tools.Project:panel()
     if ui:button("Save as...") then
         saveFile(true)
     end
+
+    ui:layoutRow("dynamic", 25*global_scale,3)
+    ui:label("Encode string levels as:")
+
+    -- local radio_state={Base256= not app.store_strings_as_hex, Hex=app.store_strings_as_hex}
+    local radio_state= {value=app.store_strings_as_hex and "Hex" or "Base256"}
+    ui:radio("Base256", radio_state)
+    ui:radio("Hex", radio_state)
+    app.store_strings_as_hex = radio_state.value=="Hex"
 
     ui:layoutRow("dynamic", 25*global_scale, {0.8, 0.1, 0.1})
     ui:label("Room parameter names:")

@@ -1,3 +1,5 @@
+local utf8 = require("utf8")
+
 function isempty(t)
     for k, v in pairs(t) do
         return false
@@ -22,6 +24,51 @@ end
 
 function tohex_swapnibbles(b)
     return hext[b%16]..hext[math.floor(b/16)]
+end
+
+
+local b256_chars = {
+    "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "\t", "\n", "ᵇ",
+    "ᶜ", "\r", "ᵉ", "ᶠ", "▮", "■", "□", "⁙", "⁘", "‖", "◀",
+    "▶", "「", "」", "¥", "•", "、", "。", "゛", "゜", " ", "!",
+    "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0",
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?",
+    "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
+    "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]",
+    "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
+    "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{",
+    "|", "}", "~", "○", "█", "▒", "🐱", "⬇️", "░", "✽", "●",
+    "♥", "☉", "웃", "⌂", "⬅️", "😐", "♪", "🅾️", "◆",
+    "…", "➡️", "★", "⧗", "⬆️", "ˇ", "∧", "❎", "▤", "▥",
+    "あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ",
+    "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に",
+    "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む",
+    "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ",
+    "を", "ん", "っ", "ゃ", "ゅ", "ょ", "ア", "イ", "ウ", "エ", "オ",
+    "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", "タ",
+    "チ", "ツ", "テ", "ト", "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ",
+    "フ", "ヘ", "ホ", "マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ",
+    "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヲ", "ン", "ッ", "ャ", "ュ",
+    "ョ", "◜", "◝", "\0"
+}
+
+local b256_to_vals={}
+for k,v in pairs(b256_chars) do
+    b256_to_vals[v]=k
+
+    --for multi code point chars, allow decoding using only their first char
+    if utf8.len(v)>1 then
+        b256_to_vals[string.sub(v,1,utf8.offset(v,2)-1)]=k
+    end
+end
+
+--we use a base256 format that is cyclically shifted by 1 from pico8's ord
+function frombase256(x)
+    return b256_to_vals[x]-1
+end
+
+function tobase256(x)
+    return b256_chars[x+1]
 end
 
 function roundto8(x)
@@ -83,7 +130,9 @@ function b26(n)
     end
 end
 
-function loadroomdata(room, levelstr)
+
+
+function loadroomdata_hex(room, levelstr)
     for i = 0, room.w - 1 do
         for j = 0, room.h - 1 do
             local k = i + j*room.w
@@ -92,7 +141,7 @@ function loadroomdata(room, levelstr)
     end
 end
 
-function dumproomdata(room)
+function dumproomdata_hex(room)
     local s = ""
     for j = 0, room.h - 1 do
         for i = 0, room.w - 1 do
@@ -102,16 +151,41 @@ function dumproomdata(room)
     return s
 end
 
+function loadroomdata_base256(room,levelstr)
+    local i,j=0,0
+    for pos,codepoint in utf8.codes(levelstr) do
+        --p8scii has a couple of chars which are 2 bytes, the 2nd of which is 0xFE0F
+        if codepoint~=0xFE0F then
+            room.data[i][j]=frombase256(utf8.char(codepoint))
+            i=i+1
+            if i == room.w then
+                i=0
+                j=j+1
+            end
+        end
+    end
+end
+
+function dumproomdata_base256(room)
+    local s = ""
+    for j = 0, room.h - 1 do
+        for i = 0, room.w - 1 do
+            s = s .. tobase256(room.data[i][j])
+        end
+    end
+    return s
+end
+
 function roomMakeStr(room)
     if room then
-        room.str = dumproomdata(room)
+        room.str = dumproomdata_hex(room)
     end
 end
 
 function roomMakeData(room)
     if room then
         room.data = fill2d0s(room.w, room.h)
-        loadroomdata(room, room.str)
+        loadroomdata_hex(room, room.str)
     end
 end
 

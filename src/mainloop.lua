@@ -131,7 +131,7 @@ function love.update(dt)
             line = line .. (room.exits.bottom and "d" or "")
             line = line .. (room.exits.right and "r" or "")
             line = line .. (room.exits.top and "u" or "")
-            line = line .. (room.hex and "h" or "")
+            line = line .. (room.is_string and "s" or "")
             line = line .. "] " .. room.title
 
             if ui:selectable(line, n == app.room) then
@@ -191,7 +191,7 @@ function love.update(dt)
     if app.roomResizeSideX and app.room then
         local room = activeRoom()
 
-        if not room.hex then
+        if not room.is_string then
             -- if the room is stored in mapdata, it still has to fit when resizing
             mx = math.min(math.max(mx, 0), 1024)
             my = math.min(math.max(my, 0), 512)

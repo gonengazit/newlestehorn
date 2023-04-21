@@ -4,7 +4,7 @@ function newRoom(x, y, w, h)
         y = y or 0,
         w = w or 16,
         h = h or 16,
-        hex=true,
+        string=true,
         data = {},
         exits={left=false, bottom=false, right=false, top=true},
         params = {},
@@ -20,9 +20,9 @@ function drawRoom(room, p8data, highlight)
     --background color
     love.graphics.setColor(0.133, 0.133, 0.133)
     love.graphics.rectangle("fill", room.x, room.y, room.w*8, room.h*8)
-    
+
     love.graphics.setColor(1, 1, 1)
-    
+
     -- draw shapes bigger than 1x1 (like spinners)
     for i = 0, room.w - 1 do
         for j = 0, room.h - 1 do
@@ -30,7 +30,7 @@ function drawRoom(room, p8data, highlight)
             drawCompositeShape(n,room.x+8*i,room.y+8*j)
         end
     end
-    
+
     -- tiles
     for i = 0, room.w - 1 do
         for j = 0, room.h - 1 do
