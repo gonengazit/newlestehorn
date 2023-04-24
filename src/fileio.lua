@@ -446,7 +446,7 @@ function savePico8(filename)
 
     -- write to levels table without overwriting the code
     cartdata = cartdata:gsub("(%-%-@begin.*levels%s*=%s*){.-}(.*%-%-@end)","%1"..dumplua(levels).."%2")
-    cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-}(.*%-%-@end)",
+    cartdata = cartdata:gsub("(%-%-@begin.*mapdata%s*=%s*){.-\n}(.*%-%-@end)",
         --this is done in a function instead of a string with references, in order to avoid having to escape special chars in the mapdata
         function(a,b)
             return a..dumplua(mapdata)..b
